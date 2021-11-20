@@ -5,16 +5,6 @@
 </div>
 
 ## How to Use:
-install single dependancy - 18.5kb, pre-installed on most linux systems
-
-on arch linux
-
-> **#**&ensp; `sudo pacman -S wmctrl`
-
-on debian
-
-> **#**&ensp; `sudo apt-get install wmctrl`
-
 clone the repository
 
 > **#**&ensp; `git clone https://github.com/wick3dr0se/fetch.sh`
