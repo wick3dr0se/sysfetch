@@ -28,8 +28,8 @@ echo -ne "${BLUE}shell${NC} ~ " ; echo $SHELL | sed 's%.*/%%'
 # PRETTY_NAME from /etc/os-release
 echo -ne "${PURPLE}os${NC} ~ " ; awk -F '"' '/PRETTY/ {print $2}' /etc/os-release
 
-# active desktop enviornment with wmctrl \\ !remove dependacy to external package
-echo -ne "${RED}de/wm${NC} ~ " ; wmctrl -m | grep 'Name:' | sed 's/Name: //g'
+# desktop enviornment from xsessions
+echo -ne "${RED}de/wm${NC} ~ " ; awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g'
 
 # gtk theme, if exist print name
 echo -ne "${YELLOW}gtk${NC} ~ " ; grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
