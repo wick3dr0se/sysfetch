@@ -15,7 +15,7 @@ WHITE='\033[1;37m'
 os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
 pkgs=""
 case $os in 
-*"Ubuntu"*|*"Mint"*|*"Debian"*|*"Pop!_OS")
+*"Ubuntu"*|*"Mint"*|*"Debian"*|*"Pop!_OS"*)
     pkgs=$(dpkg-query -l | grep "^ii" | wc -l)
     ;;
 *"Arch"*)
