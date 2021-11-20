@@ -16,11 +16,17 @@ os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
 pkgs=""
 case $os in 
 *"Ubuntu"*|*"Mint"*|*"Debian"*|*"Pop!_OS"*)
-    pkgs=$(dpkg-query -l | grep "^ii" | wc -l)
-    ;;
-*"Arch"*)
-    pkgs=$(pacman -Q | wc -l)
-    ;;
+	pkgs=$(dpkg-query -l | grep "^ii" | wc -l)
+	;;
+*"Arch_Linux"*)
+	pkgs=$(pacman -Q | wc -l)
+	;;
+*"RedHat"*|*"Fedora"*|*"SUSE"*|*"CentOS"*)
+	pkgs=$(rpm -qa | wc -l)
+	;;
+*"Slackware"*)
+	pkgs=$(ls /var/log/packages | wc -l)
+	;;
 esac
 
 # output errors to null
@@ -50,6 +56,22 @@ echo -ne "${YELLOW}gtk${NC} ~ " ; grep 'gtk-theme-name' ~/.config/gtk-3.0/* | se
 echo -ne "${GREEN}cpu${NC} ~ " ; awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
 
 # installed packages from package manager
+os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
+pkgs=""
+case $os in 
+*"Ubuntu"*|*"Mint"*|*"Debian"*|*"Pop!_OS"*)
+	pkgs=$(dpkg-query -l | grep "^ii" | wc -l)
+	;;
+*"Arch"*)
+	pkgs=$(pacman -Q | wc -l)
+	;;
+*"Ubuntu"*|*"Mint"*|*"Debian"*|*"Pop!_OS"*)
+	pkgs=$(dpkg-query -l | grep "^ii" | wc -l)
+	;;
+*"Arch"*)
+	pkgs=$(pacman -Q | wc -l)
+	;;
+esac
 
 echo -ne "${CYAN}pkgs${NC} ~ " ; echo "$pkgs"
 
