@@ -5,7 +5,8 @@
 </div>
 
 ## How to Use:
-install single dependancy - 18.5kb, pre-installed on most linux
+install single dependancy - 18.5kb, pre-installed on most linux systems
+
 on arch linux
 
 > **#**&ensp; `sudo pacman -S wmctrl`
