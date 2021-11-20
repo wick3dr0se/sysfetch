@@ -12,7 +12,7 @@ CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
 # output errors to null
-exec 2>/dev/null
+#exec 2>/dev/null
 
 # hostname, architecture & kernel from uname
 echo -ne "${RED}host${NC} ~ " ; uname -n
@@ -35,10 +35,11 @@ echo -ne "${RED}de/wm${NC} ~ " ; awk '/^DesktopNames/' /usr/share/xsessions/* | 
 echo -ne "${YELLOW}gtk${NC} ~ " ; grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
 
 # print model name from /proc/cpuinfo
-echo -ne "${GREEN}cpu${NC} ~ " ; grep -m 1 "model name" /proc/cpuinfo | sed 's/^[model name:.* \t]*//'
+echo -ne "${GREEN}cpu${NC} ~ " ; awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
 
 # installed packages from package manager
-echo -ne "${CYAN}pkgs${NC} ~ " ; pacman -Q | wc -l
+echo -ne "${CYAN}pkgs${NC} ~ " ; pacman -Q | wc -l || dpkg-query -l | grep -c '^ii' || rpm -qa | wc -l || ls /var/log/packages | wc -l
+
 
 # MemTotal in /proc/meminfo
 echo -ne "${BLUE}ram${NC} ~ " ; awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo 
