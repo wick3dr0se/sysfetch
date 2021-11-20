@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #colors
 NC='\033[0m'
@@ -35,4 +35,4 @@ echo -ne "${CYAN}pkgs${NC} ~ " ; pacman -Q | wc -l
 # MemTotal in /proc/meminfo
 echo -ne "${BLUE}ram${NC} ~ " ; awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo 
 # TERM info from printenv
-echo -ne "${PURPLE}term${NC} ~ " ; printenv | grep -w 'TERM' | sed 's/TERM=//g'
+echo -ne "${PURPLE}term${NC} ~ " ; echo $TERM
