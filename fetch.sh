@@ -11,6 +11,18 @@ PURPLE='\033[1;35m'
 CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
+#store OS information to collect number of packages from different sources(apt or pacman)
+os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
+pkgs=""
+case $os in 
+*"Ubuntu"*|*"Mint"*|*"Debian"*|*"Pop!_OS"*)
+    pkgs=$(dpkg-query -l | grep "^ii" | wc -l)
+    ;;
+*"Arch"*)
+    pkgs=$(pacman -Q | wc -l)
+    ;;
+esac
+
 # output errors to null
 #exec 2>/dev/null
 
@@ -26,7 +38,7 @@ echo -ne "${CYAN}uptime${NC} ~ " ; uptime --pretty | sed -e 's/up//'
 echo -ne "${BLUE}shell${NC} ~ " ; echo $SHELL | sed 's%.*/%%'
 
 # PRETTY_NAME from /etc/os-release
-echo -ne "${PURPLE}os${NC} ~ " ; awk -F '"' '/PRETTY/ {print $2}' /etc/os-release
+echo -ne "${PURPLE}os${NC} ~ " ; echo "$os"
 
 # desktop enviornment from xsessions
 echo -ne "${RED}de/wm${NC} ~ " ; awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g'
@@ -38,8 +50,8 @@ echo -ne "${YELLOW}gtk${NC} ~ " ; grep 'gtk-theme-name' ~/.config/gtk-3.0/* | se
 echo -ne "${GREEN}cpu${NC} ~ " ; awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
 
 # installed packages from package manager
-echo -ne "${CYAN}pkgs${NC} ~ " ; pacman -Q | wc -l || dpkg-query -l | grep -c '^ii' || rpm -qa | wc -l || ls /var/log/packages | wc -l
 
+echo -ne "${CYAN}pkgs${NC} ~ " ; echo "$pkgs"
 
 # MemTotal in /proc/meminfo
 echo -ne "${BLUE}ram${NC} ~ " ; awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo 
