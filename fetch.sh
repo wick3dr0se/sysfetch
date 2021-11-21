@@ -36,24 +36,29 @@ os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
 echo "$os"
 
 # desktop enviornment from xsessions
-echo -ne "${RED}de/wm${NC} ~ "
-awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g'
+# i'm not going to explain how this sed-mess works, think of it as an exercise for the reader :)
+dnames=$(awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g')
+if test ! -z "$dnames"; then
+    echo -e "${RED}de/wm${NC} ~ ${dnames}"
+fi
 
 # gtk theme, if exist print name
-echo -ne "${YELLOW}gtk${NC} ~ "
-grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
-
+gtk=`grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'`
+if test ! -z "${gtk}"; then
+    echo -e "${YELLOW}gtk${NC} ~ ${gtk}"
+fi
 # print model name from /proc/cpuinfo
 echo -ne "${GREEN}cpu${NC} ~ "
 awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
 
 # installed packages from package manager
 echo -ne "${CYAN}pks${NC} ~ "
-if [[ "$os" =~ ^(Arch Linux|Manjaro)$ ]]; then
+if [ -x "$(command -v pacman)" ]; then
 	pacman -Q | wc -l
-fi
-if [[ "$os" =~ ^(Debian|Ubuntu|Mint|!Pop_OS)$ ]]; then
-	dpkg-query -l | grep -c '^li'
+elif [ -x "$(command -v dpkg-query)" ]; then
+	dpkg-query -l | grep -c '^.i'
+else
+	echo -n "0 (unrecognised package manager)";
 fi
 
 # MemTotal in /proc/meminfo
