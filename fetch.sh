@@ -11,60 +11,53 @@ PURPLE='\033[1;35m'
 CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
-# output errors to null
-# exec 2>/dev/null
+# // HOST // ARCH // KERNEL // run uname
+echo -ne "${RED}host${NC} ~ " ; uname -n
+echo -ne "${YELLOW}arch${NC} ~ " ; uname -m
+echo -ne "${GREEN}kernel${NC} ~ " ; uname -r
 
-# hostname, architecture & kernel from uname
-echo -ne "${RED}host${NC} ~ "
-uname -n
-echo -ne "${YELLOW}arch${NC} ~ "
-uname -m
-echo -ne "${GREEN}kernel${NC} ~ "
-uname -r
-
-# uptime using uptime
+# // UPTIME // run 'uptime' 
 echo -ne "${CYAN}uptime${NC} ~ "
 uptime --pretty | sed -e 's/up//'
 
-# check shell enviornment variable
+# // SHELL // echo '$SHELL' enviornment variable
 echo -ne "${BLUE}shell${NC} ~ "
 echo $SHELL | sed 's%.*/%%'
 
-# PRETTY_NAME from /etc/os-release
+# // OS // print 'PRETTY_NAME'
 echo -ne "${PURPLE}os${NC} ~ "
-os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
-echo "$os"
+awk -F '"' '/PRETTY/ {print $2}' /etc/os-release
 
-# desktop enviornment from xsessions
-# i'm not going to explain how this sed-mess works, think of it as an exercise for the reader :)
-dnames=$(awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g')
-if test ! -z "$dnames"; then
-    echo -e "${RED}de/wm${NC} ~ ${dnames}"
+# // DE/WM // if file exist print 'DesktopNames'
+if test -e /usr/share/xsessions/  ; then
+	echo -ne "${RED}de/wm${NC} ~ "
+	awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g'
 fi
 
-# gtk theme, if exist print name
-gtk=`grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'`
-if test ! -z "${gtk}"; then
-    echo -e "${YELLOW}gtk${NC} ~ ${gtk}"
+# // GTK // if file exist print 'gtk-theme-name'
+if test -e ~/.config/gtk-3.0/ ; then
+	echo -ne "${YELLOW}gtk${NC} ~ "
+	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'	
 fi
-# print model name from /proc/cpuinfo
+
+# // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${GREEN}cpu${NC} ~ "
 awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
 
-# installed packages from package manager
+# // PKGS // if package manager found run query
 echo -ne "${CYAN}pks${NC} ~ "
-if [ -x "$(command -v pacman)" ]; then
+if [[ $(command -v pacman) ]]; then
 	pacman -Q | wc -l
-elif [ -x "$(command -v dpkg-query)" ]; then
-	dpkg-query -l | grep -c '^.i'
+elif [[ $(command -v dpkg-query) ]]; then
+	dkpg-query -l | grep -c '^.i'
 else
-	echo -n "0 (unrecognised package manager)";
+	echo not found
 fi
 
-# MemTotal in /proc/meminfo
+# // RAM // print 'MemTotal' in /proc/meminfo
 echo -ne "${BLUE}ram${NC} ~ "
 awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo 
 
-# print $TERM variable
+# // TERM // echo $TERM variable
 echo -ne "${PURPLE}term${NC} ~ "
 echo $TERM
