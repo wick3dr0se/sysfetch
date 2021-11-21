@@ -14,52 +14,49 @@ WHITE='\033[1;37m'
 # output errors to null
 # exec 2>/dev/null
 
-# store os info to get pkgs
-os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
-pkgs=""
-case $os in 
-*"Ubuntu"*|*"Mint"*|*"Debian"*|*"Pop!_OS"*)
-	pkgs=$(dpkg-query -l | grep "^ii" | wc -l)
-	;;
-*"Arch Linux"*)
-	pkgs=$(pacman -Q | wc -l)
-	;;
-*"RedHat"*|*"Fedora"*|*"CentOS"*|*"SUSE"*)
-	pkgs=$(rpm -qa | wc -l)
-	;;
-*"Slackware"*)
-	pkgs=$(ls /var/log/packages | wc -l)
-	;;
-esac
-
 # hostname, architecture & kernel from uname
 echo -ne "${RED}host${NC} ~ " ; uname -n
 echo -ne "${YELLOW}arch${NC} ~ " ; uname -m
 echo -ne "${GREEN}kernel${NC} ~ " ; uname -r
 
 # uptime using uptime
-echo -ne "${CYAN}uptime${NC} ~ " ; uptime --pretty | sed -e 's/up//'
+echo -ne "${CYAN}uptime${NC} ~ "
+uptime --pretty | sed -e 's/up//'
 
 # check shell enviornment variable
-echo -ne "${BLUE}shell${NC} ~ " ; echo $SHELL | sed 's%.*/%%'
+echo -ne "${BLUE}shell${NC} ~ "
+echo $SHELL | sed 's%.*/%%'
 
 # PRETTY_NAME from /etc/os-release
-echo -ne "${PURPLE}os${NC} ~ " ; echo "$os"
+echo -ne "${PURPLE}os${NC} ~ "
+os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
+echo "$os"
 
 # desktop enviornment from xsessions
-echo -ne "${RED}de/wm${NC} ~ " ; awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g'
+echo -ne "${RED}de/wm${NC} ~ "
+awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g'
 
 # gtk theme, if exist print name
-echo -ne "${YELLOW}gtk${NC} ~ " ; grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
+echo -ne "${YELLOW}gtk${NC} ~ "
+grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
 
 # print model name from /proc/cpuinfo
-echo -ne "${GREEN}cpu${NC} ~ " ; awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
+echo -ne "${GREEN}cpu${NC} ~ "
+awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
 
 # installed packages from package manager
-echo -ne "${CYAN}pkgs${NC} ~ " ; echo "$pkgs"
+echo -ne "${CYAN}pks${NC} ~ "
+if [[ "$os" =~ ^(Arch Linux|Manjaro)$ ]]; then
+	pacman -Q | wc -l
+fi
+if [[ "$os" =~ ^(Debian|Ubuntu|Mint|!Pop_OS)$ ]]; then
+	dpkg-query -l | grep -c '^li'
+fi
 
 # MemTotal in /proc/meminfo
-echo -ne "${BLUE}ram${NC} ~ " ; awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo 
+echo -ne "${BLUE}ram${NC} ~ "
+awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo 
 
 # print $TERM variable
-echo -ne "${PURPLE}term${NC} ~ " ; echo $TERM
+echo -ne "${PURPLE}term${NC} ~ "
+echo $TERM
