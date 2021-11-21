@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#colors
+#colorsi
 NC='\033[0m'
 BLACK='\033[1;30m'
 RED='\033[1;31m'
@@ -11,41 +11,38 @@ PURPLE='\033[1;35m'
 CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
-# // HOST // ARCH // KERNEL // run uname
+# // HOST // KERNEL // run uname
 echo -ne "${RED}host${NC} ~ " ; uname -n
-echo -ne "${YELLOW}arch${NC} ~ " ; uname -m
-echo -ne "${GREEN}kernel${NC} ~ " ; uname -r
+echo -ne "${YELLOW}kernel${NC} ~ " ; uname -r
 
 # // UPTIME // run 'uptime' 
-echo -ne "${CYAN}uptime${NC} ~ "
+echo -ne "${GREEN}uptime${NC} ~ "
 uptime --pretty | sed -e 's/up//'
 
-# // SHELL // echo '$SHELL' enviornment variable
-echo -ne "${BLUE}shell${NC} ~ "
-echo $SHELL | sed 's%.*/%%'
-
 # // OS // print 'PRETTY_NAME'
-echo -ne "${PURPLE}os${NC} ~ "
-awk -F '"' '/PRETTY/ {print $2}' /etc/os-release
-
+echo -ne "${CYAN}os${NC} ~ "
+awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n' 
+echo -ne "${GREEN}\t arch${NC} ~ "
+uname -m
 # // DE/WM // if file exist print 'DesktopNames'
 if test -e /usr/share/xsessions/  ; then
-	echo -ne "${RED}de/wm${NC} ~ "
-	awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g'
+	echo -ne "${BLUE}de/wm${NC} ~ "
+	awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g' | tr -d "\n"
 fi
 
 # // GTK // if file exist print 'gtk-theme-name'
 if test -e ~/.config/gtk-3.0/ ; then
-	echo -ne "${YELLOW}gtk${NC} ~ "
+	echo -ne "${CYAN}\t gtk${NC} ~ "
 	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'	
 fi
 
 # // CPU // return cpu model name from /proc/cpuinfo
-echo -ne "${GREEN}cpu${NC} ~ "
-awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo
+echo -ne "${PURPLE}cpu${NC} ~ "
+awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g' | tr -d '\n'
+sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//'| tr -d '\n' ; echo " GHz"
 
 # // PKGS // if package manager found run query
-echo -ne "${CYAN}pks${NC} ~ "
+echo -ne "${RED}pkgs${NC} ~ "
 if [[ $(command -v pacman) ]]; then
 	pacman -Q | wc -l
 elif [[ $(command -v dpkg-query) ]]; then
@@ -55,9 +52,21 @@ else
 fi
 
 # // RAM // print 'MemTotal' in /proc/meminfo
-echo -ne "${BLUE}ram${NC} ~ "
-awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo 
+echo -ne "${YELLOW}ram${NC} ~ "
+awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
+
+# // SWAP // print 'Size' from /proc/swaps
+swapK=$(awk '{print $3}' /proc/swaps | sed '1d')
+let "swapM = $swapK / 1024"
+if test -e /proc/swaps ; then
+	echo -ne "${BLUE}\t swap${NC} ~ "
+	echo $swapM MiB
+fi
 
 # // TERM // echo $TERM variable
-echo -ne "${PURPLE}term${NC} ~ "
-echo $TERM
+echo -ne "${GREEN}term${NC} ~ "
+echo $TERM | tr -d "\n"
+
+# // SHELL // echo '$SHELL' enviornment variable
+echo -ne "${PURPLE}\tshell${NC} ~ "
+echo $SHELL | sed 's%.*/%%'
