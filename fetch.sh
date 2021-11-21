@@ -15,9 +15,12 @@ WHITE='\033[1;37m'
 # exec 2>/dev/null
 
 # hostname, architecture & kernel from uname
-echo -ne "${RED}host${NC} ~ " ; uname -n
-echo -ne "${YELLOW}arch${NC} ~ " ; uname -m
-echo -ne "${GREEN}kernel${NC} ~ " ; uname -r
+echo -ne "${RED}host${NC} ~ "
+uname -n
+echo -ne "${YELLOW}arch${NC} ~ "
+uname -m
+echo -ne "${GREEN}kernel${NC} ~ "
+uname -r
 
 # uptime using uptime
 echo -ne "${CYAN}uptime${NC} ~ "
