@@ -23,14 +23,14 @@ echo -ne "${BLUE}kernel${NC} ~ "
 uname -r
 
 
-# // UPTIME // run 'uptime' 
+# // UPTIME // run 'uptime'
 echo -ne "${CYAN}uptime${NC} ~ "
 uptime --pretty | sed -e 's/up//;s/^ *//'
 
 
 # // OS // ARCH // print 'PRETTY_NAME' / get processor speed
 echo -ne "${GREEN}os${NC} ~ "
-awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n' 
+awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n'
 
 echo -ne " \e \e \e \e "
 echo -ne "${PURPLE}arch${NC} ~ "
@@ -48,7 +48,7 @@ fi
 if test -e ~/.config/gtk-3.0/ ; then
 	echo -ne " \e \e \e \e "
 	echo -ne "${BLUE}theme${NC} ~ "
-	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'	
+	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
 fi
 
 
@@ -72,7 +72,7 @@ echo -ne "${BLUE}pkgs${NC} ~ "
 if [[ $(command -v pacman) ]]; then
 	pacman -Q | wc -l
 elif [[ $(command -v dpkg-query) ]]; then
-	dpkg-query -l | grep -c '^.i'
+	dpkg-query -l | grep -c '^ii'
 else
 	echo not found
 fi
