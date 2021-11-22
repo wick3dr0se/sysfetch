@@ -50,9 +50,12 @@ fi
 
 # // THEME // if file exist print 'gtk-theme-name'
 if test -e ~/.config/gtk-3.0/ ; then
-	echo -ne " \e \e \e \e "
-	echo -ne "${BLUE}theme${NC} ~ "
-	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
+	theme=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
+	if [ "$theme" != '' ]; then
+		echo -ne " \e \e \e \e "
+		echo -ne "${BLUE}theme${NC} ~ "
+		echo $	theme
+	fi
 fi
 
 
