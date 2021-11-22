@@ -31,50 +31,35 @@ uptime --pretty | sed -e 's/up//;s/^ *//'
 # // OS // ARCH // print 'PRETTY_NAME' / get processor speed
 echo -ne "${GREEN}os${NC} ~ "
 awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n'
-
+# get architecture with uname
 echo -ne " \e \e \e \e "
 echo -ne "${PURPLE}arch${NC} ~ "
 uname -m
 
 
 # // DE/WM // if file exist print 'DesktopNames'
+echo -ne "${YELLOW}de/wm${NC} ~ "
 if test -e /usr/share/xsessions/  ; then
-	echo -ne "${YELLOW}de/wm${NC} ~ "
-  
-	cat /usr/share/xsessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi'
-
-elif test -e /usr/share/wayland-sessions/*  ; then
-	echo -ne "${YELLOW}de/wm${NC} ~ "
-	cat /usr/share/wayland-sessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi'
-  
-	awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g' | tr -d "\n"
+	 cat /usr/share/xsessions/* | grep -i 'names=' | sed 's/DesktopNames=//' | tr -d '\n'
+elif test -e /usr/share/wayland-sessions/* ; then
+	cat /usr/share/wayland-sessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi' | tr -d '\n'
 else
 	echo -ne "${YELLOW}de/wm${NC} ~ "
-    # Get ID of child window (check https://specifications.freedesktop.org/wm-spec/1.3/ar01s03.html)
-    id=$(xprop -root 2>/dev/null | sed -n '/^_NET_SUPPORTING_WM_CHECK/ s/.* // p')
-    # Get WM's name
-    echo $(xprop -id "$id" -notype -len 25 -f _NET_WM_NAME 8t 2>/dev/null | sed -n '/^_NET_WM_NAME/ s/.* // p' | sed 's/"//g') | tr -d "\n"
+	xprop -root | grep '^_NET_WM_NAME' | sed 's/^_NET_WM_NAME//g;s/(UTF8_STRING) = //g' | tr -d '\n'
 fi
 
 
 # // THEME // if file exist print 'gtk-theme-name'
-if [ "$theme" != '' ]; then
-  echo -ne " \e \e \e \e "
-  echo -ne "${BLUE}theme${NC} ~ "
-  echo $	theme
-fi
-if command -v gsettings &> /dev/null
-then
-	echo -ne " \e \e \e \e "
-	echo -ne "${BLUE}theme${NC} ~ "
-    echo $(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'/\n/g")
+echo -ne " \e \e \e \e "
+echo -ne "${BLUE}theme${NC} ~ "
+if test -e ~/.config/gtk-3.0/ ; then
+	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
+elif command -v gsettings ; then
+	echo $(gsettings get org.gnome.desktop.interface gtk-theme | tr -d '\n')
 else
-    if test -e ~/.config/gtk-3.0/ ; then
-        echo -ne " \e \e \e \e "
-        echo -ne "${BLUE}theme${NC} ~ "
-        grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
-    fi
+	echo not found
 fi
+
 
 # // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${RED}cpu${NC} ~ "
