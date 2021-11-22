@@ -86,7 +86,7 @@ awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
 
 
 # // SWAP // print 'Size' from /proc/swaps
-swap_kb=$(awk '{print $3}' /proc/swaps | sed '1d')
+swap_kb=$(cat /proc/swaps | grep -vi filename | awk '{n+=$3} END {print n}')
 let "swap_mb = $swap_kb / 1024"
 if test -e /proc/swaps ; then
 	echo -ne " \e \e \e \e "
