@@ -53,7 +53,7 @@ fi
 echo -ne " \e \e \e \e "
 echo -ne "${BLUE}theme${NC} ~ "
 if test -e ~/.config/gtk-3.0/ ; then
-	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
+	grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
 elif command -v gsettings ; then
 	echo $(gsettings get org.gnome.desktop.interface gtk-theme | tr -d '\n')
 else
@@ -79,13 +79,13 @@ fi
 
 # // PKGS // if package manager found run query
 echo -ne "${BLUE}pkgs${NC} ~ "
-if [[ $(command -v pacman) ]]; then
+if [[ $(command -v pacman) ]] ; then
 	pacman -Q | wc -l
 elif [[ $(command -v dpkg-query) ]]; then
 	dpkg-query -l | grep -c '^ii'
-elif [[ $(command -v dnf) ]]; then
+elif [[ $(command -v dnf) ]] ; then
 	dnf list installed | grep ".@." -c
-elif [[ $(command -v rpm) ]]; then
+elif [[ $(command -v rpm) ]] ; then
 	rpm -qa | wc -l
 elif test -e /var/log/packages ; then
 	ls /var/log/packages | wc -l
@@ -101,7 +101,7 @@ awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
 
 # // SWAP // print 'Size' from /proc/swaps
 swap_kb=$(cat /proc/swaps | grep -vi filename | awk '{n+=$3} END {print n}')
-if [ -n "$swap_kb" ]; then
+if [ -n "$swap_kb" ] ; then
 	let "swap_mb = $swap_kb /	 1024"
 	echo -ne " \e \e \e \e "
 	echo -ne "${YELLOW}swap${NC} ~ "
