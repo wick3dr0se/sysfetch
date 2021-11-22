@@ -1,6 +1,6 @@
 <div align="center">
 <h1>fetch.sh</h1>
-<p>A very tiny, simple system information fetch script written in basic shell commands</p>
+<p>A super tiny Linux system information fetch script written in BASH</p>
 <img src="https://github.com/wick3dr0se/fetch.sh/blob/master/screen.png"></img>
 </div>
 
