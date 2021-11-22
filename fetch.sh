@@ -63,8 +63,10 @@ fi
 
 
 # // GPU // w/ lspci
-echo -ne "${PURPLE}gpu${NC} ~ "
-lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
+if lspci | grep -qi --color 'vga\|3d\|2d'; then
+	echo -ne "${PURPLE}gpu${NC} ~ "
+	lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
+fi
 
 
 # // PKGS // if package manager found run query
