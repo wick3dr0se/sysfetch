@@ -63,7 +63,7 @@ fi
 
 
 # // GPU // w/ lspci
-echo -ne "${PURPLE}gpu${NC} ~ " 
+echo -ne "${PURPLE}gpu${NC} ~ "
 lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 
 
@@ -73,6 +73,8 @@ if [[ $(command -v pacman) ]]; then
 	pacman -Q | wc -l
 elif [[ $(command -v dpkg-query) ]]; then
 	dpkg-query -l | grep -c '^ii'
+elif [[ $(command -v dnf) ]]; then
+	dnf list installed | grep ".@." -c
 else
 	echo not found
 fi
