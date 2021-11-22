@@ -85,6 +85,8 @@ elif [[ $(command -v dpkg-query) ]]; then
 	dpkg-query -l | grep -c '^ii'
 elif [[ $(command -v dnf) ]]; then
 	dnf list installed | grep ".@." -c
+elif [[ $(command -v rpm) ]]; then
+	rpm -qa | wc -l
 else
 	echo not found
 fi
