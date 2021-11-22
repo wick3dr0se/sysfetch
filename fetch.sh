@@ -17,7 +17,7 @@ echo -ne "${YELLOW}kernel${NC} ~ " ; uname -r
 
 # // UPTIME // run 'uptime' 
 echo -ne "${GREEN}uptime${NC} ~ "
-uptime --pretty | sed -e 's/up//'
+uptime --pretty | sed -e 's/up//;s/^ *//'
 
 # // OS // print 'PRETTY_NAME'
 echo -ne "${CYAN}os${NC} ~ "
@@ -39,7 +39,7 @@ fi
 
 # // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${PURPLE}cpu${NC} ~ "
-awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g' | tr -d '\n'
+awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g;s/^ *//' | tr -d '\n'
 # get cpu frequency if /sys/devices/system/cpu exist
 if test -e /sys/devices/system/cpu ; then
 	sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//'| tr -d '\n' ; echo " GHz"
