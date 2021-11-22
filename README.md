@@ -5,18 +5,23 @@
 </div>
 
 ## How to Use:
-clone the repository
+Clone the repository
 
 > **#**&ensp; `git clone https://github.com/wick3dr0se/fetch.sh`
 
-change directory into the folder
+Change directory into the folder
 
 > **#**&ensp; `cd fetch.sh`
 
-make script executable
+Make script executable
 
 > **#**&ensp; `chmod +x fetch.sh`
 
-execute script
+Execute script
 
 > **#**&ensp; `./fetch.sh`
+
+## Contributing:
+Fork the repository and make a pull request with some code change; keep the code small, clean and only BASH 
+
+This is a huge WIP, so any contributions are much appreciated!
