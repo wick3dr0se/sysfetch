@@ -40,24 +40,41 @@ uname -m
 # // DE/WM // if file exist print 'DesktopNames'
 if test -e /usr/share/xsessions/  ; then
 	echo -ne "${YELLOW}de/wm${NC} ~ "
+  
 	cat /usr/share/xsessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi'
 
 elif test -e /usr/share/wayland-sessions/*  ; then
 	echo -ne "${YELLOW}de/wm${NC} ~ "
 	cat /usr/share/wayland-sessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi'
+  
+	awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g' | tr -d "\n"
+else
+	echo -ne "${YELLOW}de/wm${NC} ~ "
+    # Get ID of child window (check https://specifications.freedesktop.org/wm-spec/1.3/ar01s03.html)
+    id=$(xprop -root 2>/dev/null | sed -n '/^_NET_SUPPORTING_WM_CHECK/ s/.* // p')
+    # Get WM's name
+    echo $(xprop -id "$id" -notype -len 25 -f _NET_WM_NAME 8t 2>/dev/null | sed -n '/^_NET_WM_NAME/ s/.* // p' | sed 's/"//g') | tr -d "\n"
 fi
 
 
 # // THEME // if file exist print 'gtk-theme-name'
-if test -e ~/.config/gtk-3.0/ ; then
-	theme=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
-	if [ "$theme" != '' ]; then
-		echo -ne " \e \e \e \e "
-		echo -ne "${BLUE}theme${NC} ~ "
-		echo $	theme
-	fi
+if [ "$theme" != '' ]; then
+  echo -ne " \e \e \e \e "
+  echo -ne "${BLUE}theme${NC} ~ "
+  echo $	theme
 fi
-
+if command -v gsettings &> /dev/null
+then
+	echo -ne " \e \e \e \e "
+	echo -ne "${BLUE}theme${NC} ~ "
+    echo $(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'/\n/g")
+else
+    if test -e ~/.config/gtk-3.0/ ; then
+        echo -ne " \e \e \e \e "
+        echo -ne "${BLUE}theme${NC} ~ "
+        grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
+    fi
+fi
 
 # // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${RED}cpu${NC} ~ "
@@ -74,7 +91,6 @@ if lspci | grep -qi --color 'vga\|3d\|2d'; then
 	echo -ne "${PURPLE}gpu${NC} ~ "
 	lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 fi
-
 
 # // PKGS // if package manager found run query
 echo -ne "${BLUE}pkgs${NC} ~ "
