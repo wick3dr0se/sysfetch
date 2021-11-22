@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#colorsi
+#colors
 NC='\033[0m'
 BLACK='\033[1;30m'
 RED='\033[1;31m'
@@ -13,7 +13,7 @@ WHITE='\033[1;37m'
 
 # // HOST@USER // w/ uname & whoami
 host=$(uname -n)
-user=$(whoami)
+user=$(echo $USER)
 echo -ne "\e[3m${PURPLE}$user${NC}\e[0m"
 echo -e "\e[3m@${YELLOW}$host${NC}\e[0m"
 
@@ -108,7 +108,7 @@ awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
 # // SWAP // print 'Size' from /proc/swaps
 swap_kb=$(cat /proc/swaps | grep -vi filename | awk '{n+=$3} END {print n}')
 if [ -n "$swap_kb" ] ; then
-	let "swap_mb = $swap_kb /	 1024"
+	let "swap_mb = $swap_kb / 1024"
 	echo -ne " \e \e \e \e "
 	echo -ne "${YELLOW}swap${NC} ~ "
 	echo $swap_mb MiB
