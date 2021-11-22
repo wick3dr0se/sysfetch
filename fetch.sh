@@ -40,7 +40,11 @@ uname -m
 # // DE/WM // if file exist print 'DesktopNames'
 if test -e /usr/share/xsessions/  ; then
 	echo -ne "${YELLOW}de/wm${NC} ~ "
-	awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g' | tr -d "\n"
+	cat /usr/share/xsessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi'
+
+elif test -e /usr/share/wayland-sessions/*  ; then
+	echo -ne "${YELLOW}de/wm${NC} ~ "
+	cat /usr/share/wayland-sessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi'
 fi
 
 
