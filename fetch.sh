@@ -64,7 +64,7 @@ fi
 
 # // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${RED}cpu${NC} ~ "
-awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/(TM)//;s/(R)//;s/CPU//;s/^ *//' | tr -d '\n'
+awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//' | tr -d '\n'
 
 # get cpu frequency if /sys/devices/system/cpu exist
 if test -e /sys/devices/system/cpu/cpu0/cpufreq ; then
