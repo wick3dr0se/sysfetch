@@ -87,6 +87,8 @@ elif [[ $(command -v dnf) ]]; then
 	dnf list installed | grep ".@." -c
 elif [[ $(command -v rpm) ]]; then
 	rpm -qa | wc -l
+elif test -e /var/log/packages ; then
+	ls /var/log/packages | wc -l
 else
 	echo not found
 fi
