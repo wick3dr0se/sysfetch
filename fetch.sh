@@ -66,9 +66,18 @@ echo -ne "${RED}cpu${NC} ~ "
 awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g;s/^ *//' | tr -d '\n'
 
 # get cpu frequency if /sys/devices/system/cpu exist
-if test -e /sys/devices/system/cpu ; then
-	sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//;s/^/@/'| tr -d '\n' ; echo " GHz"
+if test -e /sys/devices/system/cpu/cpu0/cpufreq ; then
+	cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/.....$//' | tr -d '\n'
+	echo -ne @ ; cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/....$//' | tr -d '\n' ; echo GHz
 fi
+
+
+
+
+
+#if test -e /sys/devices/system/cpu/cpu0/cpufreq ; then
+#	 | head -n1 | sed 's/......$/.&/;s/...$//;s/^/@/'| tr -d '\n' ; echo " GHz"
+#fi
 
 
 # // GPU // w/ lspci
