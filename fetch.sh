@@ -59,7 +59,7 @@ awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g;
 
 # get cpu frequency if /sys/devices/system/cpu exist
 if test -e /sys/devices/system/cpu ; then
-	sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//'| tr -d '\n' ; echo " GHz"
+	sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//;s/^/@/'| tr -d '\n' ; echo " GHz"
 fi
 
 
