@@ -52,7 +52,7 @@ fi
 # // THEME // if file exist print 'gtk-theme-name'
 echo -ne " \e \e \e \e "
 echo -ne "${BLUE}theme${NC} ~ "
-if test -e ~/.config/gtk-3.0/ ; then
+if test -e ~/.config/gtk-3.0/settings.ini ; then
 	grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
 elif command -v gsettings ; then
 	echo $(gsettings get org.gnome.desktop.interface gtk-theme | tr -d '\n')
