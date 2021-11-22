@@ -22,8 +22,9 @@ uptime --pretty | sed -e 's/up//'
 # // OS // print 'PRETTY_NAME'
 echo -ne "${CYAN}os${NC} ~ "
 awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n' 
-echo -ne "${GREEN}\t arch${NC} ~ "
+echo -ne "${GREEN} \e \e \e \e arch${NC} ~ "
 uname -m
+
 # // DE/WM // if file exist print 'DesktopNames'
 if test -e /usr/share/xsessions/  ; then
 	echo -ne "${BLUE}de/wm${NC} ~ "
@@ -32,21 +33,24 @@ fi
 
 # // GTK // if file exist print 'gtk-theme-name'
 if test -e ~/.config/gtk-3.0/ ; then
-	echo -ne "${CYAN}\t gtk${NC} ~ "
+	echo -ne "${CYAN} \e \e \e \e gtk${NC} ~ "
 	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'	
 fi
 
 # // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${PURPLE}cpu${NC} ~ "
 awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g' | tr -d '\n'
-sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//'| tr -d '\n' ; echo " GHz"
+# get cpu frequency if /sys/devices/system/cpu exist
+if test -e /sys/devices/system/cpu ; then
+	sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//'| tr -d '\n' ; echo " GHz"
+fi
 
 # // PKGS // if package manager found run query
 echo -ne "${RED}pkgs${NC} ~ "
 if [[ $(command -v pacman) ]]; then
 	pacman -Q | wc -l
 elif [[ $(command -v dpkg-query) ]]; then
-	dkpg-query -l | grep -c '^.i'
+	dpkg-query -l | grep -c '^.i'
 else
 	echo not found
 fi
@@ -59,7 +63,7 @@ awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
 swapK=$(awk '{print $3}' /proc/swaps | sed '1d')
 let "swapM = $swapK / 1024"
 if test -e /proc/swaps ; then
-	echo -ne "${BLUE}\t swap${NC} ~ "
+	echo -ne "${BLUE} \e \e \e \e swap${NC} ~ "
 	echo $swapM MiB
 fi
 
@@ -68,5 +72,5 @@ echo -ne "${GREEN}term${NC} ~ "
 echo $TERM | tr -d "\n"
 
 # // SHELL // echo '$SHELL' enviornment variable
-echo -ne "${PURPLE}\tshell${NC} ~ "
+echo -ne "${PURPLE} \e \e \e \e shell${NC} ~ "
 echo $SHELL | sed 's%.*/%%'
