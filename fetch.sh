@@ -62,7 +62,7 @@ else
 fi
 
 
-# // CPU // return cpu model name from /proc/cpuinfo
+# // CPU // try cpu model from lscpu if not found /proc/cpuinfo
 echo -ne "${RED}cpu${NC} ~ "
 if [[ $(command -v lscpu) ]] ; then
 	lscpu | grep 'Model name' | sed 's/Model name://;s/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//' | tr -d '\n'
@@ -80,10 +80,10 @@ else
 fi
 
 
-# // GPU // w/ lspci
+# // GPU // with lscpi
 if [[ $(command -v lspci) ]] ; then
 	echo -ne "${PURPLE}gpu${NC} ~ "
-	lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
+	lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/Family//;s/Processor//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 else 
 	echo -e '\n'
 fi
@@ -120,7 +120,7 @@ if [ -n "$swap_kb" ] ; then
 	echo -ne "${YELLOW}swap${NC} ~ "
 	echo $swap_mb MiB
 else
-	echo ''
+	echo "\n"
 fi
 
 
