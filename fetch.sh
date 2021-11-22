@@ -127,15 +127,22 @@ awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
 
 
 # // SWAP // print 'Size' from /proc/swaps
-swap_kb=$(cat /proc/swaps | grep -vi filename | awk '{n+=$3} END {print n}')
-if [ -n "$swap_kb" ] ; then
+echo -ne " \e \e \e \e "
+echo -ne "${YELLOW}swap${NC} ~ "
+case $(cat /proc/swaps | wc -l) in
+2) swap_kb=$(cat /proc/swaps | grep -vi filename | awk '{n+=$3} END {print n}')
+   if [ -n "$swap_kb" ] ; then
 	let "swap_mb = $swap_kb / 1024"
-	echo -ne " \e \e \e \e "
-	echo -ne "${YELLOW}swap${NC} ~ "
 	echo $swap_mb MiB
-else
+   else
 	echo "\n"
-fi
+   fi
+   ;;
+1) echo "none"
+   ;;
+*) echo "unknown"
+   ;;
+esac
 
 
 # // TERM // get terminal name w/ pstree
