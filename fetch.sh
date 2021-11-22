@@ -32,7 +32,8 @@ uptime --pretty | sed -e 's/up//;s/^ *//'
 echo -ne "${GREEN}os${NC} ~ "
 awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n' 
 
-echo -ne "${PURPLE} \e \e \e \e arch${NC} ~ "
+echo -ne " \e \e \e \e "
+echo -ne "${PURPLE}arch${NC} ~ "
 uname -m
 
 
@@ -45,7 +46,8 @@ fi
 
 # // THEME // if file exist print 'gtk-theme-name'
 if test -e ~/.config/gtk-3.0/ ; then
-	echo -ne "${BLUE} \e \e \e \e theme${NC} ~ "
+	echo -ne " \e \e \e \e "
+	echo -ne "${BLUE}theme${NC} ~ "
 	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'	
 fi
 
@@ -62,7 +64,7 @@ fi
 
 # // GPU // w/ lspci
 echo -ne "${PURPLE}gpu${NC} ~ " 
-lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/06000//;s/^ *//'
+lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 
 
 # // PKGS // if package manager found run query
@@ -85,7 +87,8 @@ awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
 swap_kb=$(awk '{print $3}' /proc/swaps | sed '1d')
 let "swap_mb = $swap_kb / 1024"
 if test -e /proc/swaps ; then
-	echo -ne "${YELLOW} \e \e \e \e swap${NC} ~ "
+	echo -ne " \e \e \e \e "
+	echo -ne "${YELLOW}swap${NC} ~ "
 	echo $swap_mb MiB
 fi
 
@@ -99,5 +102,6 @@ echo $term | tr -d "\n"
 
 
 # // SHELL // echo '$SHELL' enviornment variable
-echo -ne "${RED} \e \e \e \e shell${NC} ~ "
+echo -ne " \e \e \e \e "
+echo -ne "${RED}shell${NC} ~ "
 echo $shell
