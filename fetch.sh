@@ -63,7 +63,7 @@ fi
 
 # // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${RED}cpu${NC} ~ "
-awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g;s/^ *//' | tr -d '\n'
+awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/(TM)//;s/(R)//;s/CPU//;s/^ *//' | tr -d '\n'
 
 # get cpu frequency if /sys/devices/system/cpu exist
 if test -e /sys/devices/system/cpu/cpu0/cpufreq ; then
@@ -72,18 +72,12 @@ if test -e /sys/devices/system/cpu/cpu0/cpufreq ; then
 fi
 
 
-
-
-
-#if test -e /sys/devices/system/cpu/cpu0/cpufreq ; then
-#	 | head -n1 | sed 's/......$/.&/;s/...$//;s/^/@/'| tr -d '\n' ; echo " GHz"
-#fi
-
-
 # // GPU // w/ lspci
-if lspci | grep -qi --color 'vga\|3d\|2d'; then
+if [[ $(command -v lspci) ]] ; then
 	echo -ne "${PURPLE}gpu${NC} ~ "
 	lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
+else 
+	echo -e '\n'
 fi
 
 # // PKGS // if package manager found run query
