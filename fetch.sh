@@ -100,6 +100,8 @@ elif [[ $(command -v rpm) ]] ; then
 	rpm -qa | wc -l
 elif test -e /var/log/packages ; then
 	ls /var/log/packages | wc -l
+elif [[ $(command -v opkg) ]] ; then
+	opkg list-installed | wc -w
 else
 	echo not found
 fi
