@@ -43,7 +43,7 @@ if test -e /usr/share/xsessions/  ; then
 	 cat /usr/share/xsessions/* | grep -i 'names=' | sed 's/DesktopNames=//' | tr -d '\n'
 elif test -e /usr/share/wayland-sessions/* ; then
 	cat /usr/share/wayland-sessions/* | grep -i 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi' | tr -d '\n'
-elief
+elif command -v xprop ; then
 	xprop -root | grep '^_NET_WM_NAME' | sed 's/^_NET_WM_NAME//g;s/(UTF8_STRING) = //g' | tr -d '\n'
 else
 	echo not found
