@@ -23,14 +23,14 @@ echo -ne "${BLUE}kernel${NC} ~ "
 uname -r
 
 
-# // UPTIME // run 'uptime' 
+# // UPTIME // run 'uptime'
 echo -ne "${CYAN}uptime${NC} ~ "
 uptime --pretty | sed -e 's/up//;s/^ *//'
 
 
 # // OS // ARCH // print 'PRETTY_NAME' / get processor speed
 echo -ne "${GREEN}os${NC} ~ "
-awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n' 
+awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | tr -d '\n'
 
 echo -ne " \e \e \e \e "
 echo -ne "${PURPLE}arch${NC} ~ "
@@ -41,16 +41,28 @@ uname -m
 if test -e /usr/share/xsessions/  ; then
 	echo -ne "${YELLOW}de/wm${NC} ~ "
 	awk '/^DesktopNames/' /usr/share/xsessions/* | sed 's/DesktopNames=//g' | sed 's/\;/\n/g' | sed '/^$/d' | sort -u | sed ':a;N;$!ba;s/\n/, /g' | tr -d "\n"
+else
+	echo -ne "${YELLOW}de/wm${NC} ~ "
+    # Get ID of child window (check https://specifications.freedesktop.org/wm-spec/1.3/ar01s03.html)
+    id=$(xprop -root 2>/dev/null | sed -n '/^_NET_SUPPORTING_WM_CHECK/ s/.* // p')
+    # Get WM's name
+    echo $(xprop -id "$id" -notype -len 25 -f _NET_WM_NAME 8t 2>/dev/null | sed -n '/^_NET_WM_NAME/ s/.* // p' | sed 's/"//g') | tr -d "\n"
 fi
 
 
 # // THEME // if file exist print 'gtk-theme-name'
-if test -e ~/.config/gtk-3.0/ ; then
+if command -v gsettings &> /dev/null
+then
 	echo -ne " \e \e \e \e "
 	echo -ne "${BLUE}theme${NC} ~ "
-	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'	
+    echo $(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'/\n/g")
+else
+    if test -e ~/.config/gtk-3.0/ ; then
+        echo -ne " \e \e \e \e "
+        echo -ne "${BLUE}theme${NC} ~ "
+        grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'
+    fi
 fi
-
 
 # // CPU // return cpu model name from /proc/cpuinfo
 echo -ne "${RED}cpu${NC} ~ "
@@ -63,7 +75,7 @@ fi
 
 
 # // GPU // w/ lspci
-echo -ne "${PURPLE}gpu${NC} ~ " 
+echo -ne "${PURPLE}gpu${NC} ~ "
 lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 
 
