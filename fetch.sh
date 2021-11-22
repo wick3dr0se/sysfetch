@@ -1,6 +1,5 @@
 #!/bin/bash
 
-
 #colorsi
 NC='\033[0m'
 BLACK='\033[1;30m'
@@ -12,15 +11,14 @@ PURPLE='\033[1;35m'
 CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
-# variables
-swap_kb=$(awk '{print $3}' /proc/swaps | sed '1d')
-shell="$(echo $SHELL | sed 's%.*/%%')"
-term="$(pstree -sA $$)"; term="$(echo ${term%---${shell}*})"; term="$(echo ${term##*---})";
+# // HOST@USER // w/ uname & whoami
+host=$(uname -n)
+user=$(whoami)
+echo -ne "\e[3m${PURPLE}$user${NC}\e[0m"
+echo -e "\e[3m@${YELLOW}$host${NC}\e[0m"
 
-# // HOST // KERNEL // run uname
-echo -ne "${PURPLE}host${NC} ~ "
-uname -n
 
+# // KERNEL // w/ uname
 echo -ne "${BLUE}kernel${NC} ~ "
 uname -r
 
@@ -45,9 +43,9 @@ if test -e /usr/share/xsessions/  ; then
 fi
 
 
-# // GTK // if file exist print 'gtk-theme-name'
+# // THEME // if file exist print 'gtk-theme-name'
 if test -e ~/.config/gtk-3.0/ ; then
-	echo -ne "${BLUE} \e \e \e \e gtk${NC} ~ "
+	echo -ne "${BLUE} \e \e \e \e theme${NC} ~ "
 	grep 'gtk-theme-name' ~/.config/gtk-3.0/* | sed 's/gtk-theme-name=//g' | sed 's/-/ /g'	
 fi
 
@@ -56,16 +54,15 @@ fi
 echo -ne "${RED}cpu${NC} ~ "
 awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/\<Processor\>//g;s/^ *//' | tr -d '\n'
 
-
 # get cpu frequency if /sys/devices/system/cpu exist
 if test -e /sys/devices/system/cpu ; then
 	sort -rn /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq | head -n1 | sed 's/......$/.&/;s/...$//;s/^/@/'| tr -d '\n' ; echo " GHz"
 fi
 
 
-# // GPU //
+# // GPU // w/ lspci
 echo -ne "${PURPLE}gpu${NC} ~ " 
-lspci | grep -i --color 'vga\|3d\|2d' | sed 's/\<VGA compatible controller\>//;s/\<Advanced Micro Devices, Inc\>//;s/\<NVIDIA Corporation\>//' | tr -d '.:[0-9]' | sed 's/^ *//'
+lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//' | tr -d '.:[]' | sed 's/06000//;s/^ *//'
 
 
 # // PKGS // if package manager found run query
@@ -83,7 +80,9 @@ fi
 echo -ne "${CYAN}ram${NC} ~ "
 awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n'
 
+
 # // SWAP // print 'Size' from /proc/swaps
+swap_kb=$(awk '{print $3}' /proc/swaps | sed '1d')
 let "swap_mb = $swap_kb / 1024"
 if test -e /proc/swaps ; then
 	echo -ne "${YELLOW} \e \e \e \e swap${NC} ~ "
@@ -92,6 +91,9 @@ fi
 
 
 # // TERM // get terminal name w/ pstree
+shell="$(echo $SHELL | sed 's%.*/%%')"
+term="$(pstree -sA $$)"; term="$(echo ${term%---${shell}*})"; term="$(echo ${term##*---})"
+
 echo -ne "${GREEN}term${NC} ~ "
 echo $term | tr -d "\n"
 
