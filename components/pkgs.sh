@@ -16,11 +16,19 @@ elif test -e /var/log/packages ; then
 elif [[ $(command -v opkg) ]] ; then
         opkg list-installed | wc -w
 elif [[ $(command -v emerge) ]] ; then
-  ls -d /var/db/pkg/*/* | wc -l
-elif [[ $(command -v guix) ]] ; then
-        guix package --list-installed | wc -l
-elif [[ $(command -v nixos-rebuild) ]] ; then
-        ls /run/current-system/sw/bin/ | wc -l
+        ls -d /var/db/pkg/*/* | wc -l
 else
-        echo not found
+        echo "pkgs not found"
+fi
+
+# // GUIX PKGS // seperate count for GUIX packages:
+if [[ $(command -v guix) ]] ; then
+        echo -ne "${YELLOW}GUIX pkgs${NC} ~ "
+        guix package --list-installed | wc -l
+fi
+
+# // NIX PKGS // seperate count for NIX packages:
+if [[ $(command -v nixos-rebuild) ]] ; then
+        echo -ne "${PURPLE}NIX pkgs${NC} ~ "
+        ls /run/current-system/sw/bin/ | wc -l
 fi
