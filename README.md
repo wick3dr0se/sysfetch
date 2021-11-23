@@ -7,19 +7,19 @@
 ## How to Use:
 Clone the repository
 
-> **#**&ensp; `git clone https://github.com/wick3dr0se/fetch.sh`
+> **$**&ensp; `git clone https://github.com/wick3dr0se/fetch.sh`
 
 Change directory into the folder
 
-> **#**&ensp; `cd fetch.sh`
+> **$**&ensp; `cd fetch.sh`
 
 Make script executable
 
-> **#**&ensp; `chmod +x fetch.sh`
+> **$**&ensp; `chmod a+rx fetch.sh`
 
 Execute script
 
-> **#**&ensp; `./fetch.sh`
+> **$**&ensp; `./fetch.sh`
 
 ## Contributing:
 Fork the repository and make a pull request with some code change; keep the code small, clean and only BASH 
