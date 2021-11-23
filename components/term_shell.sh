@@ -4,7 +4,7 @@
 # // TERM // get terminal name w/ pstree
 shell="$(echo $SHELL | sed 's%.*/%%')"
 if [ `command -v pstree` ] ; then
-        term="$(pstree -sA $$)"; term="$(echo ${term%---${shell}*})"; term="$(echo ${term##*---})"
+        term="$(pstree -sA $$)"; term="$(echo ${term%%---${shell}*})"; term="$(echo ${term##*---})"
 else
         term="unknown"
 fi
