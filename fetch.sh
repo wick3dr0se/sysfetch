@@ -131,11 +131,9 @@ swap_kb=$(head /proc/swaps | grep '/dev' | awk '{print($3)}')
 swap_count=$(head /proc/swaps | wc -l)
 if [[ $swap_count -ge 2 ]] ; then
 	let "swap_mb = $swap_kb / 1024"
-	echo -ne " \e \e \e \e "
+	echo -ee " \e \e \e \e " | tr -d '\n'
 	echo -ne "${YELLOW}swap${NC} ~ "
-	echo $swap_mb MiB
-else
-	echo "\n"
+	echo -e "$swap_mb MiB"
 fi
 
 
