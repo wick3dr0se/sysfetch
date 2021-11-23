@@ -2,13 +2,12 @@
 
 # // UPTIME // run 'uptime'
 echo -ne "${CYAN}uptime${NC} ~ "
-# check for uptime --pretty instead of file; run if found
-if [[ $(command -v uptime --pretty )  ]] ; then
-        uptime --pretty | sed -e 's/up//;s/^ *//'
+# if /proc/uptime found convert time
+raw_sec=$(head /proc/uptime | awk '{print $1}')
+raw_sec=${raw_sec%\.*}
+if [[ -e /proc/uptime ]] ; then
+	#da math
+	printf '%d weeks, %d hours, %d minutes \n' $(($raw_sec/604800)) $(($raw_sec/3600)) $(($raw_sec%3600/60))
 else
-        UPTIME=$(uptime)
-        UPTIME=$(echo -n "$UPTIME" | sed -e 's/^.*up //')
-        UPTIME=$(echo "$UPTIME" | sed -e 's/load.*$//')
-        UPTIME=${UPTIME%\,*}
-        echo "$UPTIME"
+	echo timeless
 fi
