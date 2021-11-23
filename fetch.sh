@@ -84,23 +84,25 @@ fi
 
 
 # get cpu frequency if /sys/devices/system/cpu exist
-max_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/....$//' | tr -d '\n' ; echo GHz)
-scal_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/.....$//' | tr -d '\n')
-if test -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq ; then
-	echo -ne "${CYAN}$scal_cpu${NC}"
-	echo -e "@${YELLOW}$max_cpu${NC}"
+max_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/....$//' | tr -d '\n' ; echo GHz)
+scal_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/.....$//' | tr -d '\n')
+if [[ $max_cpu ]] ; then
+	echo -ne "${CYAN}$max_cpu${NC}"
+	echo -e "@${YELLOW}$scal_cpu${NC}"
 else
 	echo -e '\n'
 fi
 
+
+# wont output values on some systems, need to convert values to readable temps
 # // LOAD AVGS // w tr /proc/loadavg
-echo -ne "${YELLOW}avgs${NC} ~ "
-cat /proc/loadavg | awk '{print $1,$2,$3}'
+#echo -ne "${YELLOW}avgs${NC} ~ "
+#cat /proc/loadavg | awk '{print $1,$2,$3}'
 
 # // GPU // with lscpi
 if [[ $(command -v lspci) ]] ; then
 	echo -ne "${PURPLE}gpu${NC} ~ "
-	lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
+	lspci | grep -im1 --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 else
 	echo -e '\n'
 fi
