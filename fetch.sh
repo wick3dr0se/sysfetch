@@ -122,6 +122,8 @@ elif test -e /var/log/packages ; then
 	ls /var/log/packages | wc -l
 elif [[ $(command -v opkg) ]] ; then
 	opkg list-installed | wc -w
+elif [[ $(command -v emerge) ]]; then
+        ls -d /var/db/pkg/*/* | wc -l
 else
 	echo not found
 fi
