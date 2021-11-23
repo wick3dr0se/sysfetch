@@ -94,7 +94,7 @@ else
 fi
 
 # // LOAD AVGS // w tr /proc/loadavg
-echo -ne "${YELLOW}avgs:${NC} ~ "
+echo -ne "${YELLOW}avgs${NC} ~ "
 LOADAVG=( $(tr ' ' '\n' < /proc/loadavg) )
 echo -ne "${LOADAVG[0]} "
 echo -ne "${LOADAVG[1]} "
