@@ -93,12 +93,18 @@ else
 	echo -e '\n'
 fi
 
+# // LOAD AVGS // w tr /proc/loadavg
+echo -ne "${YELLOW}avgs${NC} ~ "
+LOADAVG=( $(tr ' ' '\n' < /proc/loadavg) )
+echo -ne "${LOADAVG[0]} "
+echo -ne "${LOADAVG[1]} "
+echo -e "${LOADAVG[2]}"
 
 # // GPU // with lscpi
 if [[ $(command -v lspci) ]] ; then
 	echo -ne "${PURPLE}gpu${NC} ~ "
 	lspci | grep -i --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
-else 
+else
 	echo -e '\n'
 fi
 
