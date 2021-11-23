@@ -141,7 +141,11 @@ fi
 
 # // TERM // get terminal name w/ pstree
 shell="$(echo $SHELL | sed 's%.*/%%')"
-term="$(pstree -sA $$)"; term="$(echo ${term%---${shell}*})"; term="$(echo ${term##*---})"
+if [ `command -v pstree` ] ; then
+	term="$(pstree -sA $$)"; term="$(echo ${term%---${shell}*})"; term="$(echo ${term##*---})"
+else
+	term="unknown"
+fi
 
 echo -ne "${GREEN}term${NC} ~ "
 echo $term | tr -d "\n"
