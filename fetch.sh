@@ -86,7 +86,7 @@ fi
 # get cpu frequency if /sys/devices/system/cpu exist
 max_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/....$//' | tr -d '\n' ; echo GHz)
 scal_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/.....$//' | tr -d '\n')
-if test -e /sys/devices/system/cpu/cpu0/cpufreq ; then
+if test -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq ; then
 	echo -ne "${CYAN}$scal_cpu${NC}"
 	echo -e "@${YELLOW}$max_cpu${NC}"
 else
