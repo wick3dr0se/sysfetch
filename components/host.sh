@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# // HOST@USER // w/ uname & whoami
+# // HOST@USER // w/ uname & $USER variable
 host=$(uname -n)
 user=$(echo $USER)
 echo -ne "\e[3m${PURPLE}$user${NC}\e[0m"

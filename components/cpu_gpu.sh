@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # // CPU // try cpu model from lscpu if not found /proc/cpuinfo
-
 vendor=$(cat /proc/cpuinfo | grep -m1 "vendor_id" | sed 's/vendor_id//' | tr -d '\t :')
 echo -ne "${RED}cpu${NC} ~ "
 if [[ $(command -v lscpu) ]] ; then
@@ -26,7 +25,7 @@ fi
 
 # // GPU // with lscpi
 if [[ $(command -v lspci) ]] ; then
-        echo -ne "${PURPLE}gpu${NC} ~ " 
+        echo -ne "${PURPLE}gpu${NC} ~ "
         lspci | grep -im1 --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/0000//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 else
         echo -ne "\n"
