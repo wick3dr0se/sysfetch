@@ -21,11 +21,13 @@ else
         echo "pkgs not found"
 fi
 
+
 # // GUIX PKGS // seperate count for GUIX packages:
 if [[ $(command -v guix) ]] ; then
         echo -ne "${YELLOW}GUIX pkgs${NC} ~ "
         guix package --list-installed | wc -l
 fi
+
 
 # // NIX PKGS // seperate count for NIX packages:
 if [[ $(command -v nixos-rebuild) ]] ; then

@@ -1,3 +1,6 @@
-// LOAD AVGS // w tr /proc/loadavg
+#!/bin/bash
+
+
+# // LOAD AVGS // w shell redirect into awk
 echo -ne "${YELLOW}avgs${NC} ~ "
-cat /proc/loadavg | awk '{print $1,$2,$3}'
+awk '{print $1,$2,$3}' < /proc/loadavg

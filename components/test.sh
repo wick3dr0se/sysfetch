@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Get raw seconds value
 raw_sec=$(head /proc/uptime | awk '{print $1}')
 raw_sec=${raw_sec%\.*}

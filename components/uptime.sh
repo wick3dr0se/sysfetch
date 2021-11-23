@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # // UPTIME // run 'uptime'
 echo -ne "${CYAN}uptime${NC} ~ "
 # if /proc/uptime found convert time
