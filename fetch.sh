@@ -11,13 +11,13 @@ PURPLE='\033[1;35m'
 CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
-source host.sh
-source kernel.sh
-source uptime.sh
-source os_arch.sh
-source de-wm_theme.sh
-source cpu_gpu.sh
-#source load.sh
-source pkgs.sh
-source ram_swap.sh
-source term_shell.sh
+source ./components/host.sh
+source ./components/kernel.sh
+source ./components/uptime.sh
+source ./components/os_arch.sh
+source ./components/de-wm_theme.sh
+source ./components/cpu_gpu.sh
+#source ./components/load.sh
+source ./components/pkgs.sh
+source ./components/ram_swap.sh
+source ./components/term_shell.sh
