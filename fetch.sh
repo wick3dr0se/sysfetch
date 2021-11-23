@@ -94,11 +94,8 @@ else
 fi
 
 # // LOAD AVGS // w tr /proc/loadavg
-#echo -ne "${YELLOW}avgs${NC} ~ "
-#LOADAVG=( $(tr ' ' '\n' < /proc/loadavg) )
-#echo -ne "${LOADAVG[0]} "
-#echo -ne "${LOADAVG[1]} "
-#echo -e "${LOADAVG[2]}"
+echo -ne "${YELLOW}avgs${NC} ~ "
+cat /proc/loadavg | awk '{print $1,$2,$3}'
 
 # // GPU // with lscpi
 if [[ $(command -v lspci) ]] ; then
