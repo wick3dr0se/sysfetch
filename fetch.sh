@@ -122,8 +122,12 @@ elif test -e /var/log/packages ; then
 	ls /var/log/packages | wc -l
 elif [[ $(command -v opkg) ]] ; then
 	opkg list-installed | wc -w
-elif [[ $(command -v emerge) ]]; then
-        ls -d /var/db/pkg/*/* | wc -l
+elif [[ $(command -v emerge) ]] ; then
+  ls -d /var/db/pkg/*/* | wc -l
+elif [[ $(command -v guix) ]] ; then
+	guix package --list-installed | wc -l
+elif [[ $(command -v nixos-rebuild) ]] ; then
+	ls /run/current-system/sw/bin/ | wc -l
 else
 	echo not found
 fi
