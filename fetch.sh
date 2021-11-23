@@ -137,17 +137,19 @@ swap_kb=$(head /proc/swaps | grep '/dev' | awk '{print($3)}')
 swap_count=$(head /proc/swaps | wc -l)
 if [[ $swap_count -ge 2 ]] ; then
 	let "swap_mb = $swap_kb / 1024"
-	echo -ne " \e \e \e \e "
+	echo -ee " \e \e \e \e " | tr -d '\n'
 	echo -ne "${YELLOW}swap${NC} ~ "
-	echo $swap_mb MiB
-else
-	echo "\n"
+	echo -e "$swap_mb MiB"
 fi
 
 
 # // TERM // get terminal name w/ pstree
 shell="$(echo $SHELL | sed 's%.*/%%')"
-term="$(pstree -sA $$)"; term="$(echo ${term%---${shell}*})"; term="$(echo ${term##*---})"
+if [ `command -v pstree` ] ; then
+	term="$(pstree -sA $$)"; term="$(echo ${term%---${shell}*})"; term="$(echo ${term##*---})"
+else
+	term="unknown"
+fi
 
 echo -ne "${GREEN}term${NC} ~ "
 echo $term | tr -d "\n"
