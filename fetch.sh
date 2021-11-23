@@ -84,13 +84,13 @@ fi
 
 
 # get cpu frequency if /sys/devices/system/cpu exist
-max_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/....$//' | tr -d '\n' ; echo GHz)
-scal_cpu=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/.....$//' | tr -d '\n')
-if [[ $max_cpu ]] ; then
+max_cpu=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/....$//' | tr -d '\n' ; echo GHz)
+scal_cpu=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/.....$//')
+if test -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq ; then
 	echo -ne "${CYAN}$max_cpu${NC}"
 	echo -e "@${YELLOW}$scal_cpu${NC}"
 else
-	echo -e '\n'
+	echo -ne "\n"
 fi
 
 
@@ -104,7 +104,7 @@ if [[ $(command -v lspci) ]] ; then
 	echo -ne "${PURPLE}gpu${NC} ~ "
 	lspci | grep -im1 --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/0000//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 else
-	echo -e '\n'
+	echo -ne "\n"
 fi
 
 # // PKGS // if package manager found run query
