@@ -22,6 +22,6 @@ Execute script
 > **$**&ensp; `./fetch.sh`
 
 ## Contributing:
-Fork the repository and make a pull request with some code change; keep the code small, clean and only BASH 
+See: https://github.com/wick3dr0se/fetch.sh/tree/alpha to help contribute. 
 
 This is a huge WIP, so any contributions are much appreciated!
