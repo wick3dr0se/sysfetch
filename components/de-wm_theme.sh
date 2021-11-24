@@ -3,7 +3,7 @@
 # // DE/WM // if file exist print 'DesktopNames'
 echo -ne "${YELLOW}de/wm${NC} ~ "
 if [[ -e /usr/share/xsessions/ ]] ; then
-         head /usr/share/xsessions/* | grep -im1 'names=' | sed 's/DesktopNames=//;s/CLASSIC//;s/Ubuntu//;s/ubuntu//;s/Classic//;s/GNOME//2g' | tr -d '\n'
+         head /usr/share/xsessions/* | grep -im1 'names=' | sed 's/DesktopNames=//;s/CLASSIC//;s/Ubuntu//;s/ubuntu//;s/Classic//;s/GNOME//2g' | tr -d ':-;\n'
 elif [[ -e /usr/share/wayland-sessions/ ]] ; then
         head /usr/share/wayland-sessions/* | grep -im1 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi' | tr -d '\n'
 elif [[ $(command -v xprop) ]] ; [[ ! -z $DISPLAY ]] ; then
