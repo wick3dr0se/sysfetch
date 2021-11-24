@@ -2,9 +2,9 @@
 
 # // DE/WM // if file exist print 'DesktopNames'
 echo -ne "${YELLOW}de/wm${NC} ~ "
-if [[ -e /usr/share/xsession/ ]] ; then
+if [[ -e /usr/share/xsessions/ ]] ; then
          head /usr/share/xsessions/* | grep -im1 'names=' | sed 's/DesktopNames=//' | tr -d '\n'
-elif test -e /usr/share/wayland-sessions/ ; then
+elif [[ -e /usr/share/wayland-sessions/ ]] ; then
         head /usr/share/wayland-sessions/* | grep -im1 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi' | tr -d '\n'
 elif [[ $(command -v xprop) ]] ; [[ ! -z $DISPLAY ]] ; then
         xprop -root | grep -m1 '^_NET_WM_NAME' | sed 's/^_NET_WM_NAME//g;s/(UTF8_STRING) = //g' | tr -d '"\n'
