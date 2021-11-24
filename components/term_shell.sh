@@ -3,14 +3,13 @@
 
 # // TERM // get terminal name w/ pstree
 shell="$(echo $SHELL | sed 's%.*/%%')"
-if [ `command -v pstree` ] ; then
-        term="$(pstree -sA $$)"; term="$(echo ${term%%---${shell}*})"; term="$(echo ${term##*---})"
+term="$(pstree -sA $$)"; term="$(echo ${term%%---${shell}*})"; term="$(echo ${term##*---})"
+if [[ $(command -v pstree) ]] ; then
+  echo -ne "${GREEN}term${NC} ~ " 
+  echo $term | tr -d '\n'
 else
-        echo $TERM
+  echo $TERM
 fi
-
-echo -ne "${GREEN}term${NC} ~ "
-echo $term | tr -d "\n"
 
 
 # // SHELL // echo '$SHELL' enviornment variable

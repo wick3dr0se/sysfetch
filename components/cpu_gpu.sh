@@ -13,7 +13,7 @@ fi
 
 
 # get cpu frequency if /sys/devices/system/cpu exist
-if test -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq ; then
+if [[ -e /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq ]] ; then
         max_cpu=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/....$//' | tr -d '\n')
         scal_cpu=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/.....$//' | tr -d '\n')
         echo -ne "${CYAN}$max_cpu${NC}"
