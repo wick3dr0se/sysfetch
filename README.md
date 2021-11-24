@@ -7,7 +7,7 @@
 ## How to Use:
 Clone the repository
 
-> **$**&ensp; `git clone https://github.com/wick3dr0se/fetch.sh`
+> **$**&ensp; `git clone -b master --single-branch https://github.com/wick3dr0se/fetch.sh`
 
 Change directory into the folder
 
