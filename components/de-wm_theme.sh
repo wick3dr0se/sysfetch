@@ -17,7 +17,7 @@ fi
 echo -ne " \e \e \e \e "
 echo -ne "${BLUE}theme${NC} ~ "
 gtk_name=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini 2>/dev/null | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
-theme_name=$(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'//g" | tr -d '\n')
+theme_name=$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null | sed "s/'//g" | tr -d '\n')
 if [[ ! -z "$gtk_name" ]] ; then
   echo "$gtk_name"
 elif [[ ! -z "theme_name" ]] ; then
