@@ -9,7 +9,7 @@ elif [[ -e /usr/share/wayland-sessions/ ]] ; then
 elif [[ $(command -v xprop) ]] ; [[ ! -z $DISPLAY ]] ; then
         xprop -root | grep -m1 '^_NET_WM_NAME' | sed 's/^_NET_WM_NAME//g;s/(UTF8_STRING) = //g' | tr -d '"\n'
 else
-        echo not found
+        echo -n not found
 fi
 
 
