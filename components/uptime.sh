@@ -4,7 +4,7 @@
 # // UPTIME // run 'uptime'
 echo -ne "${CYAN}uptime${NC} ~ "
 # if /proc/uptime found convert time
-sec=$(head /proc/uptime | awk '{print $1}')
+sec=$(awk '{print $1}' /proc/uptime)
 sec=${sec%\.*}
 if [[ -e /proc/uptime ]] ; then
 	#da math
