@@ -13,21 +13,20 @@ else
 fi
 
 
-
-## // THEME // if variable doesn't return 0 then print gtk_name
+# // THEME // get theme name from settings.ini if variable exist, if not found print output to /dev/null. stat gsettings if variable found 
 echo -ne " \e \e \e \e "
 echo -ne "${BLUE}theme${NC} ~ "
+gtk_name=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini 2>/dev/null | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
 theme_name=$(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'//g" | tr -d '\n')
-gtk_name=""
-if [[ -e ~/.config/gtk-3.0/settings.ini ]] ; then
-        gtk_name=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
-        #Some people may have a settings.ini file in their system, but theme-name may be not there.
-        if [[ ! -z "$gtk_name" ]] ; then
-		echo "$gtk_name"
-	fi
-fi
-if [[ ! -z "$theme_name" ]] && [[ -z "$gtk_name" ]] ; then
-	echo $theme_name
+if [[ ! -z "$gtk_name" ]] ; then
+  echo "$gtk_name"
+elif [[ ! -z "theme_name" ]] ; then
+  echo "$theme_name"
 else
-	echo not found
+  echo "not found"
 fi
+
+
+
+
+
