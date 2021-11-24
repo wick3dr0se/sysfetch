@@ -3,9 +3,11 @@
 
 # // TERM // get terminal name w/ pstree
 shell="$(echo $SHELL | sed 's%.*/%%')"
-term="$(pstree -sA $$)"; term="$(echo ${term%%---${shell}*})"; term="$(echo ${term##*---})"
+pppid=$(ps -o ppid= -p $PPID  | awk '{print $1}')
+term=$(ps -o comm= -p "$pppid")
+
 if [[ $(command -v pstree) ]] ; then
-  echo -ne "${GREEN}term${NC} ~ " 
+  echo -ne "${GREEN}term${NC} ~ "
   echo $term | tr -d '\n'
 else
   echo $TERM
