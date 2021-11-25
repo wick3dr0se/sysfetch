@@ -2,13 +2,11 @@
 
 
 # // TERM // get terminal name w/ pstree
-shell="$(echo $SHELL | sed 's%.*/%%')"
-term="$(pstree -sA $$)"; term="$(echo ${term%%---${shell}*})"; term="$(echo ${term##*---})"
-if [[ $(command -v pstree) ]] ; then
-  echo -ne "${GREEN}term${NC} ~ " 
-  echo $term | tr -d '\n'
-else
-  echo $TERM
+shell=$(echo "$SHELL" | sed 's%.*/%%')
+term=$(pstree -sA $$ | head -n1 | sed 's/head//g;s/fetch.sh//g;s/systemd//g;s/init//g;s/bash//g;s/ash//g;s/zsh//g;s/fish//g;s/^-*//;s/+//;s/-*$//')
+if [[ ! -z $shell ]] ; then
+	echo -ne "${GREEN}term${NC} ~ "
+	echo -ne "$term"
 fi
 
 
