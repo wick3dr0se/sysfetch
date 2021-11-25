@@ -17,6 +17,8 @@ elif [[ $(command -v opkg) ]] ; then
         opkg list-installed | wc -w
 elif [[ $(command -v emerge) ]] ; then
         ls -d /var/db/pkg/*/* | wc -l
+elif [[ $(command -v xbps-query) ]]; then
+        xbps-query -l | grep -c '^ii'
 else
         echo "pkgs not found"
 fi
