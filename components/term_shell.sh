@@ -3,7 +3,7 @@
 
 # // TERM // get terminal name w/ pstree
 init_strip="s/init//g;s/systemd//g"
-shell_strip="s/fish//g;s/bash//g;s/zsh//g;s/ash//g"
+shell_strip="s/fish//g;s/bash//g;s/zsh//g;s/ash//g;s/xterm//g"
 shell=$(echo "$SHELL" | sed 's%.*/%%')
 term=$(pstree -sA $$ 2>/dev/null | head -n1 | sed "s/head//g;s/fetch.sh//g;$init_strip;$shell_strip;s/^-*//;s/+//;s/-*$//")
 if [[ ! -z $shell ]] ; then
