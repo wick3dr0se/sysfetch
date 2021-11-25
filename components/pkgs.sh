@@ -2,7 +2,7 @@
 
 
 # // PKGS // if package manager found run query
-echo -ne "${BLUE}pkgs${NC} ~ "
+echo -ne "${CYAN}pkgs${NC} ~ "
 if [[ $(command -v pacman) ]] ; then
         pacman -Q | wc -l
 elif [[ $(command -v dpkg-query) ]]; then
