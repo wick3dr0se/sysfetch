@@ -2,16 +2,18 @@
 
 # // CPU // try cpu model from lscpu if not found /proc/cpuinfo
 vendor=$(head /proc/cpuinfo | grep -m1 "vendor_id" | sed 's/vendor_id//' | tr -d '\t :')
-intel_strip="s/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//;s/.......$//"
+intel_strip="s/\Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//;s/.......$//"
 echo -ne "${RED}cpu${NC} ~ "
-if [[ $(command -v lscpu) ]] ; then
+if [[ "$vendor" = "GenuineIntel" ]] && [[ $(command -v lscpu) ]] ; then
+	lscpu | grep 'Model name' | sed "s/Model name://;$intel_strip"
+elif [[ $(command -v lscpu) ]] ; then
         lscpu | grep 'Model name' | sed 's/Model name://;s/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//' | tr -d '\n'
-elif [[ $($vendor = "GenuineIntel") ]] ; then
-	lscpu | grep 'Model name' | sed "$intel_strip"
-elif [[ $($vendor = "GenuineIntel") ]] ; then
+elif [[ "$vendor" = "GenuineIntel" ]] && [[ -e /proc/cpuinfo ]] ; then
 	awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed "$intel_strip"
-else
+elif [[ -e /proc/cpuinfo ]] ; then
         awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/CPU//;s/^ *//' | tr -d '\n'
+else
+	echo "not found"
 fi
 
 

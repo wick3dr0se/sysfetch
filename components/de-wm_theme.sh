@@ -12,7 +12,7 @@ elif [[ -e /usr/share/xsessions/ ]] ; then
 elif [[ -e /usr/share/wayland-sessions/ ]] ; then
         echo -ne "$dewm"
 	head /usr/share/wayland-sessions/* | grep -im1 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi' | tr -d '\n'
-elif [[ $(command -v xprop) ]] ; [[ ! -z $DISPLAY ]] ; then
+elif [[ $(command -v xprop) ]] && [[ ! -z $DISPLAY ]] ; then
 	id=$(xprop -root 2>/dev/null | sed -n '/^_NET_SUPPORTING_WM_CHECK/ s/.* // p')
 	echo -ne "$dewm"
 	echo $(xprop -id "$id" | sed -n '/^_NET_WM_NAME/ s/.* // p' | sed 's/"//g') | tr -d "\n"
