@@ -23,4 +23,4 @@ For individual scripts that need further testing or are possible implementations
 
 &ensp;**#** `git clone -b gamma --single-branch https://github.com/<user>/fetch.sh gamma_fetch.sh`
 
-Repeat commands from above, however in gamma branch feel free to add your own scripts that could be merged into the alpha branch after testing on atleast two operating systems
+Repeat commands from above, however in gamma branch feel free to add your own scripts that could be merged into the alpha branch after testing on atleast two operating systems. Test commands and communicate with us on Discord
