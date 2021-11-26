@@ -5,11 +5,11 @@ vendor=$(head /proc/cpuinfo | grep -m1 "vendor_id" | sed 's/vendor_id//' | tr -d
 intel_strip="s/\Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//;s/.......$//"
 echo -ne "${RED}cpu${NC} ~ "
 if [[ "$vendor" = "GenuineIntel" ]] && [[ $(command -v lscpu) ]] ; then
-	lscpu | grep 'Model name' | sed "s/Model name://;$intel_strip"
+	lscpu | grep 'Model name' | sed "s/Model name://;$intel_strip" | tr -d '\n'
 elif [[ $(command -v lscpu) ]] ; then
         lscpu | grep 'Model name' | sed 's/Model name://;s/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//' | tr -d '\n'
 elif [[ "$vendor" = "GenuineIntel" ]] && [[ -e /proc/cpuinfo ]] ; then
-	awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed "$intel_strip"
+	awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed "$intel_strip" | tr -d '\n'
 elif [[ -e /proc/cpuinfo ]] ; then
         awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/CPU//;s/^ *//' | tr -d '\n'
 else
