@@ -9,13 +9,16 @@ term=$(pstree -sA $$ 2>/dev/null | head -n1 | sed "s/head//g;s/fetch.sh//g;$init
 if [[ ! -z $shell ]] ; then
 	echo -ne "${YELLOW}term${NC} ~ "
 	echo -ne "$term"
-else
+elif [[ ! -z "$TERM" ]] ; then
 	echo -ne "${YELLOW}term${NC} ~ "
 	echo -ne "$TERM"
+else
+	echo -ne "not found"
 fi
 
-
 # // SHELL // echo '$SHELL' enviornment variable
-echo -ne " \e \e \e \e "
-echo -ne "${RED}shell${NC} ~ "
-echo $shell
+if [[ ! -z "$shell" ]] ; then
+	echo -ne " \e \e \e \e "
+	echo -ne "${RED}shell${NC} ~ "
+	echo $shell
+fi
