@@ -14,13 +14,13 @@ WHITE='\033[1;37m'
 script_path=$(dirname "$(readlink -f "$0")")
 
 source "$script_path/components/host.sh"
-source "$script_path/components/kernel.sh"
 source "$script_path/components/uptime.sh"
 source "$script_path/components/os_arch.sh"
+source "$script_path/components/kernel.sh"
+source "$script_path/components/term_shell.sh"
 source "$script_path/components/de-wm_theme.sh"
+source "$script_path/components/pkgs.sh"
 source "$script_path/components/cpu_gpu.sh"
 source "$script_path/components/mobo.sh"
-#source "$script_path/components/load.sh"
-source "$script_path/components/pkgs.sh"
 source "$script_path/components/ram_swap.sh"
-source "$script_path/components/term_shell.sh"
+source "$script_path/components/load.sh"
