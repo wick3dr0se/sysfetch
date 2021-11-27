@@ -39,6 +39,8 @@ cpu_vendor=$(head /proc/cpuinfo | grep -m1 "vendor_id" | sed 's/vendor_id//' | t
 mobo_vendor=$(head /sys/devices/virtual/dmi/id/board_vendor)
 mobo_name=$(head /sys/devices/virtual/dmi/id/board_name)
 
+# ram
+ram=$(awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n')
 
 script_path=$(dirname "$(readlink -f "$0")")
 
