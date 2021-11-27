@@ -2,8 +2,7 @@
 
 # // CPU //
 echo -ne "${RED}cpu${NC} ~ "
-vendor=$(head /proc/cpuinfo | grep -m1 "vendor_id" | sed 's/vendor_id//' | tr -d '\t :')
-case $vendor in
+case $cpu_vendor in
 	AuthenticAMD)
 		awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/CPU//;s/^ *//' ;;
 	GenuineIntel)
