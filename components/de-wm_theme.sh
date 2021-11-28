@@ -22,7 +22,7 @@ fi
 
 
 # // THEME // get theme name from settings.ini if variable exist, if not found print output to /dev/null. stat gsettings if variable found 
-echo -ne " \e \e \e \e ${CYAN}theme${NC} ~ "
+echo -ne " \e \e \e \e ${YELLOW}theme${NC} ~ "
 if [[ ! -z "$gtk_name" ]] ; then
 	echo "$gtk_name"
 elif [[ $(command -v gsettings) ]] && [[ ! -z "theme_name" ]] ; then

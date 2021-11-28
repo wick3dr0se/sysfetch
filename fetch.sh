@@ -41,7 +41,7 @@ mobo_name=$(head /sys/devices/virtual/dmi/id/board_name)
 
 # ram
 cur_ram=$(awk '/Active:/ {printf "%d/", $2 / 1024}' /proc/meminfo)
-max_ram=$(awk '/MemTotal:/ {printf "%d MiB", $2 / 1024}' /proc/meminfo)
+max_ram=$(awk '/MemTotal:/ {printf "%dMiB", $2 / 1024}' /proc/meminfo)
 
 script_path=$(dirname "$(readlink -f "$0")")
 source "$script_path/components/host.sh"
