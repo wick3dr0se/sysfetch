@@ -13,15 +13,19 @@
 Clone the repository
 
 > **$**&ensp; `git clone -b master --single-branch https://github.com/wick3dr0se/fetch.sh`
+
 Change directory into the folder
 
 > **$**&ensp; `cd fetch.sh`
+
 Make script executable
 
 > **$**&ensp; `chmod a+rx fetch.sh`
+
 Execute script
 
 > **$**&ensp; `./fetch.sh`
+
 ## Contributing:
 See: https://github.com/wick3dr0se/fetch.sh/tree/alpha to help contribute. 
 
