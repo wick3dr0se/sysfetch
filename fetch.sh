@@ -45,14 +45,14 @@ uname -r
 
 
 # // TERM // get terminal name w/ pstree
-if [[ ! -z $term ]] ; then
 init_strip="s/login//g;s/startx//g;s/x//g;s/init//g;s/systemd//g"
 de_strip="s/dwm//g"
 shell_strip="s/fish//g;s/bash//g;s/zsh//g;s/ash//g"
 term=$(pstree -sA $$ 2>/dev/null | head -n1 | sed "s/head//g;s/fetch.sh//g;$init_strip;$de_strip;$shell_strip;s/^-*//;s/+//;s/-*$//")
+if [[ $(command -v pstree) ]] ; then
         echo -ne "${RED}term${NC} ~ $term \e \e \e \e "
 elif [[ ! -z "$TERM" ]] ; then
-        echo -ne "${YELLOW}term${NC} ~ $TERM \e \e \e \e "
+        echo -ne "${RED}term${NC} ~ $TERM \e \e \e \e "
 else
         echo -ne "not found"
 fi
@@ -70,7 +70,7 @@ fi
 dewm="${PURPLE}de/wm${NC} ~ "
 if [[ ! -z "$XDG_CURRENT_DESKTOP" ]] ; then
 session=$(echo $XDG_CURRENT_DESKTOP)
-        echo -ne "$dewm $session \e \e \e \e "
+        echo -ne "$dewm$session \e \e \e \e "
 elif [[ -e /usr/share/xsessions/ ]] ; then
         echo -ne "$dewm"
         head /usr/share/xsessions/* | grep -im1 'names=' | sed 's/DesktopNames=//;s/CLASSIC//;s/Ubuntu//;s/ubuntu//;s/Classic//;s/GNOME//2g' | tr -d ':-;\n'
