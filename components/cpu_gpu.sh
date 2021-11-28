@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # // CPU //
-echo -ne "${RED}cpu${NC} ~ "
+echo -ne "${CYAN}cpu${NC} ~ "
 case $cpu_vendor in
 	AuthenticAMD)
 		awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/CPU//;s/^ *//' | tr -d '\n' ;;
@@ -19,6 +19,6 @@ fi
 
 # // GPU // with lscpi
 if [[ $(command -v lspci) ]] ; then
-	echo -ne "${PURPLE}gpu${NC} ~ "
+	echo -ne "${GREEN}gpu${NC} ~ "
 	lspci | grep -im1 --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/0000//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//' 
 fi
