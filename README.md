@@ -6,7 +6,6 @@
 <img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg"></img>
 <img src=https://img.shields.io/badge/Maintained%3F-yes-green.svg></img>
 <img src="https://badge-size.herokuapp.com/wick3dr0se/fetch.sh/alpha/fetch.sh"></img>
-<img src="https://img.shields.io/github/license/wick3dr0se/fetch.sh.svg"><img>
 </div>
 
 ## Contributing:
