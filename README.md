@@ -1,5 +1,6 @@
 <div align="center">
-<h1>fetch.sh alpha</h1>
+<h1>fetch.sh</h1>
+<p>A super tiny Linux system information fetch script written in BASH</p>
 <img src="https://github.com/wick3dr0se/fetch.sh/blob/alpha/screen.png"></img>
 
 <img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white"></img>
@@ -8,24 +9,20 @@
 <img src="https://badge-size.herokuapp.com/wick3dr0se/fetch.sh/alpha/fetch.sh"></img>
 </div>
 
+## How to Use:
+Clone the repository
+
+> **$**&ensp; `git clone -b master --single-branch https://github.com/wick3dr0se/fetch.sh`
+Change directory into the folder
+
+> **$**&ensp; `cd fetch.sh`
+Make script executable
+
+> **$**&ensp; `chmod a+rx fetch.sh`
+Execute script
+
+> **$**&ensp; `./fetch.sh`
 ## Contributing:
-Fork this repository, then clone this branch from your fork
+See: https://github.com/wick3dr0se/fetch.sh/tree/alpha to help contribute. 
 
-&ensp;**#** `git clone -b alpha --single-branch https://github.com/<user>/fetch.sh alpha_fetch.sh`
-
-Stage and commit your changes with a relevant message and link to issue # if fix, like:
-
-&ensp;**#** `git add .`
-
-&ensp;**#** `git commit -m "test; fix issue #3"`
-
-Push your changes and then create a pull request to merge from your branch to this repositorys alpha branch
-
-&ensp;**#** `git push`
-
-## Testing:
-For individual scripts that need further testing or are possible implementations
-
-&ensp;**#** `git clone -b gamma --single-branch https://github.com/<user>/fetch.sh gamma_fetch.sh`
-
-Repeat commands from above, however in gamma branch feel free to add your own scripts that could be merged into the alpha branch after testing on atleast two operating systems. Test commands and communicate with us on Discord
+This is a huge WIP, so any contributions are much appreciated!
