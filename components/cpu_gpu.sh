@@ -13,8 +13,8 @@ esac
 max_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/.....$//')
 cur_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/....$//')
 if [[ ! -z $max_cpufreq ]] ; then
-echo -ne "${CYAN}$max_cpufreq${NC}"
-echo -ne "@${YELLOW}$cur_cpufreq${NC}" ; echo "GHz"
+echo -ne "$max_cpufreq"
+echo -ne "@${CYAN}$cur_cpufreq${NC}" ; echo "GHz"
 fi
 
 # // GPU // with lscpi

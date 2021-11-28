@@ -40,10 +40,10 @@ mobo_vendor=$(head /sys/devices/virtual/dmi/id/board_vendor)
 mobo_name=$(head /sys/devices/virtual/dmi/id/board_name)
 
 # ram
-ram=$(awk '/MemTotal:/ {printf "%d MiB\n", $2 / 1024}' /proc/meminfo | tr -d '\n')
+cur_ram=$(awk '/Active:/ {printf "%d/", $2 / 1024}' /proc/meminfo)
+max_ram=$(awk '/MemTotal:/ {printf "%dMiB", $2 / 1024}' /proc/meminfo)
 
 script_path=$(dirname "$(readlink -f "$0")")
-
 source "$script_path/components/host.sh"
 source "$script_path/components/uptime.sh"
 source "$script_path/components/os_arch.sh"
@@ -54,4 +54,4 @@ source "$script_path/components/pkgs.sh"
 source "$script_path/components/cpu_gpu.sh"
 source "$script_path/components/mobo.sh"
 source "$script_path/components/ram_swap.sh"
-source "$script_path/components/load.sh"
+#source "$script_path/components/load.sh"
