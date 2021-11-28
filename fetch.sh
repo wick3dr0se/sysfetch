@@ -22,7 +22,12 @@ fi
 
 # // OS // ARCH // get os from /etc/os-release if exist; use uname for architecture
 [[ -e /etc/os-release ]] ; os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release) ; echo -ne "${GREEN}os${NC} ~ $os \e \e \e \e "
-[[ $(command -v uname) ]] ; arch=$(uname -m) ; echo -e "${RED}arch${NC} ~ $arch"
+if [[ $(command -v uname) ]] ; then
+arch=$(uname -m)
+	echo -e "${RED}arch${NC} ~ $arch"
+else
+	echo -ne "\n"
+fi
 
 
 # // UPTIME //
@@ -41,8 +46,10 @@ uname -r
 
 # // TERM // get terminal name w/ pstree
 if [[ ! -z $term ]] ; then
-init_strip="s/init//g;s/systemd//g"
-term=$(pstree -sA $$ 2>/dev/null | head -n1 | sed "s/head//g;s/fetch.sh//g;$init_strip;$shell_strip;s/^-*//;s/+//;s/-*$//")
+init_strip="s/login//g;s/startx//g;s/x//g;s/init//g;s/systemd//g"
+de_strip="s/dwm//g"
+shell_strip="s/fish//g;s/bash//g;s/zsh//g;s/ash//g"
+term=$(pstree -sA $$ 2>/dev/null | head -n1 | sed "s/head//g;s/fetch.sh//g;$init_strip;$de_strip;$shell_strip;s/^-*//;s/+//;s/-*$//")
         echo -ne "${RED}term${NC} ~ $term \e \e \e \e "
 elif [[ ! -z "$TERM" ]] ; then
         echo -ne "${YELLOW}term${NC} ~ $TERM \e \e \e \e "
@@ -54,6 +61,8 @@ fi
 if [[ ! -z "$SHELL" ]] ; then
 shell=$(echo "$SHELL" | sed 's%.*/%%')
 	echo -e "${BLUE}shell${NC} ~ $shell"
+else
+	echo -ne "\n"
 fi
 
 
@@ -61,33 +70,37 @@ fi
 dewm="${PURPLE}de/wm${NC} ~ "
 if [[ ! -z "$XDG_CURRENT_DESKTOP" ]] ; then
 session=$(echo $XDG_CURRENT_DESKTOP)
-        echo -ne "$dewm"
-        echo -n "$session"
+        echo -ne "$dewm $session \e \e \e \e "
 elif [[ -e /usr/share/xsessions/ ]] ; then
         echo -ne "$dewm"
         head /usr/share/xsessions/* | grep -im1 'names=' | sed 's/DesktopNames=//;s/CLASSIC//;s/Ubuntu//;s/ubuntu//;s/Classic//;s/GNOME//2g' | tr -d ':-;\n'
+	echo -ne " \e \e \e \e "
 elif [[ -e /usr/share/wayland-sessions/ ]] ; then
         echo -ne "$dewm"
         head /usr/share/wayland-sessions/* | grep -im1 'name=' | sed 's/name=//gi' | sort -u | sed ':a;N;$!ba;s/\n/, /gi' | tr -d '\n'
+	echo -ne " \e \e \e \e "
 elif [[ $(command -v xprop) ]] && [[ ! -z $DISPLAY ]] ; then
         id=$(xprop -root 2>/dev/null | sed -n '/^_NET_SUPPORTING_WM_CHECK/ s/.* // p')
         echo -ne "$dewm"
         echo $(xprop -id "$id" | sed -n '/^_NET_WM_NAME/ s/.* // p' | sed 's/"//g') | tr -d "\n"
+	echo -ne " \e \e \e \e "
 else
         echo -ne "$dewm"
-        echo -n "not found"
+        echo -ne "not found \e \e \e \e "
 fi
 
 
 
 # // THEME // get theme name from settings.ini if variable exist, if not found print output to /dev/null. stat gsettings if variable found 
-echo -ne " \e \e \e \e ${YELLOW}theme${NC} ~ "
+echo -ne "${YELLOW}theme${NC} ~ "
 if [[ -e ~/.config/gtk-3.0/settings.ini ]] ; then
 gtk_name=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
 	echo "$gtk_name"
 elif [[ $(command -v gsettings) ]] && [[ ! -z "theme_name" ]] ; then
 theme_name=$(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'//g")
         echo "$theme_name"
+else
+	echo -ne "\n"
 fi
 
 
@@ -180,6 +193,8 @@ elif [[ "$swap_count" -ge "3" ]] ; then
         echo -ne "$swap1_mb MiB " | sed 's/ //'
         let "swap2_mb = $swap2_kb / 1024"
         echo "$swap2_mb MiB" | sed 's/ //'
+else
+	echo -ne "\n"
 fi
 
 
