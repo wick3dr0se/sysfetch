@@ -4,15 +4,15 @@
 echo -ne "${RED}cpu${NC} ~ "
 case $cpu_vendor in
 	AuthenticAMD)
-		awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/CPU//;s/^ *//' ;;
+		awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/CPU//;s/^ *//' | tr -d '\n' ;;
 	GenuineIntel)
-		awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//;s/.......$//' ;;
+		awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//;s/.......$//' | tr -d '\n' ;;
 esac
 
 # get cpu frequency from /sys/devices/system/cpu
 max_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/.....$//')
 cur_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/....$//')
-if [[ -z $max_cpufreq ]] ; then
+if [[ ! -z $max_cpufreq ]] ; then
 echo -ne "${CYAN}$max_cpufreq${NC}"
 echo -ne "@${YELLOW}$cur_cpufreq${NC}" ; echo "GHz"
 fi
