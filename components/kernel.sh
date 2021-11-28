@@ -2,5 +2,5 @@
 
 
 # // KERNEL // w/ uname
-echo -ne "${BLUE}kernel${NC} ~ "
+echo -ne "${YELLOW}kernel${NC} ~ "
 uname -r
