@@ -73,7 +73,7 @@ session=$(echo $XDG_CURRENT_DESKTOP)
         echo -ne "$dewm$session \e \e \e \e "
 elif [[ -e /usr/share/xsessions/ ]] ; then
         echo -ne "$dewm"
-        head /usr/share/xsessions/* | grep -im1 'names=' | sed 's/DesktopNames=//;s/CLASSIC//;s/Ubuntu//;s/ubuntu//;s/Classic//;s/GNOME//2g' | tr -d ':-;\n'
+        head /usr/share/xsessions/* | grep -im1 'names=' | sed 's/DesktopNames=//;s/CLASSIC//g;s/Ubuntu//;s/ubuntu//g;s/Classic//g;s/GNOME//2g' | tr -d ':-;\n'
 	echo -ne " \e \e \e \e "
 elif [[ -e /usr/share/wayland-sessions/ ]] ; then
         echo -ne "$dewm"
