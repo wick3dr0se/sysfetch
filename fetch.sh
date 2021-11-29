@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# colors
 NC='\033[0m'
 BLACK='\033[1;30m'
 RED='\033[1;31m'
@@ -9,14 +11,19 @@ PURPLE='\033[1;35m'
 CYAN='\033[1;36m'
 WHITE='\033[1;37m'
 
-# global variables 
+
+#output errors to null
+exec 2>/dev/null
+
+
+# global variables
 
 # host
 host=$(uname -n)
 user=$(echo $USER)
 
 # os_arch
-os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release 2>/dev/null)
+os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
 arch=$(uname -m)
 
 # uptime
@@ -32,17 +39,17 @@ shell=$(echo "$SHELL" | sed 's%.*/%%')
 
 #de/wm_theme
 session=$(echo $XDG_CURRENT_DESKTOP)
-gtk_name=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini 2>/dev/null | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
-theme_name=$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null | sed "s/'//g")
+gtk_name=$(grep 'gtk-theme-name' ~/.config/gtk-3.0/settings.ini | sed 's/gtk-theme-name=//g' | sed 's/-/ /g')
+theme_name=$(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'//g")
 
 # cpu_gpu
 cpu_vendor=$(head /proc/cpuinfo | grep -m1 "vendor_id" | sed 's/vendor_id//' | tr -d '\t :')
-max_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq 2>/dev/null | sed 's/......$/.&/;s/.....$//')
-cur_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq 2>/dev/null | sed 's/......$/.&/;s/....$//')
+max_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/.....$//')
+cur_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/....$//')
 
 # mobo
-mobo_vendor=$(head /sys/devices/virtual/dmi/id/board_vendor 2>/dev/null)
-mobo_name=$(head /sys/devices/virtual/dmi/id/board_name 2>/dev/null)
+mobo_vendor=$(head /sys/devices/virtual/dmi/id/board_vendor)
+mobo_name=$(head /sys/devices/virtual/dmi/id/board_name)
 
 # ram_swap
 cur_ram=$(awk '/Active:/ {printf "%d/", $2 / 1024}' /proc/meminfo)
