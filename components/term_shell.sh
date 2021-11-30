@@ -29,5 +29,5 @@ case $systype in
     # // SHELL // echo '$SHELL' environment variable
     echo -e "${BLUE}shell${NC} ~ $shell"
     ;;
-    
+
 esac

@@ -15,7 +15,7 @@ case $systype in
 
     #// UPTIME //
     macuptime=$(uptime | awk '{print($3),($4)}' | sed 's/.$//')
-    echo -ne "${CYAN}uptime${NC} ~ ${macuptime}"
+    echo -e "${CYAN}uptime${NC} ~ ${macuptime}"
     ;;
 
 esac
