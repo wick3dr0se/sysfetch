@@ -8,6 +8,9 @@
 <img src="https://badge-size.herokuapp.com/wick3dr0se/fetch.sh/alpha/fetch.sh"></img>
 </div>
 
+### Debugging:
+Uncomment `exec 2>/dev/null` to output all errors in terminal
+
 ## Contributing:
 Fork this repository, then clone this branch from your fork
 
