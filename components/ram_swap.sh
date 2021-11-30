@@ -33,7 +33,7 @@ case $systype in
     echo -n "${macramused}M/${macmaxram}G "
 
     # // SWAP // using sysctl and awk.
-    macswap=$(sysctl vm.swapusage | awk -F:  '{print($2)}' | sed 's/.(encrypted)$//')
+    macswap=$(sysctl vm.swapusage | awk -F: '{print($2)}' | sed 's/.(encrypted)$//')
     echo -ne "${PURPLE}swap${NC} ~$macswap"
     ;;
 
