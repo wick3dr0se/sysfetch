@@ -21,8 +21,8 @@ case $systype in
 
 		# // OS // ARCH // get os global variables that display name.
     darwinos=$(sw_vers -productVersion)
-    echo -e "${GREEN}os${NC} ~ ${darwinos} ${darwinsimplename} "
-		echo -ne "${RED}arch${NC} ~ $arch"
+    echo -ne "${GREEN}os${NC} ~ ${darwinos} ${darwinsimplename} "
+		echo -e "${RED}arch${NC} ~ $arch"
 		;;
 
 esac

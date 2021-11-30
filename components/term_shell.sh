@@ -24,7 +24,7 @@ case $systype in
   Darwin)
 
     # // TERM // ger terminal name w/ global variable
-    echo -ne "${RED}term${NC} ~ $TERM_PROGRAM"
+    echo -ne "${RED}term${NC} ~ $TERM_PROGRAM "
 
     # // SHELL // echo '$SHELL' environment variable
     echo -e "${BLUE}shell${NC} ~ $shell"

@@ -15,7 +15,7 @@ case $systype in
 
     # // MOBO // pulling Mac Model from sysprofile
     macmobo=$(system_profiler SPHardwareDataType | awk 'FNR == 6 {print($3)}')
-    echo -ne "${YELLOW}mobo${NC} ~ ${macmobo}"
+    echo -e "${YELLOW}mobo${NC} ~ ${macmobo}"
     ;;
 
 esac

@@ -41,6 +41,6 @@ case $systype in
     echo -ne "${PURPLE}de/wm${NC} ~ Aqua "
 
     # // THEME // MacOS has no built in theme other than os updates, so that will be displayed.
-    echo -ne "${YELLOW}theme${NC} ~ ${darwinsimplename}"
+    echo -e "${YELLOW}theme${NC} ~ ${darwinsimplename}"
 
 esac

@@ -34,11 +34,11 @@ case $systype in
 
     # // CPU //
     maccpu=$(sysctl -n machdep.cpu.brand_string)
-    echo -ne "${CYAN}cpu${NC} ~ ${maccpu} "
+    echo -e "${CYAN}cpu${NC} ~ ${maccpu} "
 
     #// GPU //
     macgpu=$(system_profiler SPDisplaysDataType | grep Chipset | awk -F: '{print($2)}')
-    echo -ne "${GREEN}gpu${NC} ~ ${macgpu}"
+    echo -e "${GREEN}gpu${NC} ~ ${macgpu}"
     ;;
-    
+
 esac

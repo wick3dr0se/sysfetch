@@ -13,7 +13,7 @@ case $systype in
 
     # // KERNEL // w/ uname
     darwinkernel=$(uname -s -r)
-    echo -ne "${YELLOW}kernel${NC} ~ ${darwinkernel}"
+    echo -e "${YELLOW}kernel${NC} ~ ${darwinkernel}"
     ;;
-    
+
 esac
