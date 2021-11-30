@@ -21,6 +21,7 @@ exec 2>/dev/null
 # host
 host=$(uname -n)
 user=$(echo $USER)
+kernel="$(uname -r)"
 
 # os_arch
 os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
