@@ -16,7 +16,7 @@ case $systype in
 		;;
 	Darwin)
 		# // OS // ARCH // get os from /etc/os-release if exist; use uname for architecture
-		echo -ne "${GREEN}os${NC} ~ ${darwinos} ${darwinsimplename} \e \e \e \e"
+		echo -ne "${GREEN}os${NC} ~ ${darwinos} ${darwinsimplename} "
 		echo -e "${RED}arch${NC} ~ $arch"
 		;;
 esac
