@@ -30,10 +30,10 @@ case $systype in
     macramused=$(top -l 1 -s 0 | grep PhysMem | awk '{print($2)}' | sed 's/.$//')
     macmaxram=$(hostinfo | awk 'FNR == 8 {print($4)}' | sed 's/...$//')
     echo -ne "${RED}ram${NC} ~ "
-    echo -n "${macramused}M/${macmaxram}G"
+    echo -n "${macramused}M/${macmaxram}G "
 
     # // SWAP // using sysctl and awk.
-    macswap=$(sysctl vm.swapusage | awk -F:  '{print($2)}' | sed 's/(encrypted)$//')
+    macswap=$(sysctl vm.swapusage | awk -F:  '{print($2)}' | sed 's/.(encrypted)$//')
     echo -ne "${PURPLE}swap${NC} ~ $macswap"
     ;;
 
