@@ -9,7 +9,7 @@
 </div>
 
 ### Debugging:
-Uncomment `exec 2>/dev/null` to output all errors in terminal
+Comment out `exec 2>/dev/null` to output all errors in terminal
 
 ## Contributing:
 Fork this repository, then clone this branch from your fork
