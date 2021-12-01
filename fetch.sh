@@ -17,9 +17,7 @@ exec 2>/dev/null
 
 
 # global variables
-
-# system type check:
-systype=$(uname)
+sys=$(uname)
 
 # host
 host=$(uname -n)
@@ -27,7 +25,7 @@ user=$(echo $USER)
 
 # os_arch
 os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
-darwinsimplename=$(awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}')
+darwin_simple_name=$(awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}')
 arch=$(uname -m)
 
 # uptime
