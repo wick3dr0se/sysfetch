@@ -17,13 +17,16 @@ exec 2>/dev/null
 
 
 # global variables
+sys="$(uname)"
 
 # host
-host=$(uname -n)
-user=$(echo $USER)
+host="$(uname -n)"
+user="$(echo $USER)"
+kernel="$(uname -r)"
 
 # os_arch
 os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
+darwin_simple_name=$(awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}')
 arch=$(uname -m)
 
 # uptime
@@ -72,3 +75,4 @@ source "$script_path/components/cpu_gpu.sh"
 source "$script_path/components/mobo.sh"
 source "$script_path/components/ram_swap.sh"
 #source "$script_path/components/load.sh"
+#source "$script_path/components/uptime.sh"
