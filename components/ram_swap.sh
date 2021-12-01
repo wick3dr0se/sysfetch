@@ -4,8 +4,8 @@
 echo -ne "${RED}ram${NC} ~ "
 if [[ "$sys" = "Darwin" ]] ; then
 	echo -n "$(top -l 1 -s 0 | grep PhysMem | awk '{print($2)}' | sed 's/.$//')"
-	echo -n "M "
-	hostinfo | awk 'FNR == 8 {print($4)}' | sed 's/...$//'
+	echo -n "M/"
+	hostinfo | awk 'FNR == 8 {print($4)}' | sed 's/...$//' | tr -d '\n'
 	echo -n "G"
 elif [[ ! -z "$max_ram" ]] ; then
 	echo -n "$cur_ram$max_ram"
@@ -16,8 +16,8 @@ fi
 
 # // SWAP // print 'Size' from /proc/swaps
 if [[ "$sys" = "Darwin" ]] ; then
-  echo -ne " ${PURPLE}swap${NC} ~ "
-  sysctl vm.swapusage | awk '{print($7)}'
+	echo -ne " ${PURPLE}swap${NC} ~ "
+	sysctl vm.swapusage | awk '{print($7)}'
 elif [[ "$swap_count" = "2" ]] ; then
 	let "swap1_mb = $swap1_kb / 1024"
 	echo -ne " \e \e \e \e ${PURPLE}swap${NC} ~ "
