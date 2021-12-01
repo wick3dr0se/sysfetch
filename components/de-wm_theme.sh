@@ -31,5 +31,5 @@ elif [[ -e ~/.config/gtk-3.0/settings.ini ]] ; then
 elif [[ $(command -v gsettings) ]] && [[ ! -z "$theme_name" ]] ; then
 	echo -e "${YELLOW}theme${NC} ~ $theme_name"
 else
-	echo -e "\n"
+	echo -ne "\n"
 fi
