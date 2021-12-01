@@ -27,7 +27,7 @@ Execute script
 > **$**&ensp; `./fetch.sh`
 
 ### To Debug:
-Uncomment `exec 2>/dev/null` to output all errors in terminal
+Comment out `exec 2>/dev/null` to output all errors in terminal
 
 ## Contributing:
 See: https://github.com/wick3dr0se/fetch.sh/tree/alpha to help contribute. 
