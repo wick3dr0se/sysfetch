@@ -17,11 +17,12 @@ exec 2>/dev/null
 
 
 # global variables
-sys=$(uname)
+sys="$(uname)"
 
 # host
-host=$(uname -n)
-user=$(echo $USER)
+host="$(uname -n)"
+user="$(echo $USER)"
+kernel="$(uname -r)"
 
 # os_arch
 os=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
