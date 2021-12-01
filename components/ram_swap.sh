@@ -3,7 +3,7 @@
 # // RAM // print 'MemTotal' in /proc/meminfo
 echo -ne "${RED}ram${NC} ~ "
 if [[ "$sys" = "Darwin" ]] ; then
-	top -l 1 -s 0 | grep PhysMem | awk '{print($2)}' | sed 's/.$//'
+	echo -n "$(top -l 1 -s 0 | grep PhysMem | awk '{print($2)}' | sed 's/.$//')"
 	echo -n "@"
 	hostinfo | awk 'FNR == 8 {print($4)}' | sed 's/...$//'
 elif [[ ! -z "$max_ram" ]] ; then

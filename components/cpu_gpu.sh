@@ -3,7 +3,7 @@
 # // CPU //
 echo -ne "${CYAN}cpu${NC} ~ "
 if [[ "$sys" = "Darwin" ]] ; then
-	sysctl -n machdep.cpu.brand_string
+	echo -ne "$(sysctl -n machdep.cpu.brand_string)"
 elif [[ "$cpu_vendor" = "GenuineIntel" ]] ; then
 	awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//;s/.......$//' | tr -d '\n'
 else

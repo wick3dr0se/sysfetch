@@ -3,9 +3,7 @@
 if [[ ! -z  $os ]] ; then
 	echo -ne "${GREEN}os${NC} ~ $os \e \e \e \e "
 elif [[ "$sys" = "Darwin" ]] ; then
-	echo -ne "${GREEN}os${NC} ~ "
-        sw_vers -productVersion
-        echo -ne "$darwin_simple_name"
+	echo -ne "${GREEN}os${NC} ~ $(sw_vers -productVersion) $darwin_simple_name"
 else
 	echo -ne "${GREEN}os${NC} ~ not found \e \e \e \e "
 fi
