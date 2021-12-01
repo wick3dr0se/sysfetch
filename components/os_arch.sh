@@ -1,9 +1,9 @@
 #!/bin/bash
 # // OS //
-if [[ ! -z  $os ]] ; then
+if [[ "$sys" = "Darwin" ]] ; then
+	echo -ne "${GREEN}os${NC} ~ $(sw_vers -productVersion) "
+elif [[ ! -z  $os ]] ; then
 	echo -ne "${GREEN}os${NC} ~ $os \e \e \e \e "
-elif [[ "$sys" = "Darwin" ]] ; then
-	echo -ne "${GREEN}os${NC} ~ $(sw_vers -productVersion)"
 else
 	echo -ne "${GREEN}os${NC} ~ not found \e \e \e \e "
 fi
