@@ -17,7 +17,26 @@ The program is written in bash shell script, so execution is easy, and doesn't r
 
 *Ensure that the components folder is in the same directory as the script or it will not execute properly.*
 
-### Building sysfetch into a Package:
+### Simple and Fast Package creation:
+
+If you just want to simply create a package quickly of sysfetch with `fpm` then these will be the only needed steps:
+
+* Install ruby on your local system.
+* Install the ruby gem `fpm` e.g. `sudo gem install fpm`
+* Check to make sure that you have `rpmbuild` installed on your local system.
+  * on Debian based systems rpmbuild is instead called `rpm`
+  * on MacOS it's available through homebrew under `rpm`
+  * on Red Hat based systems rpmbuild is called `rpm-build.x86_64`
+* once these pre-requisites are installed you'll be able to build both .deb and .rpm files.
+* git clone a fresh copy of the source: `git clone -b alpha --single-branch https://github.com/<user>/sysfetch alpha_sysfetch` you can change the branch in the command to master if you wish to use the more stable, but older coded master branch.
+* the source has a .fpm file that automates the needed choices. `nano .fpm` to change the flags as needed for the build, such as versioning.
+* run these commands for either an rpm or deb:
+  * `fpm -t deb`
+  * `fpm -t rpm`
+
+And were done!
+
+### Building sysfetch into a Package from Scratch:
 Though generally taken care of, if you wish to build a package to test your contributions, we use the `fpm` build system here: [`fpm` Installation and how-to](https://fpm.readthedocs.io/en/latest/installation.html).
 
 The maintainer will be producing packages and releasing them, as well as versioning them, this is available just to allow the casual user to test changes to
@@ -41,7 +60,7 @@ Once installed and you've verified that `fpm` is working we do this to get ourse
     --after-remove build/afterinstall.sh \
     components=/usr/lib/sysfetch/ sysfetch=/usr/lib/sysfetch/sysfetch sysfetch.1=/usr/share/man/man1/sysfetch.1 License.md=/usr/lib/sysfetch/License
 
-You'll notice that each line is pretty straightforward. The only one that really requires explanation is the very last line that begins with: `components`.
+You'll notice that each line is pretty straightforward. The only one that really requires explanation is the very last line that begins with: `components`. (However if any are confusing please read through the [fpm userguide](https://fpm.readthedocs.io/en/latest/installation.html))
 
 This line lists out where certain files and folders in the main directory will end up installed on the target system.
 
@@ -54,4 +73,4 @@ So, if we were to add a theoretical `sysfetchpart2` script to the build, and we 
 
 #### What about other package types?
 
-.deb is first, we'll be adding the others as we figure out their build processes, though `fpm` makes that very easy.
+.deb and .rpm are first, we'll be adding the others as we figure out their build processes, though `fpm` makes that very easy. There is currently work going on for an AUR build for Arch based Linuxes.

@@ -1,0 +1,13 @@
+-s dir
+--name sysfetch
+--license gpl3
+--version 0.1.0
+--architecture all
+--depends bash
+--description "A super tiny Linux system information sysfetch script written in BASH"
+--url "https://example.com/hello-world"
+--maintainer "wick3dr0se <https://github.com/wick3dr0se/sysfetch>"
+--after-install build/beforeinstall.sh
+--after-remove build/afterinstall.sh
+
+components=/usr/lib/sysfetch/ sysfetch=/usr/lib/sysfetch/sysfetch sysfetch.1=/usr/share/man/man1/sysfetch.1 License.md=/usr/lib/sysfetch/License
