@@ -62,7 +62,7 @@ swap1_kb=$(sed -n '2p' /proc/swaps | awk '{print($3)}')
 swap2_kb=$(sed -n '3p' /proc/swaps | awk '{print($3)}')
 
 
-script_path=$(dirname "$(readlink -f "$0")")
+script_path="/usr/share/sysfetch"
 
 source "$script_path/components/host.sh"
 source "$script_path/components/uptime.sh"
