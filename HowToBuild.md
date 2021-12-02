@@ -1,4 +1,4 @@
-#How to Build:
+# How to Build:
 
 ### Current Builds:
 * makefile
@@ -7,17 +7,17 @@
 * .pkg (for MacOS)
 * pacman
 
-###Current Builds Capabilities:
+### Current Builds Capabilities:
 Currently sysfetch is built for .RPM, .DEB, MacOS, and pacman (Arch family) based systems, in addition to having a makefile so it can reasonably be used on nearly any UNIX based system. It will run as a standard shell script on both the Windows Subsystem for Linux 2, as well as Cygwin, though tests for those are ongoing.
 
-###Building from Source:
+### Building from Source:
 The program is written in bash shell script, so execution is easy, and doesn't require compiling:
 * `chmod +x sysfetch`
 * `./sysfetch`
 
 *Ensure that the components folder is in the same directory as the script or it will not execute properly.*
 
-###Building sysfetch into a Package:
+### Building sysfetch into a Package:
 Though generally taken care of, if you wish to build a package to test your contributions, we use the `fpm` build system here: [`fpm` Installation and how-to](https://fpm.readthedocs.io/en/latest/installation.html).
 
 The maintainer will be producing packages and releasing them, as well as versioning them, this is available just to allow the casual user to test changes to
