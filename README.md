@@ -26,6 +26,11 @@ Push your changes and then create a pull request to merge from your branch to th
 
 &ensp;**#** `git push`
 
+#### Communication Channels:
+Join us on discord: https://discord.gg/TstuWvDzXr
+
+Or open an [Issue](https://github.com/wick3dr0se/sysfetch/issues), we're always happy to have more feedback or ideas.
+
 --------------
 
 #### Installation:
@@ -64,8 +69,10 @@ If installed via makefile:
 --------------
 
 ## Testing:
-For individual scripts that need further testing or are possible implementations
+For individual scripts that need further testing or are possible implementations. Generally most things tested in this branch will be new scripts that are located in the components folder.
 
 &ensp;**#** `git clone -b gamma --single-branch https://github.com/<user>/sysfetch gamma_sysfetch`
 
-Repeat commands from above, however in gamma branch feel free to add your own scripts that could be merged into the alpha branch after testing on atleast two operating systems. Test commands and communicate with us on Discord
+Repeat the commands from [Contributing](#Contributing:) above, however in gamma branch feel free to add your own scripts that could be merged into the alpha branch after testing on at least two operating systems. (Different linuxes or VM's are fine.)
+
+Test commands and output and communicate with us on Discord if you need assistance, or are unsure of something.
