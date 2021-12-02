@@ -37,7 +37,8 @@ sec=${sec%\.*}
 init_strip="s/login//g;s/startx//g;s/x//g;s/init//g;s/systemd//g"
 de_strip="s/dwm//g"
 shell_strip="s/fish//g;s/bash//g;s/zsh//g;s/ash//g"
-term=$(pstree -sA $$ | head -n1 | sed "s/head//g;s/fetch.sh//g;$init_strip;$de_strip;$shell_strip;s/^-*//;s/+//;s/-*$//")
+term=$(pstree -sA $$ | head -n1 | sed "s/head//g;s/sysfetch//g;$init_strip;$de_strip;$shell_strip;s/^-*//;s/+//;s/-*$//")
+alternaterm=$(pstree -sA $$ | head -n1 | awk -F--- '{print $(NF-1)}') #This is here for testing as a replacement of the above variable.
 shell=$(echo "$SHELL" | sed 's%.*/%%')
 
 #de/wm_theme
@@ -61,8 +62,11 @@ swap_count=$(head /proc/swaps | wc -l)
 swap1_kb=$(sed -n '2p' /proc/swaps | awk '{print($3)}')
 swap2_kb=$(sed -n '3p' /proc/swaps | awk '{print($3)}')
 
-
-script_path=$(dirname "$(readlink -f "$0")")
+if [[ -e /usr/lib/sysfetch ]] ; then
+  script_path="/usr/lib/sysfetch"
+else
+  script_path=$(dirname "$(readlink -f "$0")")
+fi
 
 source "$script_path/components/host.sh"
 source "$script_path/components/uptime.sh"
@@ -75,4 +79,3 @@ source "$script_path/components/cpu_gpu.sh"
 source "$script_path/components/mobo.sh"
 source "$script_path/components/ram_swap.sh"
 #source "$script_path/components/load.sh"
-#source "$script_path/components/uptime.sh"
