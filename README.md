@@ -1,5 +1,5 @@
 <div align="center">
-<h1>fetch.sh</h1>
+<h1>sysfetch</h1>
 <p>A super tiny *nix system information fetch script written in BASH</p>
 <img src="https://github.com/wick3dr0se/fetch.sh/blob/alpha/screen.png"></img>
 
