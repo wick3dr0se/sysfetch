@@ -1,6 +1,6 @@
 <div align="center">
 <h1>fetch.sh</h1>
-<p>A super tiny Linux system information fetch script written in BASH</p>
+<p>A super tiny *nix system information fetch script written in BASH</p>
 <img src="https://github.com/wick3dr0se/fetch.sh/blob/alpha/screen.png"></img>
 
 <img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white"></img>
