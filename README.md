@@ -1,5 +1,5 @@
 <div align="center">
-<h1>fetch.sh alpha</h1>
+<h1>sysfetch alpha</h1>
 <img src="https://github.com/wick3dr0se/fetch.sh/blob/alpha/screen.png"></img>
 
 <img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white"></img>
