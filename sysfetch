@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# version 0.1
+
 # colors
 NC='\033[0m'
 BLACK='\033[1;30m'
