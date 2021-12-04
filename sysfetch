@@ -64,11 +64,7 @@ swap_count=$(head /proc/swaps | wc -l)
 swap1_kb=$(sed -n '2p' /proc/swaps | awk '{print($3)}')
 swap2_kb=$(sed -n '3p' /proc/swaps | awk '{print($3)}')
 
-if [[ -e /usr/lib/sysfetch ]] ; then
-  script_path="/usr/lib/sysfetch"
-else
-  script_path=$(dirname "$(readlink -f "$0")")
-fi
+script_path=$(dirname "$(readlink -f "$0")")
 
 source "$script_path/components/host.sh"
 source "$script_path/components/uptime.sh"
