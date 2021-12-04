@@ -65,7 +65,7 @@ swap1_kb=$(sed -n '2p' /proc/swaps | awk '{print($3)}')
 swap2_kb=$(sed -n '3p' /proc/swaps | awk '{print($3)}')
 
 if [[ -e /usr/share/sysfetch ]] ; then
-	script_path=$(/usr/share/sysfetch)
+	script_path="/usr/share/sysfetch"
 else
 	script_path=$(dirname "$(readlink -f "$0")")
 fi
