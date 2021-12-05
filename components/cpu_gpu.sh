@@ -13,7 +13,7 @@ fi
 # get cpu frequency from /sys/devices/system/cpu
 if [[ ! -z $max_cpufreq ]] ; then
 	echo -ne "$max_cpufreq"
-	echo -ne "@${CYAN}$cur_cpufreq${NC}" ; echo "GHz"
+	echo -e "@${GREEN}$cur_cpufreq${NC} GHz"
 else
 	echo -ne "\n"
 fi
@@ -28,6 +28,6 @@ elif [[ "$kernel" = *"microsoft-standard-WSL"* ]] ; then
 	wmic.exe path win32_VideoController get name | awk 'NR==2'
 elif [[ $(command -v lspci) ]] ; then
 	echo -ne "${GREEN}gpu${NC} ~ "
-	lspci | grep -im1 --color 'vga\|3d\|2d' | sed 's/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/0000//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g' | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
+	lspci | grep -im1 --color 'vga\|3d\|2d' | sed "$gpu_strip" | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 fi
 

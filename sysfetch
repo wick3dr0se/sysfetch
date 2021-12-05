@@ -26,7 +26,7 @@ host="$(uname -n)"
 user="$(echo $USER)"
 kernel="$(uname -r)"
 
-# os_arch
+# distro_arch
 distro=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
 darwin_simple_name=$(awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}')
 arch=$(uname -m)
@@ -55,6 +55,7 @@ theme_name=$(gsettings get org.gnome.desktop.interface gtk-theme | sed "s/'//g")
 cpu_vendor=$(grep -m1 "vendor_id" /proc/cpuinfo | sed 's/vendor_id//' | tr -d '\t: ')
 max_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq | sed 's/......$/.&/;s/.....$//')
 cur_cpufreq=$(head /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | sed 's/......$/.&/;s/....$//')
+gpu_strip="s/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDIA Corporation//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/0000//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/g"
 
 # mobo
 mobo_vendor=$(head /sys/devices/virtual/dmi/id/board_vendor)
@@ -62,7 +63,7 @@ mobo_name=$(head /sys/devices/virtual/dmi/id/board_name)
 
 # ram_swap
 cur_ram=$(awk '/Active:/ {printf "%d/", $2 / 1024}' /proc/meminfo)
-max_ram=$(awk '/MemTotal:/ {printf "%dMiB", $2 / 1024}' /proc/meminfo)
+max_ram=$(awk '/MemTotal:/ {printf "%d", $2 / 1024}' /proc/meminfo)
 swap_cur=$(sed -n '2p' /proc/swaps | awk '{print $4}')
 swap2_cur=$(sed -n '3p' /proc/swaps | awk '{print $4}')
 let "swap_cur=$swap_cur+$swap2_cur"
@@ -74,11 +75,14 @@ let "swap_max=$swap_max/1024"
 
 
 # path to components
-if [[ -e /usr/share/sysfetch ]] ; then
-	script_path="/usr/share/sysfetch"
-else
-	script_path=$(dirname "$(readlink -f "$0")")
-fi
+
+script_path=$(dirname "$(readlink -f "$0")")
+
+#if [[ -e /usr/share/sysfetch ]] ; then
+#	script_path="/usr/share/sysfetch"
+#else
+#	script_path=$(dirname "$(readlink -f "$0")")
+#fi
 
 source "$script_path/components/host.sh"
 source "$script_path/components/uptime.sh"
