@@ -9,34 +9,51 @@
 <img src="https://badge-size.herokuapp.com/wick3dr0se/sysfetch/master/sysfetch"></img>
 </div>
 
-### Installing from package manager:
+## Installing from package manager:
 #### Arch Linux -
 &ensp;sysfetch is installable from the AUR as `sysfetch-git`
 
 #### How to Use:
 run `sysfetch`
 
-### Pulling sysfetch from GitHub:
+## Pulling sysfetch from GitHub:
 Clone the repository
 
-> **$**&ensp; `git clone -b master --single-branch https://github.com/wick3dr0se/sysfetch`
+**#**&ensp; `git clone -b master --single-branch https://github.com/wick3dr0se/sysfetch`
 
 Change directory into the folder
 
-> **$**&ensp; `cd sysfetch`
+**#**&ensp; `cd sysfetch`
 
 Make script executable
 
-> **$**&ensp; `chmod a+rx sysfetch`
+**#**&ensp; `chmod a+rx sysfetch`
 
 Execute script
 
-> **$**&ensp; `./sysfetch` or `bash sysfetch`
+**#**&ensp; `./sysfetch` or `bash sysfetch`
 
-### To Debug:
+
+## Debugging:
 Comment out `exec 2>/dev/null` to output all errors in terminal
 
 ## Contributing:
-See: https://github.com/wick3dr0se/sysfetch/tree/alpha to help contribute. 
+Fork this repository, then clone this branch from your fork
 
-This is a huge WIP, so any contributions are much appreciated!
+&ensp;**#** `git clone -b alpha --single-branch https://github.com/<user>/sysfetch alpha_sysfetch`
+
+Stage and commit your changes with a relevant message and link to issue # if fix, like:
+
+&ensp;**#** `git add .`
+
+&ensp;**#** `git commit -m "test; fix issue #3"`
+
+Push your changes and then create a pull request to merge from your branch to this repositorys alpha branch
+
+&ensp;**#** `git push`
+
+## Testing:
+Individual scripts should be pushed to the gamma branch and any PR's to existing code should be made to alpha branch so we can test everything properly before merging to master. Scripts in gamma branch need proper testing, clean code and output to move to alpha
+
+## Communication:
+Join us on discord: https://discord.gg/TstuWvDzXr
