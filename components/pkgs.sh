@@ -10,7 +10,7 @@ elif [[ $(command -v dnf) ]] ; then
 	dnf list installed | grep ".@." -c
 elif [[ $(command -v rpm) ]] ; then
 	rpm -qa | wc -l
-elif test -e /var/log/packages ; then
+elif [[ -e /var/log/packages ]] ; then
 	ls /var/log/packages | wc -l
 elif [[ $(command -v opkg) ]] ; then
 	opkg list-installed | wc -w

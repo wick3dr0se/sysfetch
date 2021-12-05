@@ -2,32 +2,25 @@
 
 # // RAM // print 'MemTotal' in /proc/meminfo
 echo -ne "${RED}ram${NC} ~ "
-if [[ "$sys" = "Darwin" ]] ; then
+if [[ "$os" = "Darwin" ]] ; then
 	echo -n "$(top -l 1 -s 0 | grep PhysMem | awk '{print($2)}' | sed 's/.$//')"
 	echo -n "M/"
 	hostinfo | awk 'FNR == 8 {print($4)}' | sed 's/...$//' | tr -d '\n'
 	echo -n "G"
 elif [[ ! -z "$max_ram" ]] ; then
-	echo -n "$cur_ram$max_ram"
+	echo -ne "$cur_ram$max_ram \e \e \e \e "
 else
-	echo -n "no ram"
+	echo -ne "no ram \e \e \e \e "
 fi
 
 
 # // SWAP // print 'Size' from /proc/swaps
-if [[ "$sys" = "Darwin" ]] ; then
-	echo -ne " ${PURPLE}swap${NC} ~ "
+if [[ "$os" = "Darwin" ]] ; then
+	echo -ne "${PURPLE}swap${NC} ~ "
 	sysctl vm.swapusage | awk '{print($7)}'
-elif [[ "$swap_count" = "2" ]] ; then
-	let "swap1_mb = $swap1_kb / 1024"
-	echo -ne " \e \e \e \e ${PURPLE}swap${NC} ~ "
-	echo "$swap1_mb MiB"
-elif [[ "$swap_count" > "2" ]] ; then
-	let "swap1_mb = $swap1_kb / 1024"
-	echo -ne " \e \e \e \e ${PURPLE}swap${NC} ~ "
-	echo -ne "$swap1_mb MiB " | sed 's/ //'
-	let "swap2_mb = $swap2_kb / 1024"
-	echo "$swap2_mb MiB" | sed 's/ //'
+elif [[ -e /proc/swaps ]] ; then
+	echo -ne "${PURPLE}swap${NC} ~ "
+	echo "$swap_cur/$swap_max MiB" | sed 's/ //'
 else
 	echo -ne "\n"
 fi

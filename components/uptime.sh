@@ -1,8 +1,11 @@
 #!/bin/bash
 
 echo -ne "${CYAN}uptime${NC} ~ "
-if [[ -e /proc/uptime ]] ; then
-	printf '%d days, %d hours, %d minutes \n' $(($sec/86400)) $(($sec%86400/3600)) $(($sec%3600/60))
+if [[ -e /proc/uptime ]] && [[ "$days" = "0" ]] && [[ "$hrs" = "0" ]] ; then
+	printf '%d mins \n' $mins
+elif [[ -e /proc/uptime ]] && [[ "$days" = "0" ]] ; then
+	printf '%d hrs, %d mins \n' $hrs $mins
 elif [[ $(command -v uptime) ]] ; then
 	uptime | awk '{print($3),($4)}' | sed 's/.$//'
 fi
+
