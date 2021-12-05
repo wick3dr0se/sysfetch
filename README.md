@@ -9,11 +9,14 @@
 <img src="https://badge-size.herokuapp.com/wick3dr0se/fetch.sh/alpha/fetch.sh"></img>
 </div>
 
-## Installing:
+### Installing from package manager:
 #### Arch Linux -
 &ensp;sysfetch is installable from the AUR as `sysfetch-git`
 
-## How to Use:
+#### How to Use:
+run `sysfetch`
+
+### Pulling sysfetch from GitHub:
 Clone the repository
 
 > **$**&ensp; `git clone -b master --single-branch https://github.com/wick3dr0se/fetch.sh`
