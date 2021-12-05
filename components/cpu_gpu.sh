@@ -2,7 +2,7 @@
 
 # // CPU //
 echo -ne "${CYAN}cpu${NC} ~ "
-if [[ "$sys" = "Darwin" ]] ; then
+if [[ "$os" = "Darwin" ]] ; then
 	echo -ne "$(sysctl -n machdep.cpu.brand_string)"
 elif [[ "$cpu_vendor" = "GenuineIntel" ]] ; then
 	awk -F: '/model name/{print $2 ; exit}' /proc/cpuinfo | sed 's/Processor//;s/(TM)//;s/(R)//;s/@//;s/CPU//;s/^ *//;s/.......$//' | tr -d '\n'
@@ -20,7 +20,7 @@ fi
 
 
 # // GPU // with lscpi
-if [[ "$sys" = "Darwin" ]] ; then
+if [[ "$os" = "Darwin" ]] ; then
 	echo -ne "${GREEN}gpu${NC} ~ "
 	system_profiler SPDisplaysDataType | grep Chipset | awk -F: '{print($2)}'
 elif [[ "$kernel" = *"microsoft-standard-WSL"* ]] ; then

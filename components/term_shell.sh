@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # // TERM // get terminal name w/ pstree
-if [[ "$sys" = "Darwin" ]] ; then
+if [[ "$os" = "Darwin" ]] ; then
 	echo -ne "${RED}term${NC} ~ $TERM_PROGRAM "
 elif [[ $(command -v pstree) ]] ; then
 	echo -ne "${RED}term${NC} ~ $term \e \e \e \e "

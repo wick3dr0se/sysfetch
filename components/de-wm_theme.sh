@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # // DE/WM //
-if [[ "$sys" = "Darwin" ]] ; then
+if [[ "$os" = "Darwin" ]] ; then
 	echo -ne "${PURPLE}de/wm${NC} ~ Aqua "
 elif [[ ! -z "$XDG_CURRENT_DESKTOP" ]] ; then
 	echo -ne "${PURPLE}de/wm${NC} ~ $session \e \e \e \e "
@@ -24,7 +24,7 @@ fi
 
 
 # // THEME //
-if [[ "$sys" = "Darwin" ]] ; then
+if [[ "$os" = "Darwin" ]] ; then
 	echo -e "${YELLOW}theme${NC} ~ $darwin_simple_name"
 elif [[ -e ~/.config/gtk-3.0/settings.ini ]] ; then
 	echo -e "${YELLOW}theme${NC} ~ $gtk_name"
