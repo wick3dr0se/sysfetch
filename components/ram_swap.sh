@@ -8,7 +8,7 @@ if [[ "$os" = "Darwin" ]] ; then
 	hostinfo | awk 'FNR == 8 {print($4)}' | sed 's/...$//' | tr -d '\n'
 	echo -n "G"
 elif [[ ! -z "$max_ram" ]] ; then
-	echo -ne "$cur_ram$max_ram MiB \e \e \e \e "
+	echo -ne "${GREEN}$cur_ram${NC}${RED}/${NC}${BLUE}$max_ram${NC} MiB \e \e \e \e "
 else
 	echo -ne "no ram \e \e \e \e "
 fi
@@ -20,7 +20,7 @@ if [[ "$os" = "Darwin" ]] ; then
 	sysctl vm.swapusage | awk '{print($7)}'
 elif [[ -e /proc/swaps ]] ; then
 	echo -ne "${PURPLE}swap${NC} ~ "
-	echo "$swap_cur/$swap_max MiB"
+	echo -e "${GREEN}$swap_cur${NC}${RED}/${NC}${BLUE}$swap_max${NC} MiB"
 else
 	echo -ne "\n"
 fi

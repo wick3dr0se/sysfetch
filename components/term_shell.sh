@@ -2,11 +2,11 @@
 
 # // TERM // get terminal name w/ pstree
 if [[ "$os" = "Darwin" ]] ; then
-	echo -ne "${RED}term${NC} ~ $TERM_PROGRAM "
+	echo -ne "${YELLOW}term${NC} ~ $TERM_PROGRAM "
 elif [[ $(command -v pstree) ]] ; then
-	echo -ne "${RED}term${NC} ~ $term \e \e \e \e "
+	echo -ne "${YELLOW}term${NC} ~ $term \e \e \e \e "
 elif [[ ! -z "$TERM" ]] ; then
-	echo -ne "${RED}term${NC} ~ $TERM \e \e \e \e "
+	echo -ne "${YELLOW}term${NC} ~ $TERM \e \e \e \e "
 else
 	echo -ne "not found"
 fi

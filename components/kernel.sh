@@ -1,6 +1,6 @@
 #!/bin/bash
 
 # // KERNEL // w/ uname
-echo -ne "${YELLOW}kernel${NC} ~ "
+echo -ne "${GREEN}kernel${NC} ~ "
 echo "$kernel"
 

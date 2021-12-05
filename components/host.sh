@@ -1,3 +1,3 @@
 #!/bin/bash
 
-[[ $(command -v uname) ]] ; echo -e "${PURPLE}$host${NC}@${BLUE}$user${NC}"
+[[ $(command -v uname) ]] ; echo -e "${PURPLE}$host${NC}@${YELLOW}$user${NC}"

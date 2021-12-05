@@ -61,6 +61,13 @@ gpu_strip="s/VGA compatible controller//;s/Advanced Micro Devices, Inc//;s/NVIDI
 mobo_vendor=$(head /sys/devices/virtual/dmi/id/board_vendor)
 mobo_name=$(head /sys/devices/virtual/dmi/id/board_name)
 
+# disk
+disk_cur=$(df | grep -w '/' | awk '{print $3/1024}')
+disk_max=$(df | grep -w '/' | awk '{print $4/1024}')
+disk_cur=${disk_cur%\.*}
+disk_max=${disk_max%\.*}
+disk_per=$(df | grep -w '/' | awk '{print $5}' | sed 's/.$//')
+
 # ram_swap
 cur_ram=$(awk '/Active:/ {printf "%d/", $2 / 1024}' /proc/meminfo)
 max_ram=$(awk '/MemTotal:/ {printf "%d", $2 / 1024}' /proc/meminfo)
@@ -93,5 +100,6 @@ source "$script_path/components/de-wm_theme.sh"
 source "$script_path/components/pkgs.sh"
 source "$script_path/components/cpu_gpu.sh"
 source "$script_path/components/mobo.sh"
+source "$script_path/components/disk.sh"
 source "$script_path/components/ram_swap.sh"
 #source "$script_path/components/load.sh"

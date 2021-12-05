@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # // CPU //
-echo -ne "${CYAN}cpu${NC} ~ "
+echo -ne "${BLUE}cpu${NC} ~ "
 if [[ "$os" = "Darwin" ]] ; then
 	echo -ne "$(sysctl -n machdep.cpu.brand_string)"
 elif [[ "$cpu_vendor" = "GenuineIntel" ]] ; then
@@ -12,8 +12,7 @@ fi
 
 # get cpu frequency from /sys/devices/system/cpu
 if [[ ! -z $max_cpufreq ]] ; then
-	echo -ne "$max_cpufreq"
-	echo -e "@${GREEN}$cur_cpufreq${NC} GHz"
+	echo -e "${BLUE}$max_cpufreq${NC}${RED}@${NC}${GREEN}$cur_cpufreq${NC} GHz"
 else
 	echo -ne "\n"
 fi
@@ -21,13 +20,13 @@ fi
 
 # // GPU // with lscpi
 if [[ "$os" = "Darwin" ]] ; then
-	echo -ne "${GREEN}gpu${NC} ~ "
+	echo -ne "${CYAN}gpu${NC} ~ "
 	system_profiler SPDisplaysDataType | grep Chipset | awk -F: '{print($2)}'
 elif [[ "$kernel" = *"microsoft-standard-WSL"* ]] ; then
-	echo -ne "${GREEN}gpu${NC} ~ "
+	echo -ne "${CYAN}gpu${NC} ~ "
 	wmic.exe path win32_VideoController get name | awk 'NR==2'
 elif [[ $(command -v lspci) ]] ; then
-	echo -ne "${GREEN}gpu${NC} ~ "
+	echo -ne "${CYAN}gpu${NC} ~ "
 	lspci | grep -im1 --color 'vga\|3d\|2d' | sed "$gpu_strip" | tr -d '.:[]' | sed 's/^.....//;s/^ *//'
 fi
 

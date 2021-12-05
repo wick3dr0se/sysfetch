@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -ne "${CYAN}uptime${NC} ~ "
+echo -ne "${BLUE}uptime${NC} ~ "
 if [[ -e /proc/uptime ]] && [[ "$days" = "0" ]] && [[ "$hrs" = "0" ]] ; then
 	printf '%d mins \n' $mins
 elif [[ -e /proc/uptime ]] && [[ "$days" = "0" ]] ; then
