@@ -1,9 +1,10 @@
 #!/bin/bash
-# // OS //
+# // DISTRO //
 if [[ "$os" = "Darwin" ]] ; then
 	echo -ne "${GREEN}distro${NC} ~ $(sw_vers -productVersion) "
 elif [[ ! -z  $distro ]] ; then
-	echo -ne "${GREEN}distro${NC} ~ $distro \e \e \e \e "
+	[[ "$distro" = "Arch Linux" ]] ; btw="-(btw)"
+	echo -ne "${GREEN}distro${NC} ~ $distro$btw \e \e \e \e "
 else
 	echo -ne "${GREEN}distro${NC} ~ not found \e \e \e \e "
 fi
