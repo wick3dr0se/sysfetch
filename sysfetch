@@ -63,7 +63,7 @@ mobo_name=$(head /sys/devices/virtual/dmi/id/board_name)
 
 # disk
 disk_cur=$(df | grep -w '/' | awk '{print $3/1024}')
-disk_max=$(df | grep -w '/' | awk '{print $4/1024}')
+disk_max=$(df | grep -w '/' | awk '{print $2/1024}')
 disk_cur=${disk_cur%\.*}
 disk_max=${disk_max%\.*}
 disk_per=$(df | grep -w '/' | awk '{print $5}' | sed 's/.$//')
