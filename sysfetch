@@ -82,14 +82,11 @@ let "swap_max=$swap_max/1024"
 
 
 # path to components
-
-script_path=$(dirname "$(readlink -f "$0")")
-
-#if [[ -e /usr/share/sysfetch ]] ; then
-#	script_path="/usr/share/sysfetch"
-#else
-#	script_path=$(dirname "$(readlink -f "$0")")
-#fi
+if [[ -e /usr/share/sysfetch ]] ; then
+	script_path="/usr/share/sysfetch"
+else
+	script_path=$(dirname "$(readlink -f "$0")")
+fi
 
 source "$script_path/components/host.sh"
 source "$script_path/components/uptime.sh"
