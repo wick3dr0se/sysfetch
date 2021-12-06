@@ -27,7 +27,7 @@ user="$(echo $USER)"
 kernel="$(uname -r)"
 
 # distro_arch
-distro=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release)
+distro=$(awk -F '"' '/PRETTY/ {print $2}' /etc/os-release | sed 's/[0-9]//g;s/LTS//' | tr -d '.-')
 darwin_simple_name=$(awk '/SOFTWARE LICENSE AGREEMENT FOR macOS/' '/System/Library/CoreServices/Setup Assistant.app/Contents/Resources/en.lproj/OSXSoftwareLicense.rtf' | awk -F 'macOS ' '{print $NF}' | awk '{print substr($0, 0, length($0)-1)}')
 arch=$(uname -m)
 
