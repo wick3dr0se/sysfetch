@@ -42,7 +42,8 @@ let "mins=$sec%3600/60"
 init_strip="s/login//g;s/startx//g;s/\<x\>//g;s/init//g;s/systemd//g"
 dewm_strip="s/dwm//g"
 shell_strip="s/fish//g;s/bash//g;s/zsh//g;s/ash//g"
-term=$(pstree -sA $$ | head -n1 | sed "s/head//g;s/sysfetch//g;$init_strip;$dewm_strip;$shell_strip;s/^-*//;s/+//;s/-*$//")
+launcher_strip="s/latte-dock//g;s/krunner//g"
+term=$(pstree -sA $$ | head -n1 | sed "s/head//g;s/sysfetch//g;$init_strip;$dewm_strip;$shell_strip;$launcher_strip;s/^-*//;s/+//;s/-*$//")
 alternaterm=$(pstree -sA $$ | head -n1 | awk -F--- '{print $(NF-1)}') #This is here for testing as a replacement of the above variable.
 shell=$(echo "$SHELL" | sed 's%.*/%%')
 
