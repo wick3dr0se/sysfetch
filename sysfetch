@@ -4,16 +4,16 @@
 dir /usr/bin/sysfetch ; src="/usr/bin/sysfetch" || src=$(dirname "$(readlink -f "$0")")
 
 # pull in functions and code based on system
-source "$src/assets/functions"
+source "$src/assets/functions.sh"
 sys=$(uname)
 if is $sys "Darwin" ; then
-	source "$src/darwin"
+	source "$src/darwin.sh"
 elif is $sys "Linux" ; then
-	source "$src/linux"
+	source "$src/linux.sh"
 elif is $sys "BSD" ; then
-	source "$src/bsd"
+	source "$src/bsd.sh"
 elif is $sys "WSL" ; then
-	source "$src/wsl"
+	source "$src/wsl.sh"
 fi
 
 # colors
@@ -40,4 +40,4 @@ write ${yellow}disk${nc} "${green}$cur_dis${nc}${yellow}/${nc}${red}$max_dis${nc
 write ${red}ram${nc} "${green}$cur_ram${nc}${yellow}/${nc}${red}$max_ram${nc} MiB" ${purple}swap${nc} "${green}$cur_swap${nc}${yellow}/${nc}${red}$max_swap${nc} MiB"
 
 # ascii
-source "$src/assets/ascii"
+source "$src/assets/ascii.sh"
