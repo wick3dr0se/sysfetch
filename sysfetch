@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # set src directory
-dir /usr/share/sysfetch ; src="/usr/share/sysfetch" || src=$(dirname "$(readlink -f "$0")")
+[[ -e /usr/share/sysfetch ]] ; src="/usr/share/sysfetch" || src=$(dirname "$(readlink -f "$0")")
 
 # pull in functions and code based on system
 source "$src/assets/functions.sh"
 sys=$(uname)
 if is $sys "Darwin" ; then
-	source "$src/darwin.sh"
+	source "$src/sys/darwin.sh"
 elif is $sys "Linux" ; then
-	source "$src/linux.sh"
+	source "$src/sys/linux.sh"
 elif is $sys "BSD" ; then
-	source "$src/bsd.sh"
+	source "$src/sys/bsd.sh"
 elif is $sys "WSL" ; then
-	source "$src/wsl.sh"
+	source "$src/sys/wsl.sh"
 fi
 
 # colors
