@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # set src directory
-dir /usr/bin/sysfetch ; src="/usr/bin/sysfetch" || src=$(dirname "$(readlink -f "$0")")
+dir /usr/bin/sysfetch ; src="/usr/share/sysfetch" || src=$(dirname "$(readlink -f "$0")")
 
 # pull in functions and code based on system
 source "$src/assets/functions.sh"
