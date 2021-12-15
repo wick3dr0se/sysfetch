@@ -1,7 +1,7 @@
 #/bin/bash
 
 # get hooks
-[[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hook.sh"
+[[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hooks.sh"
 
 # /USER@HOST/ get user and hostname
 user=$(uname -n)
