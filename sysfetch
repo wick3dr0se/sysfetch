@@ -1,11 +1,7 @@
 #!/bin/bash
 
-# pull path
-if [[ -e /usr/share/sysfetch ]] ; then
-	source "/usr/share/sysfetch/assets/path.sh"
-else
-	source "assets/path.sh"
-fi
+# get hooks
+[[ -e /usr/share/sysfetch ]] ; source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
 
 # pull code per system
 sys=$(uname)

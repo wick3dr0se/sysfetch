@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# set src directory
+src=$(dirname "$(readlink -f "$0")")
+[[ -e /usr/share/sysfetch ]] ; src="/usr/share/sysfetch"
 
 # wrappers functions to test for command, directory and if variable exist
 is() {
@@ -16,11 +19,9 @@ var() {
 }
 
 # wrapper function to echo given values
-white='\033[1;37m'
-nc='\033[0m'
 write() {
 	if var $4 ; then
-		echo -e "$1 ${white}~${nc} $2 \e \e \e\ $3 ${white}~${nc} $4"
+		echo -e "$1 ~ $2 \e \e \e\ $3 ~ $4"
 	elif var $2 ; then
 		echo -e "$1 ~ $2"
 	else

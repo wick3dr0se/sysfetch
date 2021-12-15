@@ -1,7 +1,7 @@
 #/bin/bash
 
-# pull in path and functions
-source "assets/path.sh"
+# get hooks
+[[ -e /usr/share/sysfetch ]] ; source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
 
 # /USER@HOST/ get user and hostname
 user=$(uname -n)

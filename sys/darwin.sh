@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# get hooks
+[[ -e /usr/share/sysfetch ]] ; source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
+
 # /USER@HOST/
 user=$(uname -n)
 hostname=${USER}
