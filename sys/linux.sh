@@ -1,5 +1,8 @@
 #/bin/bash
 
+# pull in path and functions
+source "assets/path.sh"
+
 # /USER@HOST/ get user and hostname
 user=$(uname -n)
 hostname="$USER"
@@ -32,12 +35,14 @@ for d in /etc/os-release /usr/lib/os-release ; do
 done
 d=${d//NAME=}
 distro=${d//'"'}
+is $sys ; distro="$distro-btw"
 
 # /ARCH/ get architecture
 arch=$(uname -m)
 
 # /TERM/ get terminal from 2nd field of pstree output (need new method)
 comm pstree ; term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
+term=${term/-/ }
 
 # /SHELL/ check shell environment variable
 var $SHELL ; shell=${SHELL##*/}
@@ -66,6 +71,7 @@ if dir ~/.config/gtk-3.0/settings.ini ; then
 elif comm gsettings ; then
 	theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'")
 fi
+theme=${theme/-/ }
 
 # /PKGS/ return package count
 if comm pacman ; then
@@ -124,7 +130,7 @@ cur_dis=$(df | grep -w '/' | awk '{print $3 / 1024}')
 max_dis=$(df | grep -w '/' | awk '{print $2 / 1024}')
 cur_dis=${cur_dis%\.*}
 max_dis=${max_dis%\.*}
-dis_per=$(df | grep -w '/' | awk '{print $5}' | sed 's/.$//')
+dis_per=$(df | grep -w '/' | awk '{print $5}')
 
 # /RAM/ get memory kb from meminfo
 if dir /proc/meminfo ; then
@@ -142,6 +148,7 @@ fi
 
 # /SWAP/ combine two swaps into one
 cur_swap=$(sed -n '2p' /proc/swaps | awk '{print $4 / 1024}')
+is $cur_swap *,* ; cur_swap=${cur_swap::-3}
 cur_swap2=$(sed -n '3p' /proc/swaps | awk '{print $4 / 1024}')
 cur_swap=$((cur_swap + cur_swap2))
 max_swap=$(sed -n '2p' /proc/swaps | awk '{print $3 / 1024}')

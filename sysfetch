@@ -1,10 +1,13 @@
 #!/bin/bash
 
-# set src directory
-[[ -e /usr/share/sysfetch ]] ; src="/usr/share/sysfetch" || src=$(dirname "$(readlink -f "$0")")
+# pull path
+if [[ -e /usr/share/sysfetch ]] ; then
+	source "/usr/share/sysfetch/assets/path.sh"
+else
+	source "assets/path.sh"
+fi
 
-# pull in functions and code based on system
-source "$src/assets/functions.sh"
+# pull code per system
 sys=$(uname)
 if is $sys "Darwin" ; then
 	source "$src/sys/darwin.sh"

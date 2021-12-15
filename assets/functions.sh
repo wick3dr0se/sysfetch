@@ -3,7 +3,7 @@
 
 # wrappers functions to test for command, directory and if variable exist
 is() {
-	[[ $1 = $2 ]]
+	[[ $1 == "$2" ]]
 }
 comm() {
 	[[ $(command -v $1) ]]
