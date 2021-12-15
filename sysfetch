@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # get hooks
-[[ -e /usr/share/sysfetch ]] && source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
+[[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hook.sh"
 
 # pull code per system
 sys=$(uname)

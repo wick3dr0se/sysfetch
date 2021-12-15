@@ -1,7 +1,7 @@
 #/bin/bash
 
 # get hooks
-[[ -e /usr/share/sysfetch ]] && source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
+[[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hook.sh"
 
 # /USER@HOST/ get user and hostname
 user=$(uname -n)
@@ -116,7 +116,7 @@ fi
 
 # /GPU/ strip common prefixes from output of lspci
 if comm lspci ; then
-	gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/"
+	gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ //"
 	gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
 fi
 
