@@ -2,7 +2,7 @@
 
 # set src directory
 src=$(dirname "$(readlink -f "$0")")
-[[ -e /usr/share/sysfetch ]] ; src="/usr/share/sysfetch"
+[[ -e /usr/share/sysfetch ]] && src="/usr/share/sysfetch"
 
 # wrappers functions to test for command, directory and if variable exist
 is() {

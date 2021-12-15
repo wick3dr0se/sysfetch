@@ -1,7 +1,7 @@
 #/bin/bash
 
 # get hooks
-[[ -e /usr/share/sysfetch ]] ; source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
+[[ -e /usr/share/sysfetch ]] && source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
 
 # /USER@HOST/ get user and hostname
 user=$(uname -n)
@@ -41,11 +41,11 @@ is $sys ; distro="$distro-btw"
 arch=$(uname -m)
 
 # /TERM/ get terminal from 2nd field of pstree output (need new method)
-comm pstree ; term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
+comm pstree && term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
 term=${term/-/ }
 
 # /SHELL/ check shell environment variable
-var $SHELL ; shell=${SHELL##*/}
+var $SHELL && shell=${SHELL##*/}
 
 # /DE/WM/ get desktop environment or window manager
 if var $XDG_CURRENT_DESKTO ; then
@@ -97,7 +97,7 @@ elif comm nixos-rebuild ; then
 fi
 
 # /CPU/ get cpu vendor and frequency
-dir /proc/cpuinfo ; cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' /proc/cpuinfo)
+dir /proc/cpuinfo && cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' /proc/cpuinfo)
 cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//"
 if is $cpu_vendor "GenuineIntel" ; then
 	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' /proc/cpuinfo | sed "$cpu_strip;s/.......$//")
@@ -148,8 +148,8 @@ fi
 
 # /SWAP/ combine two swaps into one
 cur_swap=$(sed -n '2p' /proc/swaps | awk '{print $4 / 1024}')
-is $cur_swap *,* ; cur_swap=${cur_swap::-3}
 cur_swap2=$(sed -n '3p' /proc/swaps | awk '{print $4 / 1024}')
+is $cur_swap *.* && cur_swap=${cur_swap::-3}
 cur_swap=$((cur_swap + cur_swap2))
 max_swap=$(sed -n '2p' /proc/swaps | awk '{print $3 / 1024}')
 max_swap2=$(sed -n '3p' /proc/swaps | awk '{print $3 / 1024}')
