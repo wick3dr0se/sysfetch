@@ -35,7 +35,7 @@ for d in /etc/os-release /usr/lib/os-release ; do
 done
 d=${d//NAME=}
 distro=${d//'"'}
-is $sys ; distro="$distro-btw"
+is $sys ; distro="$distro (btw)"
 
 # /ARCH/ get architecture
 arch=$(uname -m)
@@ -67,10 +67,10 @@ if dir ~/.config/gtk-3.0/settings.ini ; then
 			gtk-icon*) icons=$line ;;
 		esac
 	done < ~/.config/gtk-3.0/settings.ini
-	theme=${theme##*=}
 elif comm gsettings ; then
 	theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'")
 fi
+theme=${theme##*=}
 theme=${theme/-/ }
 
 # /PKGS/ return package count
