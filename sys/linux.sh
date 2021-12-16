@@ -77,7 +77,9 @@ theme=${theme/-/ }
 
 # /PKGS/ return package count
 if comm pacman ; then
-	pkgs=$(pacman -Q | wc -l)
+	pacman=$(pacman -Qn | wc -l)
+	aur=$(pacman -Qqm | wc -l)
+	pkgs="$pacman (pacman) $aur (aur)"
 elif comm dpkg-query ; then
 	pkgs=$(dpkg-query -l | grep -c '^li')
 elif comm dnf ; then
