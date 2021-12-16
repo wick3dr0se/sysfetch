@@ -50,19 +50,19 @@ var $SHELL && shell=${SHELL##*/}
 # /DE/WM/ get desktop environment or window manager
 if var $XDG_CURRENT_DESKTO ; then
 	de_wm=$XDG_CURRENT_DESKTOP
+elif comm wmctrl ; then
+	de_wm=$(wmctrl -m | awk -F ': ' '/Name/ {print $2}')
 elif dir /usr/share/xsession ; then
 	de_wm=$(awk -F= '/Name/ {print $2}' /usr/share/xsessions/* | tail -n1)
 elif dir /usr/share/wayland-session ; then
 	de_wm=$(awk -F= '/Name/ {print $2}' /usr/share/wayland-sessions/*)
 elif comm xprop ; then
 	id=$(xprop -root | awk -F '# ' '/WM_CHECK/ {print $2}')
-	de_wm=$(xprop -id $id | awk -F '"' '/WM_NAME/ {print $2}')
+	de_wm=$(xprop -id $id 2>/dev/null | awk -F '"' '/WM_NAME/ {print $2}')
 fi
 
 # /THEME/ stat theme {needs more methods}
-if comm wmctrl ; then
-	theme=$(wmctrl -m | awk -F ': ' '/Name/ {print $2}')
-elif dir ~/.config/gtk-3.0/settings.ini ; then
+if dir ~/.config/gtk-3.0/settings.ini ; then
 	while read -r line ; do
 		case $line in
 			gtk-theme*) theme=$line ;;
