@@ -4,7 +4,6 @@
 [[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hooks.sh"
 
 # pull code per system
-sys=$(uname)
 if is $sys "Darwin" ; then
 	source "$src/sys/darwin.sh"
 elif is $sys "Linux" ; then
@@ -35,7 +34,7 @@ write ${purple}pkgs${nc} "$pkgs" "$pkgs2"
 write ${blue}cpu${nc} "$cpu ${red}$max_cpu${nc}${yellow}@${nc}${green}$cur_cpu${nc} GHz"
 write ${cyan}gpu${nc} "$gpu"
 write ${green}mobo${nc} "$mobo"
-write ${yellow}disk${nc} "${green}$cur_dis${nc}${yellow}/${nc}${red}$max_dis${nc} MiB ${green}$dis_per${nc}%"
+write ${yellow}disk${nc} "$disk ${green}$cur_disk${nc}${yellow}/${nc}${red}$max_disk${nc} MiB ${green}$disk_per${nc}%"
 write ${red}ram${nc} "${green}$cur_ram${nc}${yellow}/${nc}${red}$max_ram${nc} MiB" ${purple}swap${nc} "${green}$cur_swap${nc}${yellow}/${nc}${red}$max_swap${nc} MiB"
 
 # ascii

@@ -3,9 +3,12 @@
 # set src directory
 [[ -e sysfetch ]] && src=$(dirname "$(readlink -f "$0")") || src="/usr/share/sysfetch"
 
+# global variables
+sys=$(uname)
+
 # wrappers functions to test for command, directory and if variable exist
 is() {
-	[[ $1 == "$2" ]]
+	[[ $1 = $2 ]]
 }
 comm() {
 	[[ $(command -v $1) ]]

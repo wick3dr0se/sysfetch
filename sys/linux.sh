@@ -15,9 +15,9 @@ if dir /proc/uptime ; then
 	days=$((sec/86400))
 	hrs=$((sec%86400/3600))
 	mins=$((sec%3600/60))
-	if is $days "0" ; is $hrs "0" ; then
+	if is "$days" "0" ; is $hrs "0" ; then
 		uptime="$mins mins"
-	elif is $days "0" ; then
+	elif is "$days" "0" ; then
 		uptime="$hrs hrs, $mins mins"
 	else
 		uptime="$days days, $hrs hrs, $mins mins"
@@ -31,21 +31,21 @@ kernel=$(uname -r)
 
 # /DISTRO/ check os-release for distrobution
 for d in /etc/os-release /usr/lib/os-release ; do
-	dir $d ;  read -r d < $d
+	read -r d < $d
 done
 d=${d//NAME=}
 distro=${d//'"'}
-is $sys ; distro="$distro (btw)"
+is "$distro" *"Arch"* && distro="$distro (btw)"
 
 # /ARCH/ get architecture
 arch=$(uname -m)
 
 # /TERM/ get terminal from 2nd field of pstree output (need new method)
-comm pstree && term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
+term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
 term=${term/-/ }
 
 # /SHELL/ check shell environment variable
-var $SHELL && shell=${SHELL##*/}
+shell=${SHELL##*/}
 
 # /DE/WM/ get desktop environment or window manager
 if var $XDG_CURRENT_DESKTO ; then
@@ -101,7 +101,7 @@ elif comm nixos-rebuild ; then
 fi
 
 # /CPU/ get cpu vendor and frequency
-dir /proc/cpuinfo && cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' /proc/cpuinfo)
+cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' /proc/cpuinfo)
 cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//"
 if is $cpu_vendor "GenuineIntel" ; then
 	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' /proc/cpuinfo | sed "$cpu_strip;s/.......$//")
@@ -109,20 +109,16 @@ else
 	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' /proc/cpuinfo | sed "$cpu_strip")
 fi
 
-if dir /sys/devices/system/cpu/cpu0/cpufreq ; then
-	read -r max_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-	read -r cur_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
-	max_cpu=${max_cpu::-5}
-	max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
-	cur_cpu=${cur_cpu::-4}
-	cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
-fi
+read -r max_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+read -r cur_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+max_cpu=${max_cpu::-5}
+max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
+cur_cpu=${cur_cpu::-4}
+cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
 
 # /GPU/ strip common prefixes from output of lspci
-if comm lspci ; then
-	gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ //"
-	gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
-fi
+gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ //"
+gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
 
 # /MOBO/ return motherboard vendor + name
 read -r board_vendor < /sys/devices/virtual/dmi/id/board_vendor
@@ -130,14 +126,15 @@ read -r board_name < /sys/devices/virtual/dmi/id/board_name
 mobo="$board_vendor $board_name"
 
 # /DISK/ return root partition size
-cur_dis=$(df | grep -w '/' | awk '{print $3 / 1024}')
-max_dis=$(df | grep -w '/' | awk '{print $2 / 1024}')
-cur_dis=${cur_dis%\.*}
-max_dis=${max_dis%\.*}
-dis_per=$(df | grep -w '/' | awk '{print $5}')
+disk_strip="s/SSD//"
+disk=$(lsblk -io MODEL | sed -n '2p' | sed 's/ SSD//')
+cur_disk=$(df | grep -w '/' | awk '{print $3/1024}')
+max_disk=$(df | grep -w '/' | awk '{print $2/1024}')
+cur_disk=${cur_disk%\.*}
+max_disk=${max_disk%\.*}
+disk_per=$(df | grep -w '/' | awk '{print $5}')
 
 # /RAM/ get memory kb from meminfo
-if dir /proc/meminfo ; then
 while read -r line ; do
 	case $line in
 		Active:*) cur_ram=${line#*:} ;;
@@ -148,7 +145,6 @@ cur_ram=${cur_ram::-2}
 max_ram=${max_ram::-2}
 cur_ram=$((cur_ram / 1024))
 max_ram=$((max_ram / 1024))
-fi
 
 # /SWAP/ combine two swaps into one
 cur_swap=$(awk 'FNR==2 {print $4/1024}' /proc/swaps)
