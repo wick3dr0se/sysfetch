@@ -60,7 +60,9 @@ elif comm xprop ; then
 fi
 
 # /THEME/ stat theme {needs more methods}
-if dir ~/.config/gtk-3.0/settings.ini ; then
+if comm wmctrl ; then
+	theme=$(wmctrl -m | awk -F ': ' '/Name/ {print $2}')
+elif dir ~/.config/gtk-3.0/settings.ini ; then
 	while read -r line ; do
 		case $line in
 			gtk-theme*) theme=$line ;;
@@ -121,9 +123,9 @@ if comm lspci ; then
 fi
 
 # /MOBO/ return motherboard vendor + name
-read -r b_v < /sys/devices/virtual/dmi/id/board_vendor
-read -r b_n < /sys/devices/virtual/dmi/id/board_name
-mobo="$b_v $b_n"
+read -r board_vendor < /sys/devices/virtual/dmi/id/board_vendor
+read -r board_name < /sys/devices/virtual/dmi/id/board_name
+mobo="$board_vendor $board_name"
 
 # /DISK/ return root partition size
 cur_dis=$(df | grep -w '/' | awk '{print $3 / 1024}')
