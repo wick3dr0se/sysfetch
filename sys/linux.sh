@@ -4,8 +4,8 @@
 [[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hooks.sh"
 
 # /USER@HOST/ get user and hostname
-user=$(uname -n)
-hostname="$USER"
+comm uname && user=$(uname -n)
+var $USER && hostname="$USER"
 
 # /UPTIME/ convert raw seconds from /proc/uptime
 if dir /proc/uptime ; then
@@ -27,25 +27,25 @@ elif comm uptime ; then
 fi
 
 # /KERNEL/ get kernel release
-kernel=$(uname -r)
+comm uname && kernel=$(uname -r)
 
 # /DISTRO/ check os-release for distrobution
 for d in /etc/os-release /usr/lib/os-release ; do
-	read -r d < $d
+	dir $d && read -r d < $d
 done
 d=${d//NAME=}
 distro=${d//'"'}
 is "$distro" *"Arch"* && distro="$distro (btw)"
 
 # /ARCH/ get architecture
-arch=$(uname -m)
+comm uname && arch=$(uname -m)
 
 # /TERM/ get terminal from 2nd field of pstree output (need new method)
-term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
+comm pstree && term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
 term=${term/-/ }
 
 # /SHELL/ check shell environment variable
-shell=${SHELL##*/}
+var $SHELL && shell=${SHELL##*/}
 
 # /DE/WM/ get desktop environment or window manager
 if var $XDG_CURRENT_DESKTO ; then
@@ -101,55 +101,67 @@ elif comm nixos-rebuild ; then
 fi
 
 # /CPU/ get cpu vendor and frequency
-cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' /proc/cpuinfo)
+d="/proc/cpuinfo"
+dir $d && cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' $d)
 cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//"
 if is $cpu_vendor "GenuineIntel" ; then
-	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' /proc/cpuinfo | sed "$cpu_strip;s/.......$//")
+	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip;s/.......$//")
 else
-	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' /proc/cpuinfo | sed "$cpu_strip")
+	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip")
 fi
 
-read -r max_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-read -r cur_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
-max_cpu=${max_cpu::-5}
-max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
-cur_cpu=${cur_cpu::-4}
-cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
+if dir /sys/devices/system/cpu/cpu0/cpufreq ; then
+	read -r max_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
+	read -r cur_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+	max_cpu=${max_cpu::-5}
+	max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
+	cur_cpu=${cur_cpu::-4}
+	cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
+fi
 
 # /GPU/ strip common prefixes from output of lspci
 gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ //"
-gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
+comm lspci && gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
 
 # /MOBO/ return motherboard vendor + name
-read -r board_vendor < /sys/devices/virtual/dmi/id/board_vendor
-read -r board_name < /sys/devices/virtual/dmi/id/board_name
-mobo="$board_vendor $board_name"
+d="/sys/devices/virtual/dmi/id"
+if dir $d ; then
+	read -r board_vendor < $d/board_vendor
+	read -r board_name < $d/board_name
+	mobo="$board_vendor $board_name"
+fi
 
 # /DISK/ return root partition size
 disk_strip="s/SSD//"
-disk=$(lsblk -io MODEL | sed -n '2p' | sed 's/ SSD//')
-cur_disk=$(df | grep -w '/' | awk '{print $3/1024}')
-max_disk=$(df | grep -w '/' | awk '{print $2/1024}')
-cur_disk=${cur_disk%\.*}
-max_disk=${max_disk%\.*}
-disk_per=$(df | grep -w '/' | awk '{print $5}')
+comm lsblk && disk=$(lsblk -io MODEL | sed -n '2p' | sed 's/ SSD//')
+if comm df ; then
+	cur_disk=$(df | grep -w '/' | awk '{print $3/1024}')
+	max_disk=$(df | grep -w '/' | awk '{print $2/1024}')
+	cur_disk=${cur_disk%\.*}
+	max_disk=${max_disk%\.*}
+	disk_per=$(df | grep -w '/' | awk '{print $5}')
+fi
 
 # /RAM/ get memory kb from meminfo
-while read -r line ; do
-	case $line in
-		Active:*) cur_ram=${line#*:} ;;
-		MemTot*) max_ram=${line#*:} ;;
-	esac
-done < /proc/meminfo
-cur_ram=${cur_ram::-2}
-max_ram=${max_ram::-2}
-cur_ram=$((cur_ram / 1024))
-max_ram=$((max_ram / 1024))
+if dir /proc/meminfo ; then
+	while read -r line ; do
+		case $line in
+			Active:*) cur_ram=${line#*:} ;;
+			MemTot*) max_ram=${line#*:} ;;
+		esac
+	done < /proc/meminfo
+	cur_ram=${cur_ram::-2}
+	max_ram=${max_ram::-2}
+	cur_ram=$((cur_ram / 1024))
+	max_ram=$((max_ram / 1024))
+fi
 
 # /SWAP/ combine two swaps into one
+if dir /proc/swaps ; then
 cur_swap=$(awk 'FNR==2 {print $4/1024}' /proc/swaps)
 cur_swap2=$(awk 'FNR==3 {print $4/1024}' /proc/swaps)
 cur_swap=$(awk "BEGIN {print ${cur_swap1:-0}+${cur_swap2:-0}}")
 max_swap=$(awk 'FNR==2 {print $3/1024}' /proc/swaps)
 max_swap2=$(awk 'FNR==3 {print $3/1024}' /proc/swaps)
 max_swap=$(awk "BEGIN {print ${max_swap:-0}+${max_swap2:-0}}")
+fi
