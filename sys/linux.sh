@@ -149,9 +149,9 @@ max_ram=$((max_ram / 1024))
 fi
 
 # /SWAP/ combine two swaps into one
-cur_swap=$(sed -n '2p' /proc/swaps | awk '{print $4 / 1024}')
-cur_swap2=$(sed -n '3p' /proc/swaps | awk '{print $4 / 1024}')
-cur_swap=$(bc <<< "${cur_swap:-0} + ${cur_swap2:-0}")
-max_swap=$(sed -n '2p' /proc/swaps | awk '{print $3 / 1024}')
-max_swap2=$(sed -n '3p' /proc/swaps | awk '{print $3 / 1024}')
-max_swap=$(bc <<< "${max_swap:-0} + ${max_swap2:-0}")
+cur_swap=$(awk 'FNR==2 {print $4/1024}' /proc/swaps)
+cur_swap2=$(awk 'FNR==3 {print $4/1024}' /proc/swaps)
+cur_swap=$(awk "BEGIN {print ${cur_swap1:-0}+${cur_swap2:-0}}")
+max_swap=$(awk 'FNR==2 {print $3/1024}' /proc/swaps)
+max_swap2=$(awk 'FNR==3 {print $3/1024}' /proc/swaps)
+max_swap=$(awk "BEGIN {print ${max_swap:-0}+${max_swap2:-0}}")
