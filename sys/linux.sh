@@ -151,8 +151,7 @@ fi
 # /SWAP/ combine two swaps into one
 cur_swap=$(sed -n '2p' /proc/swaps | awk '{print $4 / 1024}')
 cur_swap2=$(sed -n '3p' /proc/swaps | awk '{print $4 / 1024}')
-is $cur_swap *.* && cur_swap=${cur_swap::-3}
-cur_swap=$((cur_swap + cur_swap2))
+cur_swap=$(bc <<< "${cur_swap:-0} + ${cur_swap2:-0}")
 max_swap=$(sed -n '2p' /proc/swaps | awk '{print $3 / 1024}')
 max_swap2=$(sed -n '3p' /proc/swaps | awk '{print $3 / 1024}')
-max_swap=$((max_swap + max_swap2))
+max_swap=$(bc <<< "${max_swap:-0} + ${max_swap2:-0}")
