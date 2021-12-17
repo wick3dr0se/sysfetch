@@ -88,7 +88,7 @@ if comm pacman ; then
 	pacman=$(pacman -Qn | wc -l)
 	aur=$(pacman -Qqm | wc -l)
 	compiled=$(ls /usr/local/bin | wc -l)
-	pkgs="$pacman (pacman) $aur (aur) $compiled (source)"
+	pkgs="$pacman (pacman) $aur (aur) $compiled (src)"
 elif comm dpkg-query ; then
 	pkgs=$(dpkg-query -l | grep -c '^li')
 elif comm dnf ; then
@@ -112,7 +112,7 @@ fi
 # /CPU/ get cpu vendor and frequency
 d="/proc/cpuinfo"
 dir $d && cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' $d)
-cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//"
+cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ *$//"
 if is $cpu_vendor "GenuineIntel" ; then
 	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip;s/.......$//")
 else
@@ -130,7 +130,7 @@ if dir $d ; then
 fi
 
 # /GPU/ strip common prefixes from output of lspci
-gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ //"
+gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ *//"
 comm lspci && gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
 
 # /MOBO/ return motherboard vendor + name
@@ -142,7 +142,7 @@ if dir $d ; then
 fi
 
 # /DISK/ return root partition size
-disk_strip="s/ SSD//;s/ [0-9$]*GB//"
+disk_strip="s/SSD//;s/[0-9$]*GB//;s/ *$//"
 if comm df ; then
 	disk_path=$(df | grep -w '/' | awk '{print $1}')
 	disk_path=${disk_path::-1}
