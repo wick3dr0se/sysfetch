@@ -8,8 +8,9 @@ comm uname && user=$(uname -n)
 var $USER && hostname="$USER"
 
 # /UPTIME/ convert raw seconds from /proc/uptime
-if dir /proc/uptime ; then
-	read -r sec < /proc/uptime
+d="/proc/uptime"
+if dir $d ; then
+	read -r sec < $d
 	sec=${sec//.*}
 	sec=${sec%\.*}
 	days=$((sec/86400))
@@ -30,9 +31,8 @@ fi
 comm uname && kernel=$(uname -r)
 
 # /DISTRO/ check os-release for distrobution
-for d in /etc/os-release /usr/lib/os-release ; do
-	dir $d && read -r d < $d
-done
+d="/etc/os-release"
+dir $d && read -r d < $d
 d=${d//NAME=}
 distro=${d//'"'}
 is "$distro" *"Arch"* && distro="$distro (btw)"
@@ -62,13 +62,15 @@ elif comm xprop ; then
 fi
 
 # /THEME/ stat theme {needs more methods}
-if dir ~/.config/gtk-3.0/settings.ini ; then
+d=".config/gtk-3.0/settings.ini"
+if dir ~/$d ; then
 	while read -r line ; do
 		case $line in
 			gtk-theme*) theme=$line ;;
+			### maybe we should output icons?
 			gtk-icon*) icons=$line ;;
 		esac
-	done < ~/.config/gtk-3.0/settings.ini
+	done < ~/$d 
 elif comm gsettings ; then
 	theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'")
 fi
@@ -110,9 +112,10 @@ else
 	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip")
 fi
 
-if dir /sys/devices/system/cpu/cpu0/cpufreq ; then
-	read -r max_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq
-	read -r cur_cpu < /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+d="/sys/devices/system/cpu/cpu0/cpufreq"
+if dir $d ; then
+	read -r max_cpu < $d/scaling_max_freq
+	read -r cur_cpu < $d/scaling_cur_freq
 	max_cpu=${max_cpu::-5}
 	max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
 	cur_cpu=${cur_cpu::-4}
@@ -126,9 +129,9 @@ comm lspci && gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | 
 # /MOBO/ return motherboard vendor + name
 d="/sys/devices/virtual/dmi/id"
 if dir $d ; then
-	read -r board_vendor < $d/board_vendor
-	read -r board_name < $d/board_name
-	mobo="$board_vendor $board_name"
+	read -r mobo_vendor < $d/board_vendor
+	read -r mobo_name < $d/board_name
+	mobo="$mobo_vendor $mobo_name"
 fi
 
 # /DISK/ return root partition size
@@ -143,25 +146,27 @@ if comm df ; then
 fi
 
 # /RAM/ get memory kb from meminfo
-if dir /proc/meminfo ; then
+d="/proc/meminfo"
+if dir $d ; then
 	while read -r line ; do
 		case $line in
 			Active:*) cur_ram=${line#*:} ;;
 			MemTot*) max_ram=${line#*:} ;;
 		esac
-	done < /proc/meminfo
+	done < $d
 	cur_ram=${cur_ram::-2}
 	max_ram=${max_ram::-2}
-	cur_ram=$((cur_ram / 1024))
-	max_ram=$((max_ram / 1024))
+	cur_ram=$((cur_ram/1024))
+	max_ram=$((max_ram/1024))
 fi
 
 # /SWAP/ combine two swaps into one
-if dir /proc/swaps ; then
-cur_swap=$(awk 'FNR==2 {print $4/1024}' /proc/swaps)
-cur_swap2=$(awk 'FNR==3 {print $4/1024}' /proc/swaps)
+d="/proc/swaps"
+if dir $d ; then
+cur_swap=$(awk 'FNR==2 {print $4/1024}' $d)
+cur_swap2=$(awk 'FNR==3 {print $4/1024}' $d)
 cur_swap=$(awk "BEGIN {print ${cur_swap1:-0}+${cur_swap2:-0}}")
-max_swap=$(awk 'FNR==2 {print $3/1024}' /proc/swaps)
-max_swap2=$(awk 'FNR==3 {print $3/1024}' /proc/swaps)
+max_swap=$(awk 'FNR==2 {print $3/1024}' $d)
+max_swap2=$(awk 'FNR==3 {print $3/1024}' $d)
 max_swap=$(awk "BEGIN {print ${max_swap:-0}+${max_swap2:-0}}")
 fi
