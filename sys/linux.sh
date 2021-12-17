@@ -142,7 +142,7 @@ if dir $d ; then
 fi
 
 # /DISK/ return root partition size
-disk_strip="s/ SSD//"
+disk_strip="s/ SSD//;s/ [0-9$]*GB//"
 if comm df ; then
 	disk_path=$(df | grep -w '/' | awk '{print $1}')
 	disk_path=${disk_path::-1}
