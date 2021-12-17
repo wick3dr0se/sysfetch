@@ -146,8 +146,8 @@ disk_strip="s/ SSD//"
 if comm df ; then
 	disk_path=$(df | grep -w '/' | awk '{print $1}')
 	disk_path=${disk_path::-1}
-	cur_disk=$(df | grep -w '/' | awk '{print $3/1024}')
-	max_disk=$(df | grep -w '/' | awk '{print $2/1024}')
+	cur_disk=$(df | grep -w '/' | awk '{print $3/1024/1024}')
+	max_disk=$(df | grep -w '/' | awk '{print $2/1024/1024}')
 	cur_disk=${cur_disk%\.*}
 	max_disk=${max_disk%\.*}
 	disk_per=$(df | grep -w '/' | awk '{print $5}')
