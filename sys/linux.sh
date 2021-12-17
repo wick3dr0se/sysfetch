@@ -32,9 +32,13 @@ comm uname && kernel=$(uname -r)
 
 # /DISTRO/ check os-release for distrobution
 d="/etc/os-release"
-dir $d && read -r d < $d
-d=${d//NAME=}
-distro=${d//'"'}
+if dir $d ; then
+	read -r distro < $d
+elif dir /etc/issue ; then
+	distro=$(awk -F\\ '{print $1}' /etc/issue | sed 's/ $//')
+fi	
+distro=${distro//NAME=}
+distro=${distro//'"'}
 is "$distro" *"Arch"* && distro="$distro (btw)"
 
 # /ARCH/ get architecture
