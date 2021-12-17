@@ -52,8 +52,10 @@ term=${term/-/ }
 var $SHELL && shell=${SHELL##*/}
 
 # /DE/WM/ get desktop environment or window manager
-if var $XDG_CURRENT_DESKTO ; then
+if var $XDG_CURRENT_DESKTOP ; then
 	de_wm=$XDG_CURRENT_DESKTOP
+elif var $DESKTOP_SESSION ; then
+	de_wm=$DESKTOP_SESSION
 elif comm wmctrl ; then
 	de_wm=$(wmctrl -m | awk -F ': ' '/Name/ {print $2}')
 elif dir /usr/share/xsession ; then
@@ -85,7 +87,8 @@ theme=${theme/-/ }
 if comm pacman ; then
 	pacman=$(pacman -Qn | wc -l)
 	aur=$(pacman -Qqm | wc -l)
-	pkgs="$pacman (pacman) $aur (aur)"
+	compiled=$(ls /usr/local/bin | wc -l)
+	pkgs="$pacman (pacman) $aur (aur) $compiled (source)"
 elif comm dpkg-query ; then
 	pkgs=$(dpkg-query -l | grep -c '^li')
 elif comm dnf ; then
