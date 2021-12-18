@@ -135,10 +135,12 @@ comm lspci && gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | 
 
 # /MOBO/ return motherboard vendor + name
 d="/sys/devices/virtual/dmi/id"
+mobo_strip="s/COMPUTER INC.//"
 if dir $d ; then
 	read -r mobo_vendor < $d/board_vendor
 	read -r mobo_name < $d/board_name
 	mobo="$mobo_vendor $mobo_name"
+	mobo=$(sed "$mobo_strip" <<< $mobo)
 fi
 
 # /DISK/ return device name, root partition size and output disk usage
