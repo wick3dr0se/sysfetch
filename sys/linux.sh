@@ -141,11 +141,11 @@ if dir $d ; then
 	mobo="$mobo_vendor $mobo_name"
 fi
 
-# /DISK/ return root partition size
+# /DISK/ return device name, root partition size and output disk usage
 disk_strip="s/SSD//;s/[0-9$]*GB//;s/ *$//"
 if comm df ; then
 	disk_path=$(df | grep -w '/' | awk '{print $1}')
-	disk_path=${disk_path::-1}
+	disk_path=${disk_path%[0-9]}
 	cur_disk=$(df | grep -w '/' | awk '{print $3/1024/1024}')
 	max_disk=$(df | grep -w '/' | awk '{print $2/1024/1024}')
 	cur_disk=${cur_disk%\.*}
