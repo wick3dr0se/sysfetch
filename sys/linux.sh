@@ -3,9 +3,11 @@
 # get hooks
 [[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hooks.sh"
 
-# /USER@HOST/ get user and hostname
-comm uname && user=$(uname -n)
-var $USER && hostname="$USER"
+# /USER/ get username from $USER environment variable or from id command
+user=${USER:-$(id -un)}
+
+# /HOST/ get hostname from $HOSTNAME or $hostname environment variables then uname
+hostname=${HOSTNAME:-$hostname:-$host}
 
 # /UPTIME/ convert raw seconds from /proc/uptime
 d="/proc/uptime"
@@ -27,8 +29,8 @@ elif comm uptime ; then
 	uptime=$(uptime | awk '{print $3}' | tr -d ',')
 fi
 
-# /KERNEL/ get kernel release
-comm uname && kernel=$(uname -r)
+# /KERNEL/ get kernel from uname or /proc/version
+kernel_rel=${kernel_rel:-$(awk '{print $3}' /proc/version)}
 
 # /DISTRO/ check os-release for distrobution
 d="/etc/os-release"
@@ -41,8 +43,8 @@ distro=${distro//NAME=}
 distro=${distro//'"'}
 is "$distro" *"Arch"* && distro="$distro (btw)"
 
-# /ARCH/ get architecture
-comm uname && arch=$(uname -m)
+# /ARCH/ 
+# taken from uname
 
 # /TERM/ get terminal from 2nd field of pstree output (need new method)
 comm pstree && term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
@@ -131,7 +133,10 @@ fi
 
 # /GPU/ strip common prefixes from output of lspci
 gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ *//"
-comm lspci && gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
+if comm lspci ; then 
+	gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
+	gpu2=$(lspci | awk -F ': ' '/3D/ {print $3}' | sed "$gpu_strip")
+fi
 
 # /MOBO/ return motherboard vendor + name
 d="/sys/devices/virtual/dmi/id"

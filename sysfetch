@@ -4,13 +4,13 @@
 [[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hooks.sh"
 
 # pull code per system
-if is $kernel *"WSL"* ; then
+if is $kernel_rel *"WSL"* ; then
 	source "$src/sys/wsl.sh"
-elif is $sys "Darwin" ; then
+elif is $sys *"Darwin"* ; then
 	source "$src/sys/darwin.sh"
-elif is $sys "Linux" ; then
+elif is $kernel "Linux" ; then
 	source "$src/sys/linux.sh"
-elif is $sys "BSD" ; then
+elif is $sys *"BSD"* ; then
 	source "$src/sys/bsd.sh"
 fi
 
@@ -26,13 +26,14 @@ cyan='\033[1;36m'
 # write value
 write ${purple}"$user"${nc}@${yellow}"$hostname"${nc}
 write ${blue}uptime${nc} "$uptime"
-write ${cyan}kernel${nc} "$kernel"
+write ${cyan}kernel${nc} "$kernel" "$kernel_rel"
 write ${yellow}distro${nc} "$distro" ${red}arch${nc} "$arch"
 write ${green}term${nc} "$term" ${green}shell${nc} "$shell"
 write ${red}de/wm${nc} "$de_wm" ${blue}theme${nc} "$theme"
 write ${purple}pkgs${nc} "$pkgs" "$pkgs2"
 write ${blue}cpu${nc} "$cpu ${red}$max_cpu${nc}${yellow}@${nc}${green}$cur_cpu${nc} GHz"
 write ${cyan}gpu${nc} "$gpu"
+var $gpu2 && write ${cyam}gpu${nc} "$gpu2"
 write ${green}mobo${nc} "$mobo"
 write ${yellow}disk${nc} "${green}$cur_disk${nc}${yellow}/${nc}${red}$max_disk${nc} GiB ${green}$disk_per${nc}%"
 write ${red}ram${nc} "${green}$cur_ram${nc}${yellow}/${nc}${red}$max_ram${nc} MiB" ${purple}swap${nc} "${green}$cur_swap${nc}${yellow}/${nc}${red}$max_swap${nc} MiB"

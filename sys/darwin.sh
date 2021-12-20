@@ -3,9 +3,11 @@
 # get hooks
 [[ -e /usr/share/sysfetch ]] ; source "/usr/share/sysfetch/assets/hooks.sh" || source "assets/hooks.sh"
 
-# /USER@HOST/
-user=$(uname -n)
-hostname=${USER}
+# /USER/
+user="$USER"
+
+# /HOST/
+#taken from uname
 
 # UPTIME /
 if dir /proc/uptime ; then
@@ -27,13 +29,13 @@ elif comm uptime ; then
 fi
 
 # /KERNEL/
-kernel=$(uname -r)
+# taken from uname
 
 # /DISTRO/
 distro=$(sw_vers -productVersion)
 
 # /ARCH/
-arch=$(uname -m)
+# taken from uname
 
 # /TERM/
 term=${TERM_PROGRAM}

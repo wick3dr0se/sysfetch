@@ -4,8 +4,10 @@
 [[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hooks.sh"
 
 # /USER@HOST/
-user=$(uname -n)
-hostname="$USER"
+user="$USER"
+
+# /HOST/
+#taken from uname
 
 # UPTIME /
 d="/proc/uptime"
@@ -28,10 +30,7 @@ elif comm uptime ; then
 fi
 
 # /KERNEL/
-kernel=$(uname -r)
-
-# /DISTRO/
-comm uname && kernel=$(uname -r)
+# taken from uname
 
 # /DISTRO/ check os-release for distrobution
 d="/etc/os-release"
@@ -44,7 +43,7 @@ distro=${distro//NAME=}
 distro=${distro//'"'}
 
 # /ARCH/
-arch=$(uname -m)
+# taken from uname
 
 # /TERM/
 comm pstree && term=$(pstree -sA $$ | awk -F--- '{print $3 ; exit}')
