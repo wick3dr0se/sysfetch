@@ -6,8 +6,8 @@
 # /USER@HOST/
 user="$USER"
 
-# /HOST/
-#taken from uname
+# /HOST/ get hostname from $HOSTNAME or $hostname environment variables then uname
+hostname=${HOSTNAME:-$hostname:-$host}
 
 # UPTIME /
 d="/proc/uptime"
@@ -83,8 +83,33 @@ fi
 theme=${theme##*=}
 theme=${theme/-/ }
 
-# /PKGS/
-# /CPU/
+# /PKGS/ return package count
+if comm pacman ; then
+	pacman=$(pacman -Qn | wc -l)
+	aur=$(pacman -Qqm | wc -l)
+	compiled=$(ls /usr/local/bin | wc -l)
+	pkgs="$pacman (pacman) $aur (aur) $compiled (src)"
+elif comm dpkg-query ; then
+	pkgs="$(dpkg-query -l | wc -l)"
+elif comm dnf ; then
+	pkgs=$(dnf list installed | grep ".@." -c)
+elif comm rpm ; then
+	pkgs=$(rpm -qa | wc -l)
+elif dir /var/log/packages ; then
+	pkgs=$(ls /var/log/packages | wc -l)
+elif comm opkg ; then
+	pkgs=$(opkg list-installed | wc -w)
+elif comm emrge ; then
+	pkgs=$(ls -d /var/db/pkg/*/* | wc -l)
+elif comm xbps-query ; then
+	pkgs=$(xbps-query -l | grep -c '^li')
+elif comm guix ; then
+	pkgs=$(guix package --list-installed | wc -l)
+elif comm nixos-rebuild ; then
+	pkgs=$(ls /run/current-system/sw/bin | wc -l)
+fi
+
+# /CPU/ get cpu vendor and frequency
 d="/proc/cpuinfo"
 dir $d && cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' $d)
 cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ *$//"
@@ -103,19 +128,19 @@ if dir $d ; then
 	cur_cpu=${cur_cpu::-4}
 	cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
 fi
-
 # /GPU/
+gpu="$(wmic.exe path win32_VideoController get name | sed -n 2p)"
 # /MOBO/
+mobo="$(wmic.exe baseboard get product,Manufacturer | sed -n 2p | awk -F ' ' '{print $1, $2}')"
 # /DISK/ return device name, root partition size and output disk usage
-if comm df ; then
-	cur_disk=$(df | grep -w '/' | awk '{print $3/1024/1024}')
-	max_disk=$(df | grep -w '/' | awk '{print $2/1024/1024}')
-	cur_disk=${cur_disk%\.*}
-	max_disk=${max_disk%\.*}
-	disk_per=$(df | grep -w '/' | awk '{print $5}')
-fi
+windir="$(cmd.exe /c echo %windir% 2> /dev/null)"
+disk_name="${windir%%\\*}"
+sizes="$(wmic.exe logicaldisk where "name='$disk_name'" get size, freespace | sed -n 2p)"
+max_disk="$(awk '{print $2/1024/1024/1024}' <<< $sizes)"
+cur_disk="$(awk '{print ($2-$1)/1024/1024/1024}' <<< $sizes)"
+disk_per="$(awk '{print ($2-$1)/$2*100}' <<< $sizes)"
 
-# /RAM/
+# /RAM/ get memory kb from meminfo
 d="/proc/meminfo"
 if dir $d ; then
 	while read -r line ; do
