@@ -1,5 +1,4 @@
 <div align="center">
-<h1>sysfetch</h1>
 <p>A super tiny system information fetch script written in BASH</p>
 <img src="https://github.com/wick3dr0se/sysfetch/blob/master/screen.png"></img>
 
@@ -10,7 +9,9 @@
 </div>
 
 ## Installing from package manager:
-#### Arch Linux -
+```diff
++ Arch Linux -
+```
 &ensp;sysfetch is installable from the AUR as `sysfetch-git`
 
 #### How to Use:
