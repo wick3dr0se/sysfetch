@@ -17,19 +17,23 @@ var() {
 	[[ ! -z $1 ]]
 }
 
-# wrapper function to echo given values
-write() {
-	if var $4 ; then
-		echo -e "$1 ~ $2 \e \e \e\ $3 ~ $4"
-	elif var $3 ; then
-		echo -e "$1 ~ $2 $3"
-	elif var $2 ; then
-		echo -e "$1 ~ $2"
-	else
-		echo -e "$1"
-	fi
-}
+# define colors
+nc='\033[0m'
+red='\033[1;31m'
+green='\033[1;32m'
+yellow='\033[1;33m'
+blue='\033[1;34m'
+purple='\033[1;35m'
+cyan='\033[1;36m'
 
-# global variables
-sys=$(uname -snrmo)
-read -r kernel host kernel_rel arch os <<< $sys
+# wrapper function to write given values and color
+write() {
+	is $3 red && color=$red
+	is $3 green && color=$green
+	is $3 yellow && color=$yellow
+	is $3 blue && color=$blue
+	is $3 purple && color=$purple
+	is $3 cyan && color=$cyan
+	end="\033[0m"
+	printf "$color$1$end ~ $2"
+}
