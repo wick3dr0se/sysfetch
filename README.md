@@ -1,4 +1,5 @@
 <div align="center">
+<h1>Sysfetch</h1>
 <p>A super tiny system information fetch script written in BASH</p>
 <img src="https://github.com/wick3dr0se/sysfetch/blob/master/screen.png"></img>
 
