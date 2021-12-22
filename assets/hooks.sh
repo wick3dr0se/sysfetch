@@ -34,6 +34,6 @@ write() {
 	is $3 blue && color=$blue
 	is $3 purple && color=$purple
 	is $3 cyan && color=$cyan
-	end="\033[0m"
+	end="\x1b[0m"
 	printf "$color$1$end $2"
 }

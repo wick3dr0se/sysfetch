@@ -155,7 +155,15 @@ if comm df ; then
 	cur_disk=${cur_disk%\.*}
 	max_disk=${max_disk%\.*}
 	disk_per=$(df | grep -w '/' | awk '{print $5}')
+	while read -r line ; do
+		case $line in
+			*nvme*|*mmcblk*|*loop*) disk_path=$(sed 's/p[0-9]*$//' <<< $line) ;;
+			*sd*|*vd*|*sr*) disk_path=$(sed 's/[0-9]*$//' <<< $line) ;;
+		esac
+	done < <(df / | awk 'FNR==2 {print $1}')
 fi
+disk_strip="s/ SSD//;s/ [0-9]*GB$//"
+comm lsblk && disk_model=$(lsblk -n $disk_path -io MODEL | sed "$disk_strip")
 
 # /RAM/ get memory kb from meminfo
 d="/proc/meminfo"
