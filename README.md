@@ -47,8 +47,5 @@ Push your changes and then create a pull request to merge from your fork to this
 
 &ensp;**#** `git push`
 
-## Testing:
-Individual scripts should be pushed to the testing branch and any PR's to existing code should be made to alpha branch so we can test everything properly before merging to master. Scripts in testing branch need to work as intended to move to alpha. Feel free to make any scripts you would like to see in sysfetch
-
 ## Communication:
 Join us on discord: https://discord.gg/TstuWvDzXr
