@@ -18,13 +18,13 @@ var() {
 }
 
 # define colors
-nc='\033[0m'
-red='\033[1;31m'
-green='\033[1;32m'
-yellow='\033[1;33m'
-blue='\033[1;34m'
-purple='\033[1;35m'
-cyan='\033[1;36m'
+nc='\x1b[0m'
+red='\x1b[1;91m'
+green='\x1b[1;92m'
+yellow='\x1b[1;93m'
+blue='\x1b[1;94m'
+purple='\x1b[1;95m'
+cyan='\x1b[1;96m'
 
 # wrapper function to write given values and color
 write() {
@@ -35,5 +35,5 @@ write() {
 	is $3 purple && color=$purple
 	is $3 cyan && color=$cyan
 	end="\033[0m"
-	printf "$color$1$end ~ $2"
+	printf "$color$1$end $2"
 }

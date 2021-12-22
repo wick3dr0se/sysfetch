@@ -23,11 +23,11 @@ printf "$purple$user$nc@$yellow$hostname$nc\n"
 write uptime "$uptime\n" blue
 write kernel "$kernel $kernel_rel\n" cyan
 write distro "$distro"%-3s green
-write arch "$arch\n" 
+write arch "$arch\n" cyan 
 write term "$term"%-3s yellow 
-write shell "$shell\n"
+write shell "$shell\n" purple
 write de/wm "$de_wm"%-3s red
-write theme "$theme\n"
+write theme "$theme\n" blue
 write pkgs "$pkgs $pkgs2\n" purple
 write cpu "$cpu $max_cpu@$cur_cpu GHz\n" blue
 write gpu "$gpu\n" cyan
@@ -35,7 +35,7 @@ var $gpu2 && write gpu "$gpu2\n" cyan
 write mobo "$mobo\n" green
 write disk "$cur_disk/$max_disk GiB $disk_per%\n" yellow
 write ram "$cur_ram/$max_ram MiB"%-3s red
-write swap "$cur_swap/$max_swap MiB\n"
+write swap "$cur_swap/$max_swap MiB\n" yellow
 
 # ascii
 source "$src/assets/ascii.sh"
