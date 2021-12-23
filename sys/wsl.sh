@@ -114,20 +114,14 @@ d="/proc/cpuinfo"
 dir $d && cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' $d)
 cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ *$//"
 if is $cpu_vendor "GenuineIntel" ; then
-	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip;s/.......$//")
+	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip;s/.......$//" | xargs)
 else
-	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip")
+	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip" | xargs)
 fi
 
-d="/sys/devices/system/cpu/cpu0/cpufreq"
-if dir $d ; then
-	read -r max_cpu < $d/scaling_max_freq
-	read -r cur_cpu < $d/scaling_cur_freq
-	max_cpu=${max_cpu::-5}
-	max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
-	cur_cpu=${cur_cpu::-4}
-	cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
-fi
+cur_cpu="$(awk -v freq="$(wmic.exe cpu get currentclockspeed | sed -n 2p)" 'BEGIN {printf "%.2f", freq/1000}')"
+max_cpu="$(awk -v freq="$(wmic.exe cpu get maxclockspeed | sed -n 2p)" 'BEGIN {printf "%.2f", freq/1000}')"
+
 # /GPU/
 gpu="$(wmic.exe path win32_VideoController get name | sed -n 2p)"
 # /MOBO/
