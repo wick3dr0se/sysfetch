@@ -47,11 +47,15 @@ is "$distro" *"Arch"* && distro="$distro (btw)"
 # taken from uname
 
 # /TERM/ get terminal from 2nd field of pstree output (need new method)
-comm pstree && term=$(pstree -sA $$ | awk -F--- '{print $2 ; exit}')
-term=${term/-/ }
+shell=${SHELL##*/}
+while read -r line ; do
+	case $line in
+		'`-'*) line=${line#\`-*} ; term=${line%%-+-*} ;; 
+	esac
+done < <(pstree | grep "$shell")
 
 # /SHELL/ check shell environment variable
-var $SHELL && shell=${SHELL##*/}
+# taken above in /TERM/
 
 # /DE/WM/ get desktop environment or window manager
 if var $XDG_CURRENT_DESKTOP ; then
