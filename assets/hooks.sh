@@ -19,12 +19,12 @@ var() {
 
 # define colors
 nc='\x1b[0m'
-red='\x1b[1;91m'
-green='\x1b[1;92m'
-yellow='\x1b[1;93m'
-blue='\x1b[1;94m'
-purple='\x1b[1;95m'
-cyan='\x1b[1;96m'
+red='\x1b[1;31m'
+green='\x1b[1;32m'
+yellow='\x1b[1;33m'
+blue='\x1b[1;34m'
+purple='\x1b[1;35m'
+cyan='\x1b[1;36m'
 
 # wrapper function to write given values and color
 write() {

@@ -33,7 +33,7 @@ write cpu "$cpu $max_cpu@$cur_cpu GHz\n" blue
 write gpu "$gpu\n" cyan
 var $gpu2 && write gpu "$gpu2\n" cyan
 write mobo "$mobo\n" green
-write disk "$disk_model $cur_disk/$max_disk GiB $disk_per%\n" yellow
+write disk "$disk_model $cur_disk/$max_disk GiB $disk_per%\n" yellow | xargs
 write ram "$cur_ram/$max_ram MiB"%-3s red
 write swap "$cur_swap/$max_swap MiB\n" yellow
 

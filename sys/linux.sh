@@ -18,30 +18,28 @@ if dir $d ; then
 	days=$((sec/86400))
 	hrs=$((sec%86400/3600))
 	mins=$((sec%3600/60))
-	if is "$days" "0" ; is $hrs "0" ; then
+	if is $days 0 ; is $hrs "0" ; then
 		uptime="$mins mins"
-	elif is "$days" "0" ; then
+	elif is $days 0 ; then
 		uptime="$hrs hrs, $mins mins"
 	else
 		uptime="$days days, $hrs hrs, $mins mins"
 	fi
 elif comm uptime ; then
-	uptime=$(uptime | awk '{print $3}' | tr -d ',')
+	uptime=$(uptime | awk '{print $3}')
+	uptime=${uptime//,}
 fi
 
 # /KERNEL/ get kernel from uname or /proc/version
 kernel_rel=${kernel_rel:-$(awk '{print $3}' /proc/version)}
 
 # /DISTRO/ check os-release for distrobution
-d="/etc/os-release"
-if dir $d ; then
-	read -r distro < $d
-elif dir /etc/issue ; then
-	distro=$(awk -F\\ '{print $1}' /etc/issue | sed 's/ $//')
-fi	
+d="/etc/os-release" ;dir $d && read -r distro < $d ||
+d="/etc/issue" ; dir $d && read -r line < $d ; distro=${line%%\\*}
+	
 distro=${distro//NAME=}
 distro=${distro//'"'}
-is "$distro" *"Arch"* && distro="$distro (btw)"
+is $distro *Arch* && distro="$distro (btw)"
 
 # /ARCH/ 
 # taken from uname
@@ -63,14 +61,17 @@ if var $XDG_CURRENT_DESKTOP ; then
 elif var $DESKTOP_SESSION ; then
 	de_wm=$DESKTOP_SESSION
 elif comm wmctrl ; then
-	de_wm=$(wmctrl -m | awk -F ': ' '/Name/ {print $2}')
-elif dir /usr/share/xsession ; then
-	de_wm=$(awk -F= '/Name/ {print $2}' /usr/share/xsessions/* | tail -n1)
-elif dir /usr/share/wayland-session ; then
-	de_wm=$(awk -F= '/Name/ {print $2}' /usr/share/wayland-sessions/*)
+	while read -r line ; do
+		case $line in
+			Name:*) de_wm=${line#Name: } ;;
+		esac
+	done < <(wmctrl -m)
 elif comm xprop ; then
-	id=$(xprop -root | awk -F '# ' '/WM_CHECK/ {print $2}')
-	de_wm=$(xprop -id $id 2>/dev/null | awk -F '"' '/WM_NAME/ {print $2}')
+	while read -r line ; do
+		case $line in
+			_NET_WM_NAME*) line=${line##*=} ; de_wm=${line//\"} ;;
+		esac
+	done < <(xprop -root)
 fi
 
 # /THEME/ stat theme {needs more methods}
@@ -84,17 +85,17 @@ if dir ~/$d ; then
 		esac
 	done < ~/$d 
 elif comm gsettings ; then
-	theme=$(gsettings get org.gnome.desktop.interface gtk-theme | tr -d "'")
+	theme=$(gsettings get org.gnome.desktop.interface gtk-theme)
+	theme=${theme//"'"}
 fi
 theme=${theme##*=}
 theme=${theme/-/ }
 
-# /PKGS/ return package count
+# /PKGS/ return package count - try not to use package manager, it's slow
 if comm pacman ; then
-	pacman=$(pacman -Qn | wc -l)
-	aur=$(pacman -Qqm | wc -l)
-	compiled=$(ls /usr/local/bin | wc -l)
-	pkgs="$pacman (pacman) $aur (aur) $compiled (src)"
+	pacman=$(ls /var/lib/pacman/local | wc -l)
+	src_pkgs=$(ls /usr/local/bin | wc -l)
+	pkgs="$pacman (pacman) $src_pkgs (src)"
 elif comm dpkg-query ; then
 	pkgs=$(dpkg-query -l | grep -c '^li')
 elif comm dnf ; then
@@ -117,30 +118,37 @@ fi
 
 # /CPU/ get cpu vendor and frequency
 d="/proc/cpuinfo"
-dir $d && cpu_vendor=$(awk -F ': ' '/vendor/ {print $2 ; exit}' $d)
 cpu_strip="s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ *$//"
-if is $cpu_vendor "GenuineIntel" ; then
-	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip;s/.......$//")
-else
-	cpu=$(awk -F ': ' '/name/ {print $2 ; exit}' $d | sed "$cpu_strip")
-fi
+while read -r line ; do
+	case $line in
+		vendor*) cpu_vendor=${line#*:} ;;
+		model*) if is $cpu_vendor GenuineIntel ; then
+			line=${line#*:} ; line=${line::7} ; cpu=$(sed "$cpu_strip" <<< $line) 
+			else
+			line=${line#*:} ; cpu=$(sed "$cpu_strip" <<< $line)
+			fi ;;
+	esac
+done < $d
 
 d="/sys/devices/system/cpu/cpu0/cpufreq"
 if dir $d ; then
-	read -r max_cpu < $d/scaling_max_freq
-	read -r cur_cpu < $d/scaling_cur_freq
-	max_cpu=${max_cpu::-5}
-	max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
-	cur_cpu=${cur_cpu::-4}
-	cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
+read -r max_cpu < $d/scaling_max_freq
+read -r cur_cpu < $d/scaling_cur_freq
+max_cpu=${max_cpu::-5}
+max_cpu=$(sed 's/.$/.&/' <<< $max_cpu)
+cur_cpu=${cur_cpu::-4}
+cur_cpu=$(sed 's/..$/.&/' <<< $cur_cpu)
 fi
 
 # /GPU/ strip common prefixes from output of lspci
 gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ *//"
-if comm lspci ; then 
-	gpu=$(lspci | awk -F ': ' '/VGA/ {print $2}' | sed "$gpu_strip" | tr -d '[]')
-	gpu2=$(lspci | awk -F ': ' '/3D/ {print $3}' | sed "$gpu_strip")
-fi
+comm lspci &&
+while read -r line ; do
+	case $line in
+		*VGA*) line=${line##*:} ; gpu=$(sed "$gpu_strip" <<< $line) ;;
+		*3D*) line=${line##*:} ; gpu=$(sed "$gpu_strip" <<< $line) ;;
+	esac
+done < <(lspci) 
 
 # /MOBO/ return motherboard vendor + name
 d="/sys/devices/virtual/dmi/id"
@@ -153,36 +161,36 @@ if dir $d ; then
 fi
 
 # /DISK/ return device name, root partition size and output disk usage
-if comm df ; then
-	cur_disk=$(df | grep -w '/' | awk '{print $3/1024/1024}')
-	max_disk=$(df | grep -w '/' | awk '{print $2/1024/1024}')
-	cur_disk=${cur_disk%\.*}
-	max_disk=${max_disk%\.*}
-	disk_per=$(df | grep -w '/' | awk '{print $5}')
-	while read -r line ; do
-		case $line in
-			*nvme*|*mmcblk*|*loop*) disk_path=$(sed 's/p[0-9]*$//' <<< $line) ;;
-			*sd*|*vd*|*sr*) disk_path=$(sed 's/[0-9]*$//' <<< $line) ;;
-		esac
-	done < <(df / | awk 'FNR==2 {print $1}')
-fi
+comm df &&
+while read -r line ; do
+	case $line in
+		*) dis=${line#*G }
+			cur_disk=${dis%%G *}
+			dis=${line%%G*}
+			max_disk=${dis##* }
+			dis=${line##*G}
+			disk_per=${dis% *}
+			;;
+		*nvme*|*mmcblk*|*loop*) root=$(sed 's/p[0-9]*$//' <<< $line) ;;
+		*sd*|*vd*|*sr*) root=${line%% *} ; root=$(sed 's/[0-9]*$//' <<< $line) ;;
+	esac
+done < <(df -h /)
 disk_strip="s/ SSD//;s/ [0-9]*GB$//"
-comm lsblk && disk_model=$(lsblk -n $disk_path -io MODEL | sed "$disk_strip")
+comm lsblk && disk_model=$(lsblk -n $root -io MODEL | sed "$disk_strip")
+
 
 # /RAM/ get memory kb from meminfo
-d="/proc/meminfo"
-if dir $d ; then
-	while read -r line ; do
-		case $line in
-			Active:*) cur_ram=${line#*:} ;;
-			MemTot*) max_ram=${line#*:} ;;
-		esac
-	done < $d
-	cur_ram=${cur_ram::-2}
-	max_ram=${max_ram::-2}
-	cur_ram=$((cur_ram/1024))
-	max_ram=$((max_ram/1024))
-fi
+d="/proc/meminfo" ; dir $d &&
+while read -r line ; do
+	case $line in
+		Active:*) cur_ram=${line#*:} ;;
+		MemTot*) max_ram=${line#*:} ;;
+	esac
+done < $d
+cur_ram=${cur_ram::-2}
+max_ram=${max_ram::-2}
+cur_ram=$((cur_ram/1024))
+max_ram=$((max_ram/1024))
 
 # /SWAP/ combine two swaps into one
 d="/proc/swaps"
