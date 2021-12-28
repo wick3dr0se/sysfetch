@@ -176,7 +176,7 @@ while read -r line ; do
 	esac
 done < <(df -h /)
 disk_strip="s/ SSD//;s/ [0-9]*GB$//"
-comm lsblk && disk_model=$(lsblk -n $root -io MODEL | sed "$disk_strip")
+comm lsblk && disk_model=$(lsblk -n $root -io MODEL | sed "$disk_strip" | head -n1)
 
 
 # /RAM/ get memory kb from meminfo
