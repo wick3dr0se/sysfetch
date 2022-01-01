@@ -150,8 +150,8 @@ gpu_strip="s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Contro
 comm lspci &&
 while read -r line ; do
 	case $line in
-		*VGA*) line=${line##*:} ; gpu=$(sed "$gpu_strip" <<< $line) ;;
-		*3D*) line=${line##*:} ; gpu=$(sed "$gpu_strip" <<< $line) ;;
+		*VGA*) line=$(tr -d '[]' <<< ${line##*:}) ; gpu=$(sed "$gpu_strip" <<< $line) ;;
+		*3D*) line=$(tr -d '[]' <<< ${line##*:}) ; gpu=$(sed "$gpu_strip" <<< $line) ;;
 	esac
 done < <(lspci) 
 
@@ -185,17 +185,12 @@ comm lsblk && disk_model=$(lsblk -n $root -io MODEL | sed "$disk_strip" | head -
 
 
 # /RAM/ get memory kb from meminfo
-d="/proc/meminfo" ; dir $d &&
 while read -r line ; do
 	case $line in
-		Active:*) cur_ram=${line#*:} ;;
-		MemTot*) max_ram=${line#*:} ;;
+		Active:*) v=${line#*:} ; v=${v//kB} ; v=${v//.*} ; cur_ram=$(($v/1024)) ;;
+		MemTot*) v=${line#*:} ; v=${v//kB} ; v=${v//.*} ; max_ram=$(($v/1024)) ;;
 	esac
-done < $d
-cur_ram=${cur_ram::-2}
-max_ram=${max_ram::-2}
-cur_ram=$((cur_ram/1024))
-max_ram=$((max_ram/1024))
+done < /proc/meminfo
 
 # /SWAP/ combine two swaps into one
 d="/proc/swaps"
