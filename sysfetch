@@ -1,41 +1,62 @@
 #!/bin/bash
 
-# get hooks
-[[ -e sysfetch ]] && source "assets/hooks.sh" || source "/usr/share/sysfetch/assets/hooks.sh"
+# set source directory
+[[ -f 'sysfetch' ]] && src=$(dirname "$(readlink -f "$0")") || src="/usr/share/sysfetch"
 
 # global variables
-sys=$(uname -snrmo)
-read -r kernel host kernel_rel arch os <<< $sys
+sys="$(uname -snrmo)"
+read kernel host kernel_rel arch os <<< "${sys}"
 
 # pull code per system
-if is $kernel_rel *"WSL"* ; then
+if [[ "${kernel_rel}" = *'WSL'* ]] ; then
 	source "$src/sys/wsl.sh"
-elif is $sys *"Darwin"* ; then
-	source "$src/sys/darwin.sh"
-elif is $kernel "Linux" ; then
-	source "$src/sys/linux.sh"
-elif is $sys *"BSD"* ; then
-	source "$src/sys/bsd.sh"
+elif [[ "${sys}" = *'Darwin'* ]] ; then
+	source "${src}/sys/darwin.sh"
+elif [[ "${kernel}" = 'Linux' ]] ; then
+	source "${src}/sys/linux.sh"
+elif [[ "${sys}" = *'BSD'* ]] ; then
+	source "${src}/sys/bsd.sh"
 fi
 
+# define colors
+nc='\033[0m'
+red='\033[1;31m'
+green='\033[1;32m'
+yellow='\033[1;33m'
+blue='\033[1;34m'
+purple='\033[1;35m'
+cyan='\033[1;36m'
+
+# wrapper function to write given values in color
+_out() {
+	[[ "${3}"  = 'red' ]] && color=$red
+	[[ "${3}" = 'green' ]] && color=$green
+	[[ "${3}" = 'yellow' ]] && color=$yellow
+	[[ "${3}" = 'blue' ]] && color=$blue
+	[[ "${3}" = 'purple' ]] && color=$purple
+	[[ "${3}" = 'cyan' ]] && color=$cyan
+	end_color="\033[0m"
+	printf "${color}${1}${end_color} ${2}"
+}
+
 # write output
-printf "$purple$user$nc@$yellow$hostname$nc\n"
-write uptime "$uptime\n" blue
-write kernel "$kernel $kernel_rel\n" cyan
-write distro "$distro"%-3s green
-write arch "$arch\n" cyan 
-write term "$term"%-3s yellow 
-write shell "$shell\n" purple
-write de/wm "$de_wm"%-3s red
-write theme "$theme\n" blue
-write pkgs "$pkgs $pkgs2\n" purple
-write cpu "$cpu $max_cpu@$cur_cpu GHz\n" blue
-write gpu "$gpu\n" cyan
-var $gpu2 && write gpu "$gpu2\n" cyan
-write mobo "$mobo\n" green
-write disk "$disk_model $cur_disk/$max_disk GB $disk_per%\n" yellow | xargs
-write ram "$cur_ram/$max_ram MiB"%-3s red
-write swap "$cur_swap/$max_swap MiB\n" yellow
+_user && _host && [[ -z "${user}" && "${hostname}" ]] || printf "${purple}${user}${nc}@${yellow}${hostname}${nc}\n"
+_uptime && [[ -z "${uptime}" ]] || _out 'uptime' "${uptime}\n" blue
+_kernel && [[ -z "${kernel}" ]] || _out 'kernel' "${kernel} ${kernel_rel}\n" cyan
+_distro && [[ -z "${distro}" ]] || _out 'distro' "${distro}"%-3s green
+[[ -z "${arch}" ]] || _out 'arch' "${arch}\n" cyan 
+_term && [[ -z "${term}" ]] || _out 'term' "${term}"%-3s yellow 
+_shell && [[ -z "${shell}" ]] || _out 'shell' "${shell}\n" purple
+_de_wm && [[ -z "${de_wm}" ]] || _out 'de/wm' "${de_wm}"%-3s red
+_theme && [[ -z "${theme}" ]] || _out 'theme' "${theme}\n" 'blue'
+_pkgs && [[ -z "${pkgs}" ]] || _out 'pkgs' "${pkgs} ${pkgs2}\n" 'purple'
+_cpu && _cpu_freq && [[ -z "${cpu}" && "${cpu_freq}" ]] || _out 'cpu' "${cpu} ${max_cpu}@${cur_cpu} GHz\n" 'blue'
+_gpu && [[ -z "${gpu}" ]] || _out 'gpu' "${gpu}\n" 'cyan'
+_gpu && [[ -z "${gpu2}" ]] || _out 'gpu' "${gpu2}\n" 'cyan'
+_mobo && [[ -z "${mobo}" ]] || _out 'mobo' "${mobo}\n" 'green'
+_disk && [[ -z "${disk_model}" ]] || _out 'disk' "${disk_model} ${cur_disk}/${max_disk} GB ${disk_per}%\n" 'yellow'
+_ram && [[ -z "${cur_ram}" ]] || _out 'ram' "${cur_ram}/${max_ram} MiB"%-3s 'red'
+_swap && [[ -z "${cur_swap}" ]] || _out 'swap' "${cur_swap}/${max_swap} MiB\n" 'yellow'
 
 # ascii
-source "$src/assets/ascii.sh"
+source "${src}/ascii.sh"
