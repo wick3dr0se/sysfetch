@@ -153,7 +153,7 @@ _pkgs() {
 
 # /CPU/ get cpu vendor and frequency
 _cpu() {
-	cpu_strip='s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ [0-9]*.[0-9]*GHz//;s/ *$//;'
+	cpu_strip='s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ [0-9]*\.[0-9]*GHz//;s/ *$//;'
 	while read line; do
 		case "${line}" in
 		'vendor'*) cpu_vendor="${line#*:}" ;;
