@@ -127,7 +127,7 @@ if [[ -d '/var/lib/pacman/local' ]] ; then
 	src_pkgs="$(ls '/usr/local/bin' | wc -l)"
 	pkgs="${pacman} (pacman) ${src_pkgs} (src)"
 elif [[ $(command -v dpkg-query) ]] ; then
-	pkgs="$(dpkg-query -l | grep -c '^li')"
+	pkgs="$(dpkg-query -l | wc -l)"
 elif [[ $(command -v dnf)  ]] ; then
 	pkgs="$(dnf list installed | grep ".@." -c)"
 elif [[ $(command -v rpm) ]] ; then
@@ -149,7 +149,7 @@ fi
 
 # /CPU/ get cpu vendor and frequency
 _cpu() {
-cpu_strip='s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ *$//'
+cpu_strip='s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ [0-9]*.[0-9]*GHz//;s/ *$//'
 while read line ; do
 	case "${line}" in
 		'vendor'*) cpu_vendor="${line#*:}" ;;
