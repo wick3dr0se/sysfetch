@@ -20,7 +20,7 @@ _uptime() {
 		days="$((sec / 86400))"
 		hrs="$((sec % 86400 / 3600))"
 		mins="$((sec % 3600 / 60))"
-		if [[ "$days" = '0' && "${hrs}" = '0' ]]; then
+		if [[ "${days}" = '0' && "${hrs}" = '0' ]]; then
 			uptime="${mins} mins"
 		elif [[ "${days}" = '0' ]]; then
 			uptime="${hrs} hrs, ${mins} mins"
@@ -48,7 +48,6 @@ _distro() {
 	fi
 	distro="${distro//NAME=/}"
 	distro="${distro//\"/}"
-	[[ "${distro}" = *'Arch'* ]] && distro="${distro} (btw)"
 }
 
 # /ARCH/
