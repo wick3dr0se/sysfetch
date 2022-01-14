@@ -15,16 +15,16 @@ hostname="${HOSTNAME:-$hostname:-$host}"
 # /UPTIME/ convert raw seconds from /proc/uptime
 _uptime() {
 p='/proc/uptime'
-if [[ -f "${p}" ]] ; then
-	read sec < "${p}"
+if [[ -f "$p" ]] ; then
+	read sec < "$p"
 	sec="${sec//.*}"
 	sec="${sec%\.*}"
 	days="$((sec/86400))"
 	hrs="$((sec%86400/3600))"
 	mins="$((sec%3600/60))"
-	if [[ "$days" = '0' && "${hrs}" = '0' ]] ; then
+	if [[ "$days" = '0' && "$hrs" = '0' ]] ; then
 		uptime="${mins} mins"
-	elif [[ "${days}" = '0' ]] ; then
+	elif [[ "$days" = '0' ]] ; then
 		uptime="${hrs} hrs, ${mins} mins"
 	else
 		uptime="${days} days, ${hrs} hrs, ${mins} mins"
@@ -40,17 +40,22 @@ _kernel() {
 kernel_rel="${kernel_rel:-$(awk '{print $3}' '/proc/version')}"
 }
 
-# /DISTRO/ check os-release for distrobution
+# /DISTRO/ check os-release or /etc/issue for distrobution
 _distro()  {
-if [[ -f '/etc/os-release' ]] ; then
-	read distro < '/etc/os-release'
-elif [[ -f '/etc/issue' ]] ; then
-	read distro < '/etc/issue'
-	distro="${distro// r*}"	
-fi
-distro="${distro//NAME=}"
-distro="${distro//\"}"
-[[ "${distro}" = *'Arch'* ]] && distro="${distro} (btw)"
+
+for distro in '/etc/os-release' '/usr/lib/os-release' ; do
+while read line ; do
+	case $line in
+		*'NAME'*|*'PRE'*) line="${line#*\"}" ; distro="${line//\"}" ;;
+	esac
+done < "$distro"
+done
+
+read line < '/etc/issue'
+_distro="${line%% r*}"
+distro="${distro:-$_distro}"
+
+[[ "$distro" = *'Arch'* ]] && distro="${distro} (btw)"
 }
 
 # /ARCH/ 
@@ -59,19 +64,19 @@ distro="${distro//\"}"
 # /TERM/ get terminal from 2nd field of pstree output (need new method)
 _term() {
 p="/proc/${PPID}/status"
-if [[ -f "${p}" ]] ; then
+if [[ -f "$p" ]] ; then
 	while read line ; do
 		case "${line}" in
-			'PPid'*) line="${line#PPid:}" ; ppid="$(xargs <<< ${line})" ;;
+			'PPid'*) line="${line#PPid:}" ; ppid="$(xargs <<< $line)" ;;
 		esac
-	done < "${p}"
+	done < "$p"
 fi
 if [[ $(command -v ps) ]] ; then
 	while read line ; do
-		case "${line}" in
+		case $line in
 			*':'*) term="${line##* }" ;;
 		esac
-	done < <(ps -f "${ppid}")
+	done < <(ps -f "$ppid")
 fi
 }
 
@@ -106,10 +111,10 @@ _theme() {
 p='.config/gtk-3.0/settings.ini'
 if [[ -f "~/${p}" ]] ; then
 	while read line ; do
-		case "${line}" in
-			gtk-theme*) theme="${line}" ;;
+		case $line in
+			gtk-theme*) theme="$line" ;;
 			### maybe we should output icons?
-			gtk-icon*) icons="${line}" ;;
+			gtk-icon*) icons="$line" ;;
 		esac
 	done < "~/${p}"
 elif [[ $(command -v gsettings) ]] ; then
@@ -151,12 +156,12 @@ fi
 _cpu() {
 cpu_strip='s/Processor//;s/CPU//;s/(TM)//;s/(R)//;s/@//;s/ [0-9]*\.[0-9]*GHz//;s/ *$//'
 while read line ; do
-	case "${line}" in
+	case $line in
 		'vendor'*) cpu_vendor="${line#*:}" ;;
-		'model'*) if [[ "${cpu_vendor}" = 'GenuineIntel' ]] ; then
-				line="${line#*:}" ; line="${line::7}" ; cpu="$(sed "${cpu_strip}" <<< ${line})" 
+		'model'*) if [[ "$cpu_vendor" = 'GenuineIntel' ]] ; then
+				line="${line#*:}" ; line="${line::7}" ; cpu="$(sed "$cpu_strip" <<< $line)" 
 			else
-				line="${line#*:}" ; cpu="$(sed "$cpu_strip" <<< ${line})"
+				line="${line#*:}" ; cpu="$(sed "$cpu_strip" <<< $line)"
 			fi ;;
 	esac
 done < '/proc/cpuinfo'
@@ -167,21 +172,21 @@ _cpu_freq() {
 p='/sys/devices/system/cpu/cpu0/cpufreq'
 read max_cpu < "${p}/scaling_max_freq"
 max_cpu="${max_cpu::-5}"
-max_cpu="$(sed 's/.$/.&/' <<< ${max_cpu})"
+max_cpu="$(sed 's/.$/.&/' <<< $max_cpu)"
 
 # get current cpu frequency
 read cur_cpu < "${p}/scaling_cur_freq"
 cur_cpu="${cur_cpu::-4}"
-cur_cpu="$(sed 's/..$/.&/' <<< ${cur_cpu})"
+cur_cpu="$(sed 's/..$/.&/' <<< $cur_cpu)"
 }
 
 # /GPU/ strip common prefixes from output of lspci
 _gpu() {
 gpu_strip='s/Advanced Micro Devices, Inc. //;s/NVIDIA//;s/Corporation//;s/Controller//;s/controller//;s/storage//;s/filesystem//;s/Family//;s/Processor//;s/Mixture//;s/Model//;s/Generation/Gen/;s/^ *//'
 while read line ; do
-	case "${line}" in
-		*'VGA'*) line="$(tr -d '[]' <<< ${line##*:})" ; gpu="$(sed "${gpu_strip}" <<< ${line})" ;;
-		*'3D'*) line="$(tr -d '[]' <<< ${line##*:})" ; gpu="$(sed "${gpu_strip}" <<< ${line})" ;;
+	case $line in
+		*'VGA'*) line="$(tr -d '[]' <<< ${line##*:})" ; gpu="$(sed "${gpu_strip}" <<< $line)" ;;
+		*'3D'*) line="$(tr -d '[]' <<< ${line##*:})" ; gpu="$(sed "${gpu_strip}" <<< $line)" ;;
 	esac
 done < <(lspci)
 }
@@ -193,13 +198,13 @@ mobo_strip='s/COMPUTER INC.//'
 read mobo_vendor < "${p}/board_vendor"
 read mobo_name < "${p}/board_name"
 mobo="${mobo_vendor} ${mobo_name}"
-mobo="$(sed "${mobo_strip}" <<< ${mobo})"
+mobo="$(sed "$mobo_strip" <<< $mobo)"
 }
 
 # /DISK/ return device name, root partition size and output disk usage
 _disk() {
 while read line ; do
-	case "${line}" in
+	case $line in
 		'/'*) dis="${line#*G }"
 			cur_disk="${dis%%G *}"
 			dis="${line%%G*}"
@@ -207,32 +212,32 @@ while read line ; do
 			dis="${line##*G}"
 			disk_per="${dis% *}"
 			;;
-		*'sd'*|*'vd'*|*'sr'*) line="${line%% *}" ; root="$(sed 's/[0-9]*$//' <<< ${line})" ;;
-		*'nvme'*|*'mmcblk'*) line="${line%% *}" ; root="$(sed 's/p[0-9]*$//' <<< ${line})" ;;
+		*'sd'*|*'vd'*|*'sr'*) line="${line%% *}" ; root="$(sed 's/[0-9]*$//' <<< $line)" ;;
+		*'nvme'*|*'mmcblk'*) line="${line%% *}" ; root="$(sed 's/p[0-9]*$//' <<< $line)" ;;
 	esac
 done < <(df -h /)
 disk_strip='s/ SSD//;s/ [0-9]*GB$//'
-[[ $(command -v lsblk) ]] && disk_model="$(lsblk ${root} -no 'MODEL' | sed "${disk_strip}" | head -n1)"
+[[ $(command -v lsblk) ]] && disk_model="$(lsblk $root -no 'MODEL' | sed "$disk_strip" | head -n1)"
 }
 
 # /RAM/ get memory kb from meminfo
 _ram() {
 p='/proc/meminfo'
 while read line ; do
-	case "${line}" in
+	case $line in
 		'Active:'*) v="${line#*:}" ; v="${v//kB}" ; v="${v//.*}" ; cur_ram="$((${v}/1024))" ;;
 		'MemTot'*) v="${line#*:}" ; v="${v//kB}" ; v="${v//.*}" ; max_ram="$((${v}/1024))" ;;
 	esac
-done < "${p}"
+done < "$p"
 }
 
 # /SWAP/ combine two swaps into one
 _swap() {
 p='/proc/swaps'
-cur_swap="$(awk 'FNR==2 {print $4/1024}' "${p}")"
-cur_swap2="$(awk 'FNR==3 {print $4/1024}' "${p}")"
+cur_swap="$(awk 'FNR==2 {print $4/1024}' "$p")"
+cur_swap2="$(awk 'FNR==3 {print $4/1024}' "$p")"
 cur_swap="$(awk "BEGIN {print "${cur_swap:-0}+${cur_swap2:-0}"}")" 
-max_swap="$(awk 'FNR==2 {print $3/1024}' "${p}")"
-max_swap2="$(awk 'FNR==3 {print $3/1024}' "${p}")"
+max_swap="$(awk 'FNR==2 {print $3/1024}' "$p")"
+max_swap2="$(awk 'FNR==3 {print $3/1024}' "$p")"
 max_swap="$(awk "BEGIN {print "${max_swap:-0}+${max_swap2:-0}"}")"
 }
