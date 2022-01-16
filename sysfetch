@@ -5,16 +5,16 @@
 
 # global variables
 sys="$(uname -snrmo)"
-read kernel host kernel_rel arch os <<< "${sys}"
+read kernel host kernel_rel arch os <<< "$sys"
 
 # pull code per system
-if [[ "${kernel_rel}" = *'WSL'* ]] ; then
-	source "$src/sys/wsl.sh"
-elif [[ "${sys}" = *'Darwin'* ]] ; then
+if [[ "$kernel_rel" = *'WSL'* ]] ; then
+	source "${src}/sys/wsl.sh"
+elif [[ "$sys" = *'Darwin'* ]] ; then
 	source "${src}/sys/darwin.sh"
-elif [[ "${kernel}" = 'Linux' ]] ; then
+elif [[ "$kernel" = 'Linux' ]] ; then
 	source "${src}/sys/linux.sh"
-elif [[ "${sys}" = *'BSD'* ]] ; then
+elif [[ "$sys" = *'BSD'* ]] ; then
 	source "${src}/sys/bsd.sh"
 fi
 
@@ -29,34 +29,34 @@ cyan='\033[1;36m'
 
 # wrapper function to write given values in color
 _out() {
-	[[ "${3}"  = 'red' ]] && color=$red
-	[[ "${3}" = 'green' ]] && color=$green
-	[[ "${3}" = 'yellow' ]] && color=$yellow
-	[[ "${3}" = 'blue' ]] && color=$blue
-	[[ "${3}" = 'purple' ]] && color=$purple
-	[[ "${3}" = 'cyan' ]] && color=$cyan
+	[[ "$3"  = 'red' ]] && color=$red
+	[[ "$3" = 'green' ]] && color=$green
+	[[ "$3" = 'yellow' ]] && color=$yellow
+	[[ "$3" = 'blue' ]] && color=$blue
+	[[ "$3" = 'purple' ]] && color=$purple
+	[[ "$3" = 'cyan' ]] && color=$cyan
 	end_color="\033[0m"
 	printf "${color}${1}${end_color} ${2}"
 }
 
 # write output
-_user && _host && [[ -z "${user}" && "${hostname}" ]] || printf "${purple}${user}${nc}@${yellow}${hostname}${nc}\n"
-_uptime && [[ -z "${uptime}" ]] || _out 'uptime' "${uptime}\n" blue
-_kernel && [[ -z "${kernel}" ]] || _out 'kernel' "${kernel} ${kernel_rel}\n" cyan
-_distro && [[ -z "${distro}" ]] || _out 'distro' "${distro}"%-3s green
-[[ -z "${arch}" ]] || _out 'arch' "${arch}\n" cyan 
-_term && [[ -z "${term}" ]] || _out 'term' "${term}"%-3s yellow 
-_shell && [[ -z "${shell}" ]] || _out 'shell' "${shell}\n" purple
-_de_wm && [[ -z "${de_wm}" ]] || _out 'de/wm' "${de_wm}"%-3s red
-_theme && [[ -z "${theme}" ]] || _out 'theme' "${theme}\n" 'blue'
-_pkgs && [[ -z "${pkgs}" ]] || _out 'pkgs' "${pkgs} ${pkgs2}\n" 'purple'
-_cpu && _cpu_freq && [[ -z "${cpu}" && "${cpu_freq}" ]] || _out 'cpu' "${cpu} ${max_cpu}@${cur_cpu} GHz\n" 'blue'
-_gpu && [[ -z "${gpu}" ]] || _out 'gpu' "${gpu}\n" 'cyan'
-_gpu && [[ -z "${gpu2}" ]] || _out 'gpu' "${gpu2}\n" 'cyan'
-_mobo && [[ -z "${mobo}" ]] || _out 'mobo' "${mobo}\n" 'green'
-_disk && [[ -z "${disk_model}" ]] || _out 'disk' "${disk_model} ${cur_disk}/${max_disk} GB ${disk_per}%\n" 'yellow'
-_ram && [[ -z "${cur_ram}" ]] || _out 'ram' "${cur_ram}/${max_ram} MiB"%-3s 'red'
-_swap && [[ -z "${cur_swap}" ]] || _out 'swap' "${cur_swap}/${max_swap} MiB\n" 'yellow'
+_user && _host && [[ -z "$user" && "$hostname" ]] || printf "${purple}${user}${nc}@${yellow}${hostname}${nc}\n"
+_uptime && [[ -z "$uptime" ]] || _out 'uptime' "${uptime}\n" blue
+_kernel && [[ -z "$kernel" ]] || _out 'kernel' "${kernel} ${kernel_rel}\n" cyan
+_distro && [[ -z "$distro" ]] || _out 'distro' "${distro}"%-3s green
+[[ -z "$arch" ]] || _out 'arch' "${arch}\n" cyan 
+_term && [[ -z "$term" ]] || _out 'term' "${term}"%-3s yellow 
+_shell && [[ -z "$shell" ]] || _out 'shell' "${shell}\n" purple
+_de_wm && [[ -z "$de_wm" ]] || _out 'de/wm' "${de_wm}"%-3s red
+_theme && [[ -z "$theme" ]] || _out 'theme' "${theme}\n" 'blue'
+_pkgs && [[ -z "$pkgs" ]] || _out 'pkgs' "${pkgs} ${pkgs2}\n" 'purple'
+_cpu && _cpu_freq && [[ -z "$cpu" && "$cpu_freq" ]] || _out 'cpu' "${cpu} ${max_cpu}@${cur_cpu} GHz\n" 'blue'
+_gpu && [[ -z "$gpu" ]] || _out 'gpu' "${gpu}\n" 'cyan'
+_gpu && [[ -z "$gpu2" ]] || _out 'gpu' "${gpu2}\n" 'cyan'
+_mobo && [[ -z "$mobo" ]] || _out 'mobo' "${mobo}\n" 'green'
+_disk && [[ -z "$disk_model" ]] || _out 'disk' "${disk_model} ${cur_disk}/${max_disk} GB ${disk_per}%\n" 'yellow'
+_ram && [[ -z "$cur_ram" ]] || _out 'ram' "${cur_ram}/${max_ram} MiB"%-3s 'red'
+_swap && [[ -z "$cur_swap" ]] || _out 'swap' "${cur_swap}/${max_swap} MiB\n" 'yellow'
 
 # ascii
 source "${src}/ascii.sh"
