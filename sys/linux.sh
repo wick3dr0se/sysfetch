@@ -118,7 +118,7 @@ if [[ -f "~/${p}" ]] ; then
 		esac
 	done < "~/${p}"
 elif [[ $(command -v gsettings) ]] ; then
-	theme="$(gsettings get org.gnome.desktop.interface gtk-theme)"
+	theme="$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null)"
 	theme="${theme//\'}"
 fi
 theme="${theme##*=}"
