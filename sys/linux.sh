@@ -225,19 +225,23 @@ _ram() {
 p='/proc/meminfo'
 while read line ; do
 	case $line in
-		'Active:'*) v="${line#*:}" ; v="${v//kB}" ; v="${v//.*}" ; cur_ram="$((${v}/1024))" ;;
-		'MemTot'*) v="${line#*:}" ; v="${v//kB}" ; v="${v//.*}" ; max_ram="$((${v}/1024))" ;;
+		'Active:'*) v="${line#*:}" ; v="${v//kB}" ; v="${v//.*}" ; cur_ram="$((${v}/1000))" ;;
+		'MemTot'*) v="${line#*:}" ; v="${v//kB}" ; v="${v//.*}" ; max_ram="$((${v}/1000))" ;;
 	esac
 done < "$p"
 }
 
 # /SWAP/ combine two swaps into one
 _swap() {
-p='/proc/swaps'
-cur_swap="$(awk 'FNR==2 {print $4/1024}' "$p")"
-cur_swap2="$(awk 'FNR==3 {print $4/1024}' "$p")"
-cur_swap="$(awk "BEGIN {print "${cur_swap:-0}+${cur_swap2:-0}"}")" 
-max_swap="$(awk 'FNR==2 {print $3/1024}' "$p")"
-max_swap2="$(awk 'FNR==3 {print $3/1024}' "$p")"
-max_swap="$(awk "BEGIN {print "${max_swap:-0}+${max_swap2:-0}"}")"
+while read line ; do
+	read -a line1
+	read -a line2
+	if [[ $line2 ]] ; then
+		max_swap=$((${line1[2]}+${line2[2]}/1000))
+		cur_swap=$((${line1[3]}+${line2[3]}/1000))
+	else
+		max_swap=$((${line1[2]}/1000))
+		cur_swap=$((${line1[3]}/1000))
+	fi
+done < '/proc/swaps'
 }

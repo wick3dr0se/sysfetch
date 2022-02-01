@@ -55,8 +55,8 @@ _gpu && [[ -z "$gpu" ]] || _out 'gpu' "${gpu}\n" 'cyan'
 _gpu && [[ -z "$gpu2" ]] || _out 'gpu' "${gpu2}\n" 'cyan'
 _mobo && [[ -z "$mobo" ]] || _out 'mobo' "${mobo}\n" 'green'
 _disk && [[ -z "$disk_model" ]] || _out 'disk' "${disk_model} ${cur_disk}/${max_disk} GB ${disk_per}%\n" 'yellow'
-_ram && [[ -z "$cur_ram" ]] || _out 'ram' "${cur_ram}/${max_ram} MiB"%-3s 'red'
-_swap && [[ -z "$cur_swap" ]] || _out 'swap' "${cur_swap}/${max_swap} MiB\n" 'yellow'
+_ram && [[ -z "$cur_ram" ]] || _out 'ram' "${cur_ram}/${max_ram} MB"%-3s 'red'
+_swap && [[ -z "$cur_swap" ]] || _out 'swap' "${cur_swap}/${max_swap} MB\n" 'yellow'
 
 # ascii
 source "${src}/ascii.sh"
