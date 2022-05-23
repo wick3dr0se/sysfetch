@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# defined function(s)
+rmv() {
+IFS=\'
+for i in ${strip_regex[@]} ; do
+	printf 's|%s||;' "$i"
+done
+}
+
 # / USER / # check $USER environment var, then id -un command
 user=${USER:-`id -un`}
 # end / USER /
@@ -124,18 +132,14 @@ fi
 
 # / CPU / # get vendor and model name from /proc/cpuinfo; strip it with regex
 strip_regex=('Processor' 'CPU' '(TM)' '(R)' '@' ' [0-9]*\.[0-9]*GHz' ' *$')
-rmv=`IFS=\'
-for i in ${strip_regex[@]} ; do
-	printf 's|%s||;' "$i"
-done`
 while read line ; do
 	[[ $line =~ vendor ]] && cpu_vendor=${line#*:}
 	[[ $line =~ model\ name ]] &&
 		if [[ $cpu_vendor = GenuineIntel ]] ; then
-			line=${line#*:} ; cpu=`sed "$rmv" <<< ${line::7}`
+			line=${line#*:} ; cpu=`sed "$(rmv)" <<< ${line::7}`
 			break
 		else
-			cpu=`sed "$rmv" <<< ${line#*: }`
+			cpu=`sed "$(rmv)" <<< ${line#*: }`
 			break
 		fi
 done < /proc/cpuinfo
@@ -154,25 +158,17 @@ cur_cpu=`sed 's/..$/.&/' <<< $cur_cpu`
 
 # / GPU / clean lspci output
 strip_regex=('Advanced Micro Devices, Inc.' 'NVIDIA' 'Corporation' 'Controller' 'controller' 'storage' 'filesystem' 'Family' 'Processor' 'Mixture' 'Model' 'Generation' 'Gen' '^[[:space:]]*')
-rmv=`IFS=\'
-for i in ${strip_regex[@]} ; do
-	printf 's|%s||;' "$i"
-done`
 while read line ; do
-	[[ $line =~ VGA|3D ]] && gpu=`sed "$rmv" <<< ${line##*:}`
+	[[ $line =~ VGA|3D ]] && gpu=`sed "$(rmv)" <<< ${line##*:}`
 done < <(lspci)
 # end / GPU /
 
 # / MOBO / # return motherboard vendor & name
 strip_regex=('COMPUTER INC.')
-rmv=`IFS=\'
-for i in ${strip_regex[@]} ; do
-	printf 's|%s||;' "$i"
-done`
 p='/sys/devices/virtual/dmi/id'
 read mobo_vendor < ${p}/board_vendor
 read mobo_name < ${p}/board_name
-mobo=`sed "$rmv" <<< "$mobo_vendor $mobo_name"`
+mobo=`sed "$(rmv)" <<< "$mobo_vendor $mobo_name"`
 # end / MOBO /
 
 # / DISK / # get disk usage & disk model by regex
@@ -183,11 +179,7 @@ while read line ; do
 done < <(df -h /)
 
 strip_regex=('SSD' '[0-9*GB$]')
-rmv=`IFS=\' 
-for i in ${strip_regex[@]} ; do
-	printf 's|%s||;' "$i"
-done`
-[[ `command -v lsblk` ]] && read disk_model < <(lsblk $dis -no MODEL | sed "$rmv")
+[[ `command -v lsblk` ]] && read disk_model < <(lsblk $dis -no MODEL | sed "$(rmv)")
 # end /DISK /
 
 # / RAM / convert kb from meminfo
