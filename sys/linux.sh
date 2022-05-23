@@ -94,7 +94,7 @@ elif [[ `command -v gsettings` ]] ; then
 fi
 theme=${theme##*=}
 theme=${theme/-/ }
-# end / TEME /
+# end / THEME /
 
 # / PKGS / get package count; prefer ls over using package manager
 if [[ -d /var/lib/pacman/local ]] ; then
@@ -163,7 +163,7 @@ while read line ; do
 done < <(lspci)
 # end / GPU /
 
-# / MOBO / # return moterboard vendor & name
+# / MOBO / # return motherboard vendor & name
 strip_regex=('COMPUTER INC.')
 rmv=`IFS=\'
 for i in ${strip_regex[@]} ; do

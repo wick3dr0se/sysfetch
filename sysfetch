@@ -1,17 +1,20 @@
 #!/bin/bash
 
+# set src path
+[[ -f 'sysfetch' ]] && src=$(dirname "$(readlink -f "$0")") || src="/usr/share/sysfetch"
+
 # read several variables to pull sys-based code
 read kernel host kernel_rel arch os < <(uname -snrmo)
 
 # get script based on system
 if [[ $kernel_rel =~ WSL ]] ; then
-	source "./sys/wsl.sh"
+	source "${src}/sys/wsl.sh"
 elif [[ $sys =~ Darwin ]] ; then
-	source "./sys/darwin.sh"
+	source "${src}/sys/darwin.sh"
 elif [[ $kernel = Linux ]] ; then
-	source "./sys/linux.sh"
+	source "${src}/sys/linux.sh"
 elif [[ $sys =~ BSD ]] ; then
-	source "./sys/bsd.sh"
+	source "${src}/sys/bsd.sh"
 fi
 
 # colorize the output
@@ -52,4 +55,4 @@ fi
 [[ ! $swap ]] || write 'swap' "${swap}" 2 n
 
 # pull the ascii art
-source "./ascii.sh"
+source "${src}/ascii.sh"
