@@ -58,16 +58,18 @@ done
 # end / DISTRO /
 
 # / TERM / # get terminal from parent process (needs work)
-p="/proc/${PPID}/status"
-[[ -f $p ]] &&
-while read line ; do
-	[[ $line =~ PPid ]] && ppid=${line#*:}
-done < $p
+if [[ $DISPLAY ]] ; then
+	p="/proc/${PPID}/status"
+	[[ -f $p ]] &&
+	while read line ; do
+		[[ $line =~ PPid ]] && ppid=${line#*:}
+	done < $p
 
-[[ `command -v ps` ]] &&
-while read line ; do
-	[[ $line =~ : ]] && term=${line##* }
-done < <(ps -f $ppid)
+	[[ `command -v ps` ]] &&
+	while read line ; do
+		[[ $line =~ : ]] && term=${line##* }
+	done < <(ps -f $ppid)
+fi
 # end / TERM /
 
 # / SHELL / # check $SHELL environment var
@@ -75,6 +77,7 @@ shell=${SHELL##*/}
 # end / SHELL /
 
 # / DE WM / # check environment variables, then wmctrl command or xprop (needs work)
+[[ $DISPLAY ]] &&
 if [[ $XDG_CURRENT_DESKTOP ]] ; then
 	dewm=$XDG_CURRENT_DESKTOP
 elif [[ $DESKTOP_SESSION ]] ; then
