@@ -77,7 +77,6 @@ shell=${SHELL##*/}
 # end / SHELL /
 
 # / DE WM / # check environment variables, then wmctrl command or xprop (needs work)
-[[ $DISPLAY ]] &&
 if [[ $XDG_CURRENT_DESKTOP ]] ; then
 	dewm=$XDG_CURRENT_DESKTOP
 elif [[ $DESKTOP_SESSION ]] ; then
@@ -86,7 +85,7 @@ elif [[ `command -v wmctrl` ]] ; then
 	while read line ; do
 		[[ $line =~ Name: ]] && dewm=${line#Name: }
 	done < <(wmctrl -m)
-elif [[ `command -v xprop`  ]] ; then
+elif [[ $DISPLAY && `command -v xprop`  ]] ; then
 	while read line ; do
 		[[ $line =~ _NET_WM_NAME ]] && line=${line##*=} ; dewm=${line/\"}
 	done < <(xprop -root)
@@ -182,7 +181,7 @@ while read line ; do
 done < <(df -h /)
 
 strip_regex=('SSD' '[0-9*GB$]')
-[[ `command -v lsblk` ]] && read disk_model < <(lsblk $dis -no MODEL | sed "$(rmv)")
+[[ `command -v lsblk` ]] && disk_model=`lsblk $dis -no MODEL | sed "$(rmv)"`
 # end /DISK /
 
 # / RAM / convert kb from meminfo
@@ -194,13 +193,14 @@ ram="${cur_ram}/${max_ram}M"
 # end / RAM /
 
 # / SWAP / convert kB from /proc/swaps, then combine two swaps if found
-while read line ; do
-	read -a line1
-	read -a line2
+while read -a line ; do
+	[[ $line = /* ]] && echo ${line[2]}
+	#read -a line1
+	#read -a line2
 	if [[ $line2 ]] ; then
 		cur_swap=$((${line1[3]+${line2[3]}}/1024))
 		max_swap=$((${line1[2]+${line2[2]}}/1024))
-	else
+	elif [[ $line1 ]] ; then
 		cur_swap=$((${line1[3]}/1024))
 		max_swap=$((${line1[2]}/1024))
 	fi
