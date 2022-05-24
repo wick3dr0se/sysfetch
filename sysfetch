@@ -1,14 +1,17 @@
 #!/bin/bash
 
+# usage
 if [[ $@ =~ --help|-h|--usage|-u ]] ; then
 	cat <<USAGE
 |sysfetch | -f, --flag | usage |
  ------------------------------
--v, --verbose ... output all errors for debugging
+-v, --verbose ... output all errors for debugging. use -x with bash for furter debugging
 USAGE
 	exit
 elif [[ $@ =~ --verbose|-v ]] ; then
-	exec 2>/dev/null
+	set -x
+else
+	2>/dev/null
 fi
 
 # set src path (sysfetch command breaks if ran from within the script directory
