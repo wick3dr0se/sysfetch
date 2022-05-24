@@ -1,5 +1,16 @@
 #!/bin/bash
 
+if [[ $@ =~ --help|-h|--usage|-u ]] ; then
+	cat <<USAGE
+|sysfetch | -f, --flag | usage |
+ ------------------------------
+-v, --verbose ... output all errors for debugging
+USAGE
+	exit
+elif [[ $@ =~ --verbose|-v ]] ; then
+	exec 2>/dev/null
+fi
+
 # set src path (sysfetch command breaks if ran from within the script directory
 [[ -f ./sysfetch ]] && src=$(dirname "$(readlink -f "$0")") || src='/usr/share/sysfetch'
 
