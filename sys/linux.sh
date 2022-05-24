@@ -97,7 +97,7 @@ p='.config/gtk-3.0/settings.ini'
 if [[ -f ~/${p} ]] ; then
 	while read line ; do
 		[[ $line =~ gtk-theme ]] && theme=$line
-	done
+	done < ~/$p
 elif [[ `command -v gsettings` ]] ; then
 	theme=`gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null`
 	theme=${theme//\'}
@@ -161,7 +161,8 @@ cur_cpu=`sed 's/..$/.&/' <<< $cur_cpu`
 # / GPU / clean lspci output
 strip_regex=('Advanced Micro Devices, Inc.' 'NVIDIA' 'Corporation' 'Controller' 'controller' 'storage' 'filesystem' 'Family' 'Processor' 'Mixture' 'Model' 'Generation' 'Gen' '^[[:space:]]*')
 while read line ; do
-	[[ $line =~ VGA|3D ]] && gpu=`sed "$(rmv)" <<< ${line##*:}`
+	[[ $line =~ VGA ]] && gpu=`sed "$(rmv)" <<< ${line##*:}`
+	[[ $line =~ 3D ]] && gpu2=`sed "$(rmv)" <<< ${line##*:}`
 done < <(lspci)
 # end / GPU /
 
@@ -195,8 +196,8 @@ ram="${cur_ram}/${max_ram}M"
 # / SWAP / convert kB from /proc/swaps, then combine two swaps if found
 while read -a line ; do
 	[[ $line = /* ]] && echo ${line[2]}
-	#read -a line1
-	#read -a line2
+	read -a line1
+	read -a line2
 	if [[ $line2 ]] ; then
 		cur_swap=$((${line1[3]+${line2[3]}}/1024))
 		max_swap=$((${line1[2]+${line2[2]}}/1024))

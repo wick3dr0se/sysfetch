@@ -51,6 +51,7 @@ elif [[ $cpu ]] ; then
 	write 'cpu' "$cpu" 5 n
 fi
 [[ ! $gpu ]] || write 'gpu' "$gpu" 6 n
+[[ ! $gpu2 ]] || write 'gpu' "$gpu" 6 n
 [[ ! $mobo ]] || write 'mobo' "$mobo" 1 n
 [[ ! $disk ]] || write 'disk' "$disk $disk_model" 2 n
 [[ ! $ram ]] || write 'ram' "${ram}" 3
