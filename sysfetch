@@ -8,6 +8,7 @@ if [[ $@ =~ --help|-h|--usage|-u ]] ; then
 -v, --verbose ... output all errors for debugging. use -x with bash for furter debugging
 USAGE
 	exit
+# if verbose flag is supplied output all errors and debug
 elif [[ $@ =~ --verbose|-v ]] ; then
 	set -x
 else
@@ -49,27 +50,27 @@ done
 }
 
 # if variables not found, then don't output
-[[ ! $user && $host ]] || write "$user" '@' "$host" 3
-[[ ! $uptime ]] || write 'uptime' "$uptime" 5 n
-[[ ! $kernel_rel ]] || write 'kernel' "$kernel_rel" 6
-[[ ! $arch ]] || write 'arch' "$arch" 1 n
-[[ ! $distro ]] || write 'distro' "$distro" 1 n
-[[ ! $term ]] || write 'term' "$term" 2
-[[ ! $shell ]] || write 'shell' "$shell" 5 n
-[[ ! $dewm ]] || write 'de/wm' "$dewm" 3
-[[ ! $theme ]] || write 'theme' "$theme" 4 n
-[[ ! $pkgs ]] || write 'pkgs' "$pkgs" 4 n
+[[ $user && $host ]] && write "$user" '@' "$host" 3
+[[ $uptime ]] && write 'uptime' "$uptime" 5 n
+[[ $kernel_rel ]] && write 'kernel' "$kernel_rel" 6
+[[ $arch ]] || write 'arch' "$arch" 1 n
+[[ $distro ]] && write 'distro' "$distro" 1 n
+[[ $term ]] && write 'term' "$term" 2
+[[ $shell ]] && write 'shell' "$shell" 5 n
+[[ $dewm ]] && write 'de/wm' "$dewm" 3
+[[ $theme ]] && write 'theme' "$theme" 4 n
+[[ $pkgs ]] && write 'pkgs' "$pkgs" 4 n
 if [[  $cur_cpu ]] ; then
 	write 'cpu' "$cpu $max_cpu@$cur_cpu" 5 n
 elif [[ $cpu ]] ; then
 	write 'cpu' "$cpu" 5 n
 fi
-[[ ! $gpu ]] || write 'gpu' "$gpu" 6 n
-[[ ! $gpu2 ]] || write 'gpu' "$gpu" 6 n
-[[ ! $mobo ]] || write 'mobo' "$mobo" 1 n
-[[ ! $disk ]] || write 'disk' "$disk $disk_model" 2 n
-[[ ! $ram ]] || write 'ram' "${ram}" 3
-[[ ! $swap ]] || write 'swap' "${swap}" 2 n
+[[ $gpu ]] && write 'gpu' "$gpu" 6 n
+[[ $gpu2 ]] && write 'gpu' "$gpu" 6 n
+[[ $mobo ]] && write 'mobo' "$mobo" 1 n
+[[ $disk ]] && write 'disk' "$disk $disk_model" 2 n
+[[ $ram ]] && write 'ram' "${ram}" 3
+[[ $swap ]] && write 'swap' "${swap}" 2 n
 
 # pull the ascii art
 source "${src}/ascii.sh"
