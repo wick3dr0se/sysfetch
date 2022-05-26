@@ -28,7 +28,7 @@ elif [[ $os =~ Darwin ]] ; then
 	source "${src}/sys/darwin.sh"
 elif [[ $kernel = Linux ]] ; then
 	source "${src}/sys/linux.sh"
-# probably BSD too (low priority)
+# probably BSD too
 elif [[ $os =~ BSD ]] ; then
 	source "${src}/sys/bsd.sh"
 fi
@@ -52,7 +52,7 @@ done
 [[ ! $user && $host ]] || write "$user" '@' "$host" 3
 [[ ! $uptime ]] || write 'uptime' "$uptime" 5 n
 [[ ! $kernel_rel ]] || write 'kernel' "$kernel_rel" 6
-[[ ! $arch ]] || write 'arch' "$arch" 6 n
+[[ ! $arch ]] || write 'arch' "$arch" 1 n
 [[ ! $distro ]] || write 'distro' "$distro" 1 n
 [[ ! $term ]] || write 'term' "$term" 2
 [[ ! $shell ]] || write 'shell' "$shell" 5 n
