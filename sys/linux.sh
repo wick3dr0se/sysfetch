@@ -48,7 +48,7 @@ kernel_rel=${kernel_rel:-`awk '{print $3}' /proc/version`}
 # / DISTRO / # check (/etc|/usr/lib)/os-release or /etc/issue for distrobution
 for p in /etc/os-release /usr/lib/os-release ; do
 	while read line ; do
-		[[ $line =~ NAME|PRE ]] && d=${line#*\"} ; distro=${d/\"}
+		[[ $line =~ NAME|PRE ]] && d=${line#*\"} && distro=${d/\"}
 	done < $p
 done
 
