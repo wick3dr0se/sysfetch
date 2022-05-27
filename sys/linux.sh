@@ -50,6 +50,7 @@ for p in /etc/os-release /usr/lib/os-release ; do
 	while read line ; do
 		[[ $line =~ NAME|PRE ]] && d=${line#*\"} && distro=${d/\"}
 	done < $p
+	break
 done
 
 [[ ! $distro ]] && read line < '/etc/issue' && distro=${line%% r*}
