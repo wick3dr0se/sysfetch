@@ -1,5 +1,7 @@
 #!/bin/bash
 
+shopt -s extglob
+
 # defined function(s)
 rmv() {
 IFS=\'
@@ -64,12 +66,16 @@ if [[ $DISPLAY ]] ; then
 	p="/proc/${PPID}/status"
 	[[ -f $p ]] &&
 	while read line ; do
-		[[ $line =~ PPid ]] && ppid=${line#*:}
+		case $line in
+			PPid*) ppid=${line#*:} && break ;;
+		esac
 	done < $p
 
 	[[ `command -v ps` ]] &&
 	while read line ; do
-		[[ $line =~ : ]] && term=${line##* }
+		read line
+		term=${line##* }
+		break
 	done < <(ps -f $ppid)
 fi
 # end / TERM /
@@ -85,11 +91,15 @@ elif [[ $DESKTOP_SESSION ]] ; then
 	dewm=$DESKTOP_SESSION
 elif [[ `command -v wmctrl` ]] ; then
 	while read line ; do
-		[[ $line =~ Name: ]] && dewm=${line#Name: }
+		case $line in
+			Name:*) dewm=${line#*: } && break ;;
+		esac
 	done < <(wmctrl -m)
 elif [[ $DISPLAY && `command -v xprop`  ]] ; then
 	while read line ; do
-		[[ $line =~ _NET_WM_NAME ]] && line=${line##*=} ; dewm=${line/\"}
+		case $line in
+			*_NET_WM_NAME*) line=${line##*=} && dewm=${line/\"} && break ;;
+		esac
 	done < <(xprop -root)
 fi
 # end / DE WM /
@@ -98,7 +108,9 @@ fi
 p='.config/gtk-3.0/settings.ini'
 if [[ -f ~/${p} ]] ; then
 	while read line ; do
-		[[ $line =~ gtk-theme ]] && theme=$line
+		case $line in
+			*gtk-theme*) theme=$line && break ;;
+		esac
 	done < ~/$p
 elif [[ `command -v gsettings` ]] ; then
 	theme=`gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null`
@@ -137,15 +149,14 @@ fi
 # / CPU / # get vendor and model name from /proc/cpuinfo; strip it with regex
 strip_regex=('Processor' 'CPU' '(TM)' '(R)' '@' ' [0-9]*\.[0-9]*GHz' ' *$')
 while read line ; do
-	[[ $line =~ vendor ]] && cpu_vendor=${line#*:}
-	[[ $line =~ model\ name ]] &&
-		if [[ $cpu_vendor = GenuineIntel ]] ; then
-			line=${line#*:} ; cpu=`sed "$(rmv)" <<< ${line::7}`
-			break
-		else
-			cpu=`sed "$(rmv)" <<< ${line#*: }`
-			break
-		fi
+	case $line in
+		vendor*) cpu_vendor=${line#*:} ;;
+		model\ name*) if [[ $cpu_vendor = GenuineIntel ]] ; then
+				line=${line#*:} && cpu=`sed "$(rmv)" <<< ${line::7}`
+			else
+				cpu=`sed "$(rmv)" <<< ${line#*:}`
+			fi && break ;;
+	esac
 done < /proc/cpuinfo
 
 # get max cpu frequency
@@ -163,8 +174,10 @@ cur_cpu=`sed 's/..$/.&/' <<< $cur_cpu`
 # / GPU / clean lspci output
 strip_regex=('Advanced Micro Devices, Inc.' 'NVIDIA' 'Corporation' 'Controller' 'controller' 'storage' 'filesystem' 'Family' 'Processor' 'Mixture' 'Model' 'Generation' 'Gen' '^[[:space:]]*')
 while read line ; do
-	[[ $line =~ VGA ]] && gpu=`sed "$(rmv)" <<< ${line##*:}`
-	[[ $line =~ 3D ]] && gpu2=`sed "$(rmv)" <<< ${line##*:}`
+	case $line in
+		*VGA*) gpu=`sed "$(rmv)" <<< ${line##*:}` ;;
+		*3D*) gpu2=`sed "$(rmv)" <<< ${line##*:}` && break ;;
+	esac
 done < <(lspci)
 # end / GPU /
 
@@ -179,8 +192,10 @@ mobo=`sed "$(rmv)" <<< "$mobo_vendor $mobo_name"`
 # / DISK / # get disk usage & disk model by regex
 while read line ; do
 	read part max_disk cur_disk x disk_per && disk="${cur_disk}/${max_disk} ${disk_per% *}"
-	[[ $part =~ sd|vd|sr ]] && dis=`sed 's/[0-9]*$//' <<< $part`
-	[[ $part =~ nvme|mmcblk ]] && dis=`sed 's/p[0-9]*$//' <<< $part`
+	case $part in
+		/dev/+(sd*|vd*|sr*)) dis=`sed 's/[0-9]*$//' <<< $part` ;;
+		/dev/+(nvme*|mmcblk*)) dis=`sed 's/p[0-9]*$//' <<< $part` && break ;;
+	esac
 done < <(df -h /)
 
 strip_regex=('SSD' '[0-9*GB$]')
@@ -189,15 +204,16 @@ strip_regex=('SSD' '[0-9*GB$]')
 
 # / RAM / convert kb from meminfo
 while read line ; do
-	[[ $line =~ Active: ]] && line=${line#*:} && cur_ram=$((${line% kB}/1024))
-	[[ $line =~ MemTot ]] && line=${line#*:} && max_ram=$((${line% kB}/1024))
+	case $line in
+		MemTot*) line=${line#*:} && max_ram=$((${line% kB}/1024)) ;;
+		Active:*) line=${line#*:} && cur_ram=$((${line% kB}/1024)) && break ;;
+	esac
 done < /proc/meminfo
 ram="${cur_ram}/${max_ram}M"
 # end / RAM /
 
 # / SWAP / convert kB from /proc/swaps, then combine two swaps if found
 while read -a line ; do
-	[[ $line = /* ]] && echo ${line[2]}
 	read -a line1
 	read -a line2
 	if [[ $line2 ]] ; then
@@ -207,6 +223,7 @@ while read -a line ; do
 		cur_swap=$((${line1[3]}/1024))
 		max_swap=$((${line1[2]}/1024))
 	fi
+	break
 done < /proc/swaps
 swap="${cur_swap}/${max_swap}M"
 # end / SWAP /
