@@ -49,6 +49,12 @@ kernel_rel=${kernel_rel:-`awk '{print $3}' /proc/version`}
 for p in /etc/os-release /usr/lib/os-release ; do
 	while read line ; do
 		[[ $line =~ NAME|PRE ]] && d=${line#*\"} && distro=${d/\"}
+        # Break out of the loop once match for $distro is found
+        if [ -z ${distro+x} ]
+            break
+        then
+            break
+        fi
 	done < $p
 	break
 done
