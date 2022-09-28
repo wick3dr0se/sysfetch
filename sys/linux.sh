@@ -47,7 +47,7 @@ kernel_rel=${kernel_rel:-`awk '{print $3}' /proc/version`}
 # uname
 # end / ARCH /
 
-# / DISTRO / # check (/etc|/usr/lib)/os-release or /etc/issue for distrobution
+# / DISTRO / # check (/etc|/usr/lib)/os-release or /etc/issue for distribution
 for p in /etc/os-release /usr/lib/os-release ; do
 	while read line ; do
 		case $line in
@@ -96,11 +96,11 @@ elif [[ `command -v wmctrl` ]] ; then
 		esac
 	done < <(wmctrl -m)
 elif [[ $DISPLAY && `command -v xprop`  ]] ; then
-	while read line ; do
-		case $line in
-			*_NET_WM_NAME*) line=${line##*=} && dewm=${line/\"} && break ;;
-		esac
-	done < <(xprop -root)
+  while read line ; do
+    case $line in
+      *'_NET_WM_NAME('*) line=${line##*=} && dewm=${line//\"} && break ;;  
+    esac
+  done < <(xprop -root)
 fi
 # end / DE WM /
 
@@ -191,7 +191,7 @@ mobo=`sed "$(rmv)" <<< "$mobo_vendor $mobo_name"`
 
 # / DISK / # get disk usage & disk model by regex
 while read line ; do
-	read part max_disk cur_disk x disk_per && disk="${cur_disk}/${max_disk} ${disk_per% *}"
+	read part max_disk cur_disk x disk_per && disk_per="${disk_per% *}"
 	case $part in
 		/dev/+(sd*|vd*|sr*)) dis=`sed 's/[0-9]*$//' <<< $part` ;;
 		/dev/+(nvme*|mmcblk*)) dis=`sed 's/p[0-9]*$//' <<< $part` && break ;;
@@ -209,7 +209,6 @@ while read line ; do
 		Active:*) line=${line#*:} && cur_ram=$((${line% kB}/1024)) && break ;;
 	esac
 done < /proc/meminfo
-ram="${cur_ram}/${max_ram}M"
 # end / RAM /
 
 # / SWAP / convert kB from /proc/swaps, then combine two swaps if found
@@ -225,5 +224,4 @@ while read -a line ; do
 	fi
 	break
 done < /proc/swaps
-swap="${cur_swap}/${max_swap}M"
 # end / SWAP /
