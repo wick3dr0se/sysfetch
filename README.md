@@ -1,51 +1,48 @@
 <div align="center">
-<h1>Sysfetch</h1>
+<h1>SysFetch</h1>
 <p>A super tiny system information fetch script written in BASH</p>
-<img src="https://github.com/wick3dr0se/sysfetch/blob/master/screen.png"></img>
+<i>SysFetch executes in ~1ms</i>
 
-<img src="https://img.shields.io/badge/Shell_Script-121011?style=for-the-badge&logo=gnu-bash&logoColor=white"></img>
-<img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg"></img>
+<img src="https://raw.githubusercontent.com/wick3dr0se/sysfetch/master/screen.png"></img>
+
+<img src="https://img.shields.io/badge/Shell_Script-121011?logo=gnu-bash&logoColor=white"></img>
+<img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg"></img>  
 <img src=https://img.shields.io/badge/Maintained%3F-yes-green.svg></img>
 <img src="https://badge-size.herokuapp.com/wick3dr0se/sysfetch/master/sysfetch"></img>
+<a href="https://discord.gg/TstuWvDzXr">  
+<img src="https://discordapp.com/api/guilds/913584348937207839/widget.png?style=shield"/></a>
 </div>
 
-## Installing from package manager:
-```diff
-+ Arch Linux -
+## Installation
+### From package manager:
+Arch Linux [AUR]: `sysfetch-git`
+
+#### Execution:
+```bash
+sysfetch
 ```
-&ensp;sysfetch is installable from the AUR as `sysfetch-git`
 
-#### How to Use:
-run `sysfetch`
+---
 
-## Pulling sysfetch from GitHub:
-Clone the repository
+### From GitHub:
+clone the repository
+```bash
+git clone https://github.com/wick3dr0se/sysfetch
+```
+change directory into the folder
+```bash
+cd sysfetch
+```
 
-**#**&ensp; `git clone -b master --single-branch https://github.com/wick3dr0se/sysfetch`
+#### Execution:
+```bash
+bash sysfetch
+```
 
-#### How to Use:
-Change directory into the folder
+## Contributing
+fork this repo, edit your version & submit a PR with your changes, linking any relevant issues, e.g. —
+```bash
+git commit -m 'issus fix #3'
+```
 
-**#**&ensp; `cd sysfetch`
-
-Execute script
-
-**#**&ensp; `bash sysfetch`
-
-## Contributing:
-Fork this repository, then clone this branch from your fork
-
-&ensp;**#** `git clone -b alpha --single-branch https://github.com/<user>/sysfetch alpha_sysfetch`
-
-Stage and commit your changes with a relevant message and link to issue # if fix, like:
-
-&ensp;**#** `git add .`
-
-&ensp;**#** `git commit -m "test; fix issue #3"`
-
-Push your changes and then create a pull request to merge from your fork to this repository
-
-&ensp;**#** `git push`
-
-## Communication:
-Join us on discord: https://discord.gg/TstuWvDzXr
+feel free to make any changes. mainly needing help with compatibility, wsl, bsd, mac os support & package management
