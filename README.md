@@ -1,5 +1,5 @@
 <div align="center">
-<h1>SysFetch</h1>
+<h1>Sysfetch</h1>
 <p>A super tiny system information fetch script written in BASH</p>
 <i>SysFetch executes in ~1ms</i>
 
@@ -12,6 +12,10 @@
 <img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg"></img>  
 <img src=https://img.shields.io/badge/Maintained%3F-no-red.svg></img>
 <a href="https://discord.gg/TstuWvDzXr">
+</a>
+<br>
+<br>
+<p>Follow the steps below to see how to install/get sysfetch.<p> <img src="https://theoldnet.com/images/book.gif"">
 </div>
 
 ## Installation
