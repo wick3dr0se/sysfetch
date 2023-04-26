@@ -1,77 +1,175 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
-# usage
-[[ $@ =~ --help|-h|--usage|-u ]] && {
-	cat <<USAGE
-| sysfetch | -f, --flag | usage |
- -------------------------------
--v, --verbose ... output all errors for debugging. use -x with bash for furter debugging
-USAGE
-	exit
+userName="${USER:-$(id -un)}"
+hostName="${HOSTNAME:-${hostname:-$(cat /etc/hostname)}}"
+architecture="$HOSTTYPE"
+
+convert_uptime(){
+  local rawSec secsUp
+
+  read rawSec _ </proc/uptime
+  secsUp="${rawSec%.*}"
+
+  ((daysUp=secsUp/86400))
+  ((hoursUp=secsUp%86400/3600))
+  ((minsUp=secsUp%3600/60))
 }
 
-# unless verbose flag is supplied supress errors
-[[ $@ =~ --verbose|-v ]] || exec 2>/dev/null
+processor(){
+  local line freqDir
 
-# set src path
-[[ -f /usr/bin/sysfetch ]] && binPath='/usr/bin/sysfetch'
-srcPath="${binPath:-${PWD}}"
+  while read line; do
+    [[ $line =~ ^'model name' ]]&&{ processor="${line#*: }"; break; }
+  done </proc/cpuinfo
 
-# determine system with uname & pull relevant code
-read kernel host kernel_rel arch os < <(uname -snrmo)
-
-# commented-out till compatability is expanded
-: ' # get script based on system
-if [[ $kernel_rel =~ WSL ]] ; then
-	. "${srcPath}/sys/wsl.sh"
-# may be checking wrong var for Mac
-elif [[ $os =~ Darwin ]] ; then
-	. "${srcPath}/sys/darwin.sh"
-elif [[ $kernel = Linux ]] ; then
-	. "${srcPath}/sys/linux.sh"
-# probably BSD too
-elif [[ $os =~ BSD ]] ; then
-	. "${srcPath}/sys/bsd.sh"
-fi ' # source linux code
-. "${srcPath}/sys/linux.sh"
-
-# colorize the output
-write() {
-  if [[ $5 ]] ; then
-    printf "\e[1;3%sm%s\e[0m%s\e[1;3%sm%s\e[0m$6" "$4" "$2" "$1" "$5" "$3"
-  else
-    printf "\e[1;3%sm%s\e[0m%s$4" "$3" "$1" "$2"
-  fi
+  freqDir='/sys/devices/system/cpu/cpu0/cpufreq'
+  
+  read maxFreq <"$freqDir"/scaling_max_freq
+  maxFreq="${maxFreq::2}"; : "${maxFreq#[0-9]}"
+  maxFreq="${maxFreq%[0-9]}.$_"
+  
+  read curFreq <"$freqDir"/scaling_cur_freq
+  curFreq="${curFreq::2}"; : "${curFreq#0-9}"
+  curFreq="${curFreq%[0-9]}.$_"
 }
 
-# if variables exist, then output
-[[ $user && $host ]] && write @ "$user" "$host" 5 4 '\n'
-[[ $kernel_rel ]] && write 'kernel' " ~ $kernel_rel" 2 '   '
-[[ $arch ]] && write 'arch' " ~ $arch" 3 '\n'
-[[ $distro ]] && write 'distro' " ~ $distro" 3 '\n'
-[[ $term ]] && write 'term' " ~ $term" 4 '   '
-[[ $shell ]] && write 'shell' " ~ $shell" 1 '\n'
-[[ $dewm ]] && write 'de/wm' " ~ $dewm" 5 '   '
-[[ $theme ]] && write 'theme' " ~ $theme" 6 '\n'
-[[ $pkgs ]] && write 'pkgs' " ~ $pkgs" 6 '\n'
-if [[  $cur_cpu ]] ; then	
-  write 'cpu' " ~ $cpu " 1
-  write @ "$max_cpu" "$cur_cpu" 4 2 'GHz\n'
-elif [[ $cpu ]] ; then
-	write 'cpu' " ~ $cpu" 1 '\n'
+graphic_processing_unit(){
+  local line
+
+  while read line; do
+    [[ $line =~ 'VGA'|'3D' ]]&&{ graphicCard="${line##*: }"; break; }
+  done < <(lspci)
+}
+
+motherboard(){
+  local moboDir
+
+  moboDir='/sys/devices/virtual/dmi/id'
+  read -r moboVendor <"$moboDir"/board_vendor
+  read -r moboName <"$moboDir"/board_name
+}
+
+primary_disk(){
+  local line blockPath blockDevice
+
+  while read line; do
+    [[ $line =~ '0 1'$ ]]&&{ blockPath="${line%% *}"; break; }
+  done </etc/fstab
+  blockDevice="${blockPath#/dev/}"
+  
+  read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
+
+  read _ _ _ _ blockSize _ blocksTotal _ blocksAvailable _ _ < <(stat --file-system --terse /)
+  ((partAvail=blockSize*blocksAvailable/1073741824))
+  ((partTotal=blockSize*blocksTotal/1073741824))
+
+  while read line; do
+    [[ $line =~ sda$ ]]&&{ line="${line% *}" rawDiskTotal="${line##* }"; break; }
+  done </proc/partitions
+  ((diskTotal=rawDiskTotal/1048576))
+}
+
+check_memory(){
+  local line rawMemory
+
+  while read line; do
+    case $line in
+      MemTot*) rawMemory=("${line#*: }");;
+      Active:*) rawMemory+=("${line#*:}"); break;;
+    esac
+  done </proc/meminfo
+
+  ((memActive=${rawMemory[1]% kB}/1024))
+  ((memTotal=${rawMemory[0]% kB}/1024))
+  
+  memUsage="$(awk 'BEGIN{printf "%.0f\n", (1683/7864)*100}')"
+}
+
+load_average(){ read -r line _ </proc/loadavg; loadAverage="${line#?.}"; }
+
+kernel_release(){ read -r kernelName _ kernelRelease _ </proc/version; }
+
+distribution(){
+  local line
+
+  while read line; do
+    [[ $line =~ ^'PRETTY'|^'NAME' ]]&&{ 
+      line="${line#*=}" distribution="${line//\"}"; break
+    }
+  done </etc/os-release
+}
+
+graphic_environment(){
+  local line
+
+  graphicEnvironment="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
+  [[ ! $graphicEnvironment ]]&& hash wmctrl&&{
+    while read line; do
+      [[ $line =~ Name: ]]&&{ graphicEnvironment="${line#*: }"; break; }
+    done < <(wmctrl)
+  }
+}
+
+installed_packages(){
+  unset packageCount
+  : '/var/lib/pacman/local'; [[ -d $_ ]]&& for x in "$_"/*; do ((++packageCount)); done
+}
+
+check_swap(){
+  local line curSwap maxSwap
+
+  while read -a line; do
+    (( ${i:=0} ))&&{
+      ((curSwap+=${line[3]}/1024))
+      ((maxSwap+=${line[2]}/1024))
+    }|| ((++i))
+  done </proc/swaps
+}
+
+stty -echo
+main(){
+  printf '\e[2J\e[H'
+  [[ -f /proc/uptime ]]&& convert_uptime
+  [[ -f /proc/cpuinfo ]]&& processor
+  hash lspci&& graphic_processing_unit
+  [[ -d /sys/devices/virtual/dmi/id ]]&& motherboard
+  [[ -d /sys/class/block ]]&& primary_disk
+  [[ -f /proc/meminfo ]]&& check_memory
+  [[ -f /proc/loadavg ]]&& load_average
+  [[ -f /proc/version ]]&& kernel_release
+  [[ -f /etc/os-release ]]&& distribution
+  graphic_environment
+  installed_packages
+  [[ -s /proc/swaps ]]&& check_swap
+
+  printf '%b' \
+    "\e[32m$userName\e[m@\e[34m$hostName\e[m\n" \
+    '\n~=~=~ Hardware ~=~=~\n' \
+    "Uptime: ${daysUp}d ${hoursUp}h ${minsUp}m\n" \
+    "Architecture: ${architecture:-Not found}\n" \
+    "CPU: ${processor% Processor} \e[34m${maxFreq:-0}\e[m@\e[32m${curFreq:-0}\e[m GHz\n" \
+    "GPU: ${graphicCard/Advanced Micro Devices, Inc. }\n" \
+    "Motherboard: ${moboVendor:-Not found} $moboName\n" \
+    "Primary Disk: $diskModel \e[32m${partAvail:-0}\e[m" \
+    "/\e[34m${partTotal:-0}\e[m/\e[34m${diskTotal:-0}\e[m GiB\n" \
+    "RAM: \e[32m$memActive\e[m/\e[34m${memTotal:-Not found}\e[m GiB \e[32m$memUsage\e[m%\n" \
+    "Load Average: \e[32m${loadAverage:-0}\e[m%\n" \
+    '\n~=~=~ Software ~=~=~\n' \
+    "Kernel: ${kernelName:-Not found} $kernelRelease\n" \
+    "Distribution: ${distribution:-Not found}\n" \
+    "Graphic Environment: ${graphicEnvironment:-Not found}\n" \
+    "Installed Packages: \e[32m${packageCount}\e[m\n" \
+    "Swap Space: \e[32m${curSwap:-0}\e[m/\e[34m${maxSwap:-0}\e[m\n"
+}
+
+if (( ${1:-0} > 0 )); then
+  printf '\e[?1049h'
+  for((;;)){
+    trap 'printf "\e[?1049l"; stty echo; exit' 2
+    main; sleep "$1"
+  }
+else
+  main
 fi
-[[ $gpu ]] && write 'gpu' " ~ $gpu" 2 '\n'
-[[ $gpu2 ]] && write 'gpu' " ~ $gpu" 2 '\n'
-[[ $mobo ]] && write 'mobo' " ~ $mobo" 3 '\n'
-[[ $cur_disk ]] && write 'disk' " ~ $cur_disk/$max_disk $disk_per $disk_model" 4 '\n'
-[[ $cur_ram ]] && {
-  write 'ram' ' ~ ' 5
-  write / "$cur_ram" "$max_ram" 2 4 'M   '
-}
-[[ $cur_swap ]] && {
-  write 'swap' ' ~ ' 4
-  write / "$cur_swap" "$max_swap" 2 4 'M\n'
-}
 
-# pull the ascii art
-source "${srcPath}/ascii.sh"
+stty echo
