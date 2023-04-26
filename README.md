@@ -1,59 +1,52 @@
 <div align="center">
 <h1>Sysfetch</h1>
 <p>A super tiny system information fetch script written in BASH</p>
-<i>SysFetch executes in ~1ms</i>
-
-<br>
-<img src="https://raw.githubusercontent.com/wick3dr0se/sysfetch/master/screen.png"></img>
-<br>
-<br>
+<a href='#'><img src="https://img.shields.io/badge/Shell_Script-121011?logo=gnu-bash&logoColor=white"></img><a/>
+<a href='#'><img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg"></img><a/>
+<a href='#'><img src=https://img.shields.io/badge/Maintained%3F-yes-green.svg></img><a/>
+<br/>
+<a href="https://discord.gg/W4mQqNnfSq">
 <img src="https://discordapp.com/api/guilds/913584348937207839/widget.png?style=shield"/></a>
-<img src="https://img.shields.io/badge/Shell_Script-121011?logo=gnu-bash&logoColor=white"></img>
-<img src="https://img.shields.io/badge/Made%20with-Bash-1f425f.svg"></img>  
-<img src=https://img.shields.io/badge/Maintained%3F-no-red.svg></img>
-<a href="https://discord.gg/TstuWvDzXr">
-</a>
-<br>
-<br>
-<p>Follow the steps below to see how to install/get sysfetch.<p> <img src="https://theoldnet.com/images/book.gif"">
 </div>
 
 ## Installation
-### AUR
-Install sysfetch using your fav AUR helper. yay example:
+Download sysfetch
+
 ```bash
-$ yay -S sysfetch-git
+git clone https://github.com/wick3dr0se/sysfetch; cd ${_##*/}
 ```
 
-#### Execution:
+Install to $PATH (optional)
 ```bash
-sysfetch
+cp sysfetch /usr/bin/local/
 ```
 
 ---
 
-### From GitHub:
-Clone the repository.
+## Usage
+Execute script from within downloaded directory
 ```bash
-$ git clone https://github.com/wick3dr0se/sysfetch
-```
-Change directory into the folder.
-```bash
-$ cd sysfetch
+./sysfetch
 ```
 
-#### Execution:
+Or with BASH
 ```bash
-$ bash sysfetch
+bash sysfetch
 ```
-You can manually install sysfetch by running `install -Dm755 sysfetch /usr/local/bin/sysfetch` and then you can execute it without having to change directories.
+
+Otherwise execute sysfetch from anywhere if it's in $PATH
 ```bash
-$ sysfetch
+sysfetch
 ```
+
+Sysfetch can be executed in an infinite loop, with a delay, live updating the output every N seconds
+```bash
+sysfetch <N>
+```
+
+Press Ctrl+C or close terminal to kill the script
+
+---
+
 ## Contributing
-Fork this repo, edit your version & submit a PR with your changes, linking any relevant issues, e.g. —
-```bash
-$ git commit -m 'issus fix #3'
-```
-
-Feel free to make any changes. mainly needing help with compatibility, wsl, bsd, mac os support & package management
+Make a change; Submit that bitch with a relevant message, e.g. `git commit -m 'issus fix #3'`
