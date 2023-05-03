@@ -1,8 +1,53 @@
 #!/bin/bash
 
+BF_COL1=2
+BF_COL2=7
+BF_COL3=6
+info_length=19
+
 userName="${USER:-$(id -un)}"
 hostName="${HOSTNAME:-${hostname:-$(cat /etc/hostname)}}"
 architecture="$HOSTTYPE"
+
+
+log(){
+    # Do nothig if info field is empty.
+    [ "$2" ] || return
+
+    # Store the value of '$1' as we reset the argument list below.
+    name=$1
+    
+    # Use 'set --' as a means of stripping all leading and trailing
+    # white-space from the info string. This also normalizes all
+    # white-space inside of the string.
+    #
+    # Disable the shellcheck warning for word-splitting
+    # as it's safe and intended ('set -f' disables globbing).
+    {
+        set -f
+        set +f -- $2
+        info=$*
+    }
+
+    # Move the courcer toward right to print name and info right
+    # of the ascii with an aditional gap using BF_GAP = variable. 
+    # printf '[%sC' "$(( $ascii_width + ${BF_GAP:-4}))"
+
+    # Print the info name with color
+    printf '[3%s;1m%s[m' "${BF_COL1:-2}" "$name"
+
+    # Move courcer backword at starting of info name and then move
+    # it forward ( max-info-name + extra gap ) to alogn all information.
+    printf '[%sD[%sC' "${#name}" "${PF_INFOALIGN:-$(($info_length + 1))}"
+
+    # Print the information striping all the extra spaces.
+    printf '[3%sm%s[m\n' "${BF_COL2:-7}" "$info"
+
+    # Incriment whenever log is called to keep track of lenfo info_height 
+    # so that correctely align the the prompet. 
+    info_height=$((${info_height:-0} + 1))
+}
+
 
 convert_uptime(){
   local rawSec secsUp
@@ -57,7 +102,7 @@ primary_disk(){
   done </etc/fstab
   blockDevice="${blockPath#/dev/}"
   
-  read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
+  # read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
 
   read _ _ _ _ blockSize _ blocksTotal _ blocksAvailable _ _ < <(stat --file-system --terse /)
   ((partAvail=blockSize*blocksAvailable/1073741824))
@@ -142,24 +187,46 @@ main(){
   installed_packages
   [[ -s /proc/swaps ]]&& check_swap
 
-  printf '%b' \
-    "\e[32m$userName\e[m@\e[34m$hostName\e[m\n" \
-    '\n~=~=~ Hardware ~=~=~\n' \
-    "Uptime: ${daysUp}d ${hoursUp}h ${minsUp}m\n" \
-    "Architecture: ${architecture:-Not found}\n" \
-    "CPU: ${processor% Processor} \e[34m${maxFreq:-0}\e[m@\e[32m${curFreq:-0}\e[m GHz\n" \
-    "GPU: ${graphicCard/Advanced Micro Devices, Inc. }\n" \
-    "Motherboard: ${moboVendor:-Not found} $moboName\n" \
-    "Primary Disk: $diskModel \e[32m${partAvail:-0}\e[m" \
-    "/\e[34m${partTotal:-0}\e[m/\e[34m${diskTotal:-0}\e[m GiB\n" \
-    "RAM: \e[32m$memActive\e[m/\e[34m${memTotal:-Not found}\e[m GiB \e[32m$memUsage\e[m%\n" \
-    "Load Average: \e[32m${loadAverage:-0}\e[m%\n" \
-    '\n~=~=~ Software ~=~=~\n' \
-    "Kernel: ${kernelName:-Not found} $kernelRelease\n" \
-    "Distribution: ${distribution:-Not found}\n" \
-    "Graphic Environment: ${graphicEnvironment:-Not found}\n" \
-    "Installed Packages: \e[32m${packageCount}\e[m\n" \
-    "Swap Space: \e[32m${curSwap:-0}\e[m/\e[34m${maxSwap:-0}\e[m\n"
+  # disables line rapping here 
+  tput rmam
+  # printf '%b' \
+    log "[3${BF_COL3:-1}m${userName}${c7}@[3${BF_COL3:-1}m${hostName}" " "
+    log " " " "
+    log "[--------------- HARDWARE ----------------]" " "
+    log "Uptime" "${daysUp}d ${hoursUp}h ${minsUp}m"
+    log "Architecture" "${architecture:-Not found}"
+    log "CPU" "${processor% Processor} ${maxFreq:-0}@${curFreq:-0}GHz"
+    # "Uptime: ${daysUp}d ${hoursUp}h ${minsUp}m\n" \
+    # "Architecture: ${architecture:-Not found}\n" \
+    # "CPU: ${processor% Processor} \e[34m${maxFreq:-0}\e[m@\e[32m${curFreq:-0}\e[m GHz\n" \
+    log "GPU" "${graphicCard/Advanced Micro Devices, Inc. }"
+    # "GPU: ${graphicCard/Advanced Micro Devices, Inc. }\n" \
+    log "Motherboard" "${moboVendor:-Not found} $moboName"
+    # "Motherboard: ${moboVendor:-Not found} $moboName\n" \
+    log "Primary Disk" "$diskModel ${partAvail:-0}/${partTotal:-0}/${diskTotal:-0} GiB" 
+    # "Primary Disk: $diskModel \e[32m${partAvail:-0}\e[m" \
+    # "/\e[34m${partTotal:-0}\e[m/\e[34m${diskTotal:-0}\e[m GiB\n" \
+    # "RAM: \e[32m$memActive\e[m/\e[34m${memTotal:-Not found}\e[m GiB \e[32m$memUsage\e[m%\n" \
+    log "RAM" "$memActive/${memTotal:-Not found}GiB $memUsage%" 
+    # "Load Average: \e[32m${loadAverage:-0}\e[m%\n" \
+    log "Load Average" "${loadAverage:-0}%" \
+    # '\n~=~=~ Software ~=~=~\n' \
+    log " " " "
+    log "[--------------- SOFTWARE ----------------]" " "
+    # "Kernel: ${kernelName:-Not found} $kernelRelease\n" \
+    log "Kernel" "${kernelName:-Not found} $kernelRelease" 
+    # "Distribution: ${distribution:-Not found}\n" \
+    log "Distribution" "${distribution:-Not found}" 
+    # "Graphic Environment: ${graphicEnvironment:-Not found}\n" \
+    log "Graphic Environment" "${graphicEnvironment:-Not found}" 
+    # "Installed Packages: \e[32m${packageCount}\e[m\n" \
+    log "Installed Packages" "${packageCount}" 
+    # "Installed Packages: \e[32m${packageCount}\e[m\n" \
+    # "Swap Space: \e[32m${curSwap:-0}\e[m/\e[34m${maxSwap:-0}\e[m\n"
+    log "Swap Space" "${curSwap:-0}/${maxSwap:-0}"
+    log "[-----------------------------------------]" " "
+  # enable line wrapping
+  tput smam
 }
 
 if (( ${1:-0} > 0 )); then
