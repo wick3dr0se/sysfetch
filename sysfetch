@@ -1,54 +1,5 @@
 #!/bin/bash
 
-userName="${USER:-$(id -un)}"
-hostName="${HOSTNAME:-${hostname:-$(cat /etc/hostname)}}"
-architecture="$HOSTTYPE"
-
-convert_uptime(){
-  local rawSec secsUp
-
-  read rawSec _ </proc/uptime
-  secsUp="${rawSec%.*}"
-
-  ((daysUp=secsUp/86400))
-  ((hoursUp=secsUp%86400/3600))
-  ((minsUp=secsUp%3600/60))
-}
-
-processor(){
-  local line freqDir
-
-  while read line; do
-    [[ $line =~ ^'model name' ]]&&{ processor="${line#*: }"; break; }
-  done </proc/cpuinfo
-
-  freqDir='/sys/devices/system/cpu/cpu0/cpufreq'
-  
-  read maxFreq <"$freqDir"/scaling_max_freq
-  maxFreq="${maxFreq::2}"; : "${maxFreq#[0-9]}"
-  maxFreq="${maxFreq%[0-9]}.$_"
-  
-  read curFreq <"$freqDir"/scaling_cur_freq
-  curFreq="${curFreq::2}"; : "${curFreq#0-9}"
-  curFreq="${curFreq%[0-9]}.$_"
-}
-
-graphic_processing_unit(){
-  local line
-
-  while read line; do
-    [[ $line =~ 'VGA'|'3D' ]]&&{ graphicCard="${line##*: }"; break; }
-  done < <(lspci)
-}
-
-motherboard(){
-  local moboDir
-
-  moboDir='/sys/devices/virtual/dmi/id'
-  read -r moboVendor <"$moboDir"/board_vendor
-  read -r moboName <"$moboDir"/board_name
-}
-
 primary_disk(){
   local line blockPath blockDevice
 
@@ -57,7 +8,7 @@ primary_disk(){
   done </etc/fstab
   blockDevice="${blockPath#/dev/}"
   
-  read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
+  #read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
 
   read _ _ _ _ blockSize _ blocksTotal _ blocksAvailable _ _ < <(stat --file-system --terse /)
   ((partAvail=blockSize*blocksAvailable/1073741824))
@@ -127,40 +78,7 @@ check_swap(){
 }
 
 stty -echo
-main(){
-  printf '\e[2J\e[H'
-  [[ -f /proc/uptime ]]&& convert_uptime
-  [[ -f /proc/cpuinfo ]]&& processor
-  hash lspci&& graphic_processing_unit
-  [[ -d /sys/devices/virtual/dmi/id ]]&& motherboard
-  [[ -d /sys/class/block ]]&& primary_disk
-  [[ -f /proc/meminfo ]]&& check_memory
-  [[ -f /proc/loadavg ]]&& load_average
-  [[ -f /proc/version ]]&& kernel_release
-  [[ -f /etc/os-release ]]&& distribution
-  graphic_environment
-  installed_packages
-  [[ -s /proc/swaps ]]&& check_swap
 
-  printf '%b' \
-    "\e[32m$userName\e[m@\e[34m$hostName\e[m\n" \
-    '\n~=~=~ Hardware ~=~=~\n' \
-    "Uptime: ${daysUp}d ${hoursUp}h ${minsUp}m\n" \
-    "Architecture: ${architecture:-Not found}\n" \
-    "CPU: ${processor% Processor} \e[34m${maxFreq:-0}\e[m@\e[32m${curFreq:-0}\e[m GHz\n" \
-    "GPU: ${graphicCard/Advanced Micro Devices, Inc. }\n" \
-    "Motherboard: ${moboVendor:-Not found} $moboName\n" \
-    "Primary Disk: $diskModel \e[32m${partAvail:-0}\e[m" \
-    "/\e[34m${partTotal:-0}\e[m/\e[34m${diskTotal:-0}\e[m GiB\n" \
-    "RAM: \e[32m$memActive\e[m/\e[34m${memTotal:-Not found}\e[m GiB \e[32m$memUsage\e[m%\n" \
-    "Load Average: \e[32m${loadAverage:-0}\e[m%\n" \
-    '\n~=~=~ Software ~=~=~\n' \
-    "Kernel: ${kernelName:-Not found} $kernelRelease\n" \
-    "Distribution: ${distribution:-Not found}\n" \
-    "Graphic Environment: ${graphicEnvironment:-Not found}\n" \
-    "Installed Packages: \e[32m${packageCount}\e[m\n" \
-    "Swap Space: \e[32m${curSwap:-0}\e[m/\e[34m${maxSwap:-0}\e[m\n"
-}
 
 if (( ${1:-0} > 0 )); then
   printf '\e[?1049h'

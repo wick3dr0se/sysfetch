@@ -1,0 +1,102 @@
+#!/bin/bash
+
+set -eEu
+
+_user_host(){
+  local username hostname
+
+  username="${USER:-$(id -un)}"
+  hostname="${HOSTNAME:-$(</etc/hostname)}"
+  
+  userHost="$username@${hostname:-$(uname -n)}\n"
+}
+
+_uptime(){
+  local rawSeconds seconds days hours minutes
+
+  read rawSeconds _ </proc/uptime
+  
+  seconds="${rawSeconds%.*}"
+  ((days=seconds/86400))|| days=''
+  ((hours=seconds%86400/3600))|| hours=''
+  ((minutes=seconds%3600/60))|| minutes=''
+
+  days="${days:+$days days, }"
+  hours="${hours:+$hours hours, }"
+  minutes="${minutes:+$minutes minutes}"
+  uptime="${minutes:+\e[32mUptime\e[m: ${days}${hours}${minutes}\n}"
+}
+
+_kernel_arch(){
+  read kernel kernelRelease architecture < <(uname -srm)
+  architecture="${architecture:-$HOSTTYPE}"
+  kernelArch="${kernel:+\e[31mKernel\e[m: $kernel $kernelRelease $architecture\n}"
+}
+
+_operating_system(){
+  operatingSystem="${OSTYPE:-$(uname -o)}"
+
+  operatingSystem="${operatingSystem:+\e[36mOS\e[m: $operatingSystem\n}"
+}
+
+_cpu(){
+  local line processor freqDir curFreq maxFreq frequency
+
+  while read line; do
+    [[ $line =~ ^'model name' ]]&&{ processor="${line#*: }"; break; }
+  done </proc/cpuinfo
+
+  freqDir='/sys/devices/system/cpu/cpu0/cpufreq'
+  
+  read maxFreq <"$freqDir"/scaling_max_freq
+  maxFreq="${maxFreq::2}"
+  : "${maxFreq#[0-9]}"
+  maxFreq="${maxFreq%[0-9]}.$_"
+  
+  read curFreq <"$freqDir"/scaling_cur_freq
+  curFreq="${curFreq::2}"
+  : "${curFreq#0-9}"
+  curFreq="${curFreq%[0-9]}.$_"
+
+  frequency="${curFreq:+ $maxFreq@$curFreq}"
+  cpu="${processor:+\e[33mCPU\e[m: $processor $frequency\n}"
+}
+
+_gpu(){
+  local line
+
+  while read line; do
+    [[ $line =~ 'VGA'|'3D' ]]&&{ gpu="${line##*: }"; break; }
+  done < <(lspci)
+
+  gpu="${gpu:+\e[34mGPU\e[m: $gpu\n}"
+}
+
+_mobo(){
+  local moboDir moboVendor moboName
+
+  moboDir='/sys/devices/virtual/dmi/id'
+  read -r moboVendor <"$moboDir"/board_vendor
+  read -r moboName <"$moboDir"/board_name
+
+  mobo="${moboVendor:+\e[32mMobo\e[m: $moboVendor $moboName\n}"
+}
+
+_user_host
+_uptime
+_kernel_arch
+_operating_system
+_cpu
+_gpu
+_mobo
+
+printf '\e[?7l'
+printf '%b' \
+  "$userHost" \
+  "$uptime" \
+  "$kernelArch" \
+  "$operatingSystem" \
+  "$cpu" \
+  "$gpu" \
+  "$mobo"
+printf '\e[?7h'
