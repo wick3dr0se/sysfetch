@@ -1,27 +1,110 @@
 #!/bin/bash
 
-primary_disk(){
-  local line blockPath blockDevice
+_user_host(){
+  local username hostname
+
+  username="${USER:-$(id -un)}"
+  hostname="${HOSTNAME:-$(</etc/hostname)}"
+  
+  userHost="$username@${hostname:-$(uname -n)}\n"
+}
+
+_uptime(){
+  local rawSeconds seconds days hours minutes
+
+  read rawSeconds _ </proc/uptime
+  
+  seconds="${rawSeconds%.*}"
+  ((days=seconds/86400))|| days=''
+  ((hours=seconds%86400/3600))|| hours=''
+  ((minutes=seconds%3600/60))|| minutes=''
+
+  days="${days:+$days days, }"
+  hours="${hours:+$hours hours, }"
+  minutes="${minutes:+$minutes minutes}"
+  uptime="${minutes:+\e[32mUptime\e[m: ${days}${hours}${minutes}\n}"
+}
+
+_kernel_arch(){
+  read kernel kernelRelease architecture < <(uname -srm)
+  architecture="${architecture:-$HOSTTYPE}"
+  kernelArch="${kernel:+\e[32mKernel\e[m: $kernel $kernelRelease $architecture\n}"
+}
+
+_operating_system(){
+  operatingSystem="${OSTYPE:-$(uname -o)}"
+
+  operatingSystem="${operatingSystem:+\e[32mOS\e[m: $operatingSystem\n}"
+}
+
+_cpu(){
+  local line processor freqDir curFreq maxFreq frequency
+
+  while read line; do
+    [[ $line =~ ^'model name' ]]&&{ processor="${line#*: }"; break; }
+  done </proc/cpuinfo
+
+  freqDir='/sys/devices/system/cpu/cpu0/cpufreq'
+  
+  read maxFreq <"$freqDir"/scaling_max_freq
+  maxFreq="${maxFreq::2}"
+  : "${maxFreq#[0-9]}"
+  maxFreq="${maxFreq%[0-9]}.$_"
+  
+  read curFreq <"$freqDir"/scaling_cur_freq
+  curFreq="${curFreq::2}"
+  : "${curFreq#0-9}"
+  curFreq="${curFreq%[0-9]}.$_"
+
+  frequency="${curFreq:+ $maxFreq@$curFreq}"
+  cpu="${processor:+\e[32mCPU\e[m: $processor $frequency\n}"
+}
+
+_gpu(){
+  local line
+
+  while read line; do
+    [[ $line =~ 'VGA'|'3D' ]]&&{ gpu="${line##*: }"; break; }
+  done < <(lspci)
+
+  gpu="${gpu:+\e[32mGPU\e[m: $gpu\n}"
+}
+
+_mobo(){
+  local moboDir moboVendor moboName
+
+  moboDir='/sys/devices/virtual/dmi/id'
+  read -r moboVendor <"$moboDir"/board_vendor
+  read -r moboName <"$moboDir"/board_name
+
+  mobo="${moboVendor:+\e[32mMobo\e[m: $moboVendor $moboName\n}"
+}
+
+_disk(){
+  local line blockPath blockDevice blockSize blockTotal blocksTotal blocksAvailable diskModel rawDiskTotal diskTotal
 
   while read line; do
     [[ $line =~ '0 1'$ ]]&&{ blockPath="${line%% *}"; break; }
   done </etc/fstab
   blockDevice="${blockPath#/dev/}"
   
-  #read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
+  read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
 
   read _ _ _ _ blockSize _ blocksTotal _ blocksAvailable _ _ < <(stat --file-system --terse /)
   ((partAvail=blockSize*blocksAvailable/1073741824))
   ((partTotal=blockSize*blocksTotal/1073741824))
+  ((partUsed=partTotal-partAvail))
 
   while read line; do
     [[ $line =~ sda$ ]]&&{ line="${line% *}" rawDiskTotal="${line##* }"; break; }
   done </proc/partitions
   ((diskTotal=rawDiskTotal/1048576))
+
+  disk="${partAvail:+\e[32mDisk\e[m: $diskModel $partUsed/$partTotal GiB\n}"
 }
 
-check_memory(){
-  local line rawMemory
+_ram(){
+  local line rawMemory memActive memTotal memUsage
 
   while read line; do
     case $line in
@@ -33,40 +116,64 @@ check_memory(){
   ((memActive=${rawMemory[1]% kB}/1024))
   ((memTotal=${rawMemory[0]% kB}/1024))
   
-  memUsage="$(awk 'BEGIN{printf "%.0f\n", (1683/7864)*100}')"
+  memUsage="$(awk 'BEGIN{printf "%.0f\n", ('$memActive'/'$memTotal')*100}')%"
+
+  ram="${memUsage:+\e[32mRAM\e[m: $memActive/$memTotal $memUsage\n}"
 }
 
-load_average(){ read -r line _ </proc/loadavg; loadAverage="${line#?.}"; }
+_load(){
+  local line loadAvg
+  
+  read -r line _ </proc/loadavg; loadAvg="${line#?.}%"
 
-kernel_release(){ read -r kernelName _ kernelRelease _ </proc/version; }
+  load="${loadAvg:+\e[32mLoad\e[m: $loadAvg\n}"
+}
 
-distribution(){
+_kernel(){
+  local kernelName kernelRel
+
+  read -r kernelName _ kernelRel _ </proc/version
+
+  kernel="${kernelName:+\e[32mKernel\e[m: $kernelName $kernelRel\n}"
+}
+
+_distro(){
   local line
 
   while read line; do
     [[ $line =~ ^'PRETTY'|^'NAME' ]]&&{ 
-      line="${line#*=}" distribution="${line//\"}"; break
+      line="${line#*=}" distro="${line//\"}"; break
     }
   done </etc/os-release
+
+  distro="${distro:+\e[32mDistro\e[m: $distro\n}"
 }
 
-graphic_environment(){
+_genv(){
   local line
 
-  graphicEnvironment="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
-  [[ ! $graphicEnvironment ]]&& hash wmctrl&&{
+  genv="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
+  [[ ! $genv ]]&& hash wmctrl&&{
     while read line; do
-      [[ $line =~ Name: ]]&&{ graphicEnvironment="${line#*: }"; break; }
+      [[ $line =~ Name: ]]&&{ genv="${line#*: }"; break; }
     done < <(wmctrl)
   }
+
+  genv="${genv:+\e[32mGENV\e[m: $genv\n}"
 }
 
-installed_packages(){
-  unset packageCount
-  : '/var/lib/pacman/local'; [[ -d $_ ]]&& for x in "$_"/*; do ((++packageCount)); done
+_packages(){
+  local pkgCnt=0
+
+  pkgPath='/var/lib/pacman/local'
+  [[ -d $pkgPath ]]&&{
+    for _ in "$pkgPath"/*; do ((++pkgCnt)); done
+  }
+
+  packages="${pkgCnt:+\e[32mPackages\e[m: $pkgCnt\n}"
 }
 
-check_swap(){
+_swap(){
   local line curSwap maxSwap
 
   while read -a line; do
@@ -75,16 +182,58 @@ check_swap(){
       ((maxSwap+=${line[2]}/1024))
     }|| ((++i))
   done </proc/swaps
+
+  swap="${curSwap:+\e[32mSwap\e[m: $curSwap/$maxSwap\n}"
+}
+
+main(){
+  _user_host
+  _uptime
+  _kernel_arch
+  _operating_system
+  _cpu
+  _gpu
+  _mobo
+  _disk
+  _ram
+  _load
+  _kernel
+  _distro
+  _genv
+  _packages
+  _swap
+
+  printf '\e[?7l'
+  printf '%b' \
+    "$userHost" \
+    "$uptime" \
+    "$kernelArch" \
+    "$operatingSystem" \
+    "$cpu" \
+    "$gpu" \
+    "$mobo" \
+    "$disk" \
+    "$ram" \
+    "$load" \
+    "$kernel" \
+    "$distro" \
+    "$genv" \
+    "$packages" \
+    "$swap"
+  printf '\e[?7h'
 }
 
 stty -echo
 
-
 if (( ${1:-0} > 0 )); then
+  trap 'printf "\e[?1049l"; stty echo; exit' 2
+  
   printf '\e[?1049h'
+  
   for((;;)){
-    trap 'printf "\e[?1049l"; stty echo; exit' 2
-    main; sleep "$1"
+    printf '\e[2J\e[H'
+    main
+    sleep "$1"
   }
 else
   main
