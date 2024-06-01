@@ -12,7 +12,7 @@ _user_host(){
 _uptime(){
   local rawSeconds seconds days hours minutes
 
-  read rawSeconds _ </proc/uptime
+  read -r rawSeconds _ </proc/uptime
   
   seconds="${rawSeconds%.*}"
   ((days=seconds/86400))|| days=''
@@ -26,7 +26,7 @@ _uptime(){
 }
 
 _kernel_arch(){
-  read kernel kernelRelease architecture < <(uname -srm)
+  read -r kernel kernelRelease architecture < <(uname -srm)
   architecture="${architecture:-$HOSTTYPE}"
   kernelArch="${kernel:+\e[32mKernel\e[m: $kernel $kernelRelease $architecture\n}"
 }
@@ -40,18 +40,18 @@ _operating_system(){
 _cpu(){
   local line processor freqDir curFreq maxFreq frequency
 
-  while read line; do
+  while read -r line; do
     [[ $line =~ ^'model name' ]]&&{ processor="${line#*: }"; break; }
   done </proc/cpuinfo
 
   freqDir='/sys/devices/system/cpu/cpu0/cpufreq'
   
-  read maxFreq <"$freqDir"/scaling_max_freq
+  read -r maxFreq <"$freqDir/scaling_max_freq"
   maxFreq="${maxFreq::2}"
   : "${maxFreq#[0-9]}"
   maxFreq="${maxFreq%[0-9]}.$_"
   
-  read curFreq <"$freqDir"/scaling_cur_freq
+  read -r curFreq <"$freqDir"/scaling_cur_freq
   curFreq="${curFreq::2}"
   : "${curFreq#0-9}"
   curFreq="${curFreq%[0-9]}.$_"
@@ -63,7 +63,7 @@ _cpu(){
 _gpu(){
   local line
 
-  while read line; do
+  while read -r line; do
     [[ $line =~ 'VGA'|'3D' ]]&&{ gpu="${line##*: }"; break; }
   done < <(lspci)
 
@@ -81,32 +81,33 @@ _mobo(){
 }
 
 _disk(){
-  local line blockPath blockDevice blockSize blockTotal blocksTotal blocksAvailable diskModel rawDiskTotal diskTotal
+  local line blockPath blockDevice blockSize blocksTotal blocksAvailable diskModel rawDiskTotal diskTotal
 
-  while read line; do
+  while read -r line; do
     [[ $line =~ '0 1'$ ]]&&{ blockPath="${line%% *}"; break; }
   done </etc/fstab
   blockDevice="${blockPath#/dev/}"
   
-  read -r diskModel </sys/class/block/${blockDevice%[0-9]}/device/model
+  : "/sys/class/block/${blockDevice%[0-9]}/device/model"
+  [[ -f $_ ]]&& read -r diskModel <"$_"
 
-  read _ _ _ _ blockSize _ blocksTotal _ blocksAvailable _ _ < <(stat --file-system --terse /)
+  read -r _ _ _ _ blockSize _ blocksTotal _ blocksAvailable _ _ < <(stat --file-system --terse /)
   ((partAvail=blockSize*blocksAvailable/1073741824))
   ((partTotal=blockSize*blocksTotal/1073741824))
   ((partUsed=partTotal-partAvail))
 
-  while read line; do
+  while read -r line; do
     [[ $line =~ sda$ ]]&&{ line="${line% *}" rawDiskTotal="${line##* }"; break; }
   done </proc/partitions
   ((diskTotal=rawDiskTotal/1048576))
 
-  disk="${partAvail:+\e[32mDisk\e[m: $diskModel $partUsed/$partTotal GiB\n}"
+  disk="${partAvail:+\e[32mDisk\e[m: $diskModel $diskTotal $partUsed/$partTotal GiB\n}"
 }
 
 _ram(){
   local line rawMemory memActive memTotal memUsage
 
-  while read line; do
+  while read -r line; do
     case $line in
       MemTot*) rawMemory=("${line#*: }");;
       Active:*) rawMemory+=("${line#*:}"); break;;
@@ -118,15 +119,7 @@ _ram(){
   
   memUsage="$(awk 'BEGIN{printf "%.0f\n", ('$memActive'/'$memTotal')*100}')%"
 
-  ram="${memUsage:+\e[32mRAM\e[m: $memActive/$memTotal $memUsage\n}"
-}
-
-_load(){
-  local line loadAvg
-  
-  read -r line _ </proc/loadavg; loadAvg="${line#?.}%"
-
-  load="${loadAvg:+\e[32mLoad\e[m: $loadAvg\n}"
+  ram="${memUsage:+\e[32mRAM\e[m: $memActive/$memTotal MiB $memUsage\n}"
 }
 
 _kernel(){
@@ -140,7 +133,7 @@ _kernel(){
 _distro(){
   local line
 
-  while read line; do
+  while read -r line; do
     [[ $line =~ ^'PRETTY'|^'NAME' ]]&&{ 
       line="${line#*=}" distro="${line//\"}"; break
     }
@@ -154,9 +147,9 @@ _genv(){
 
   genv="${XDG_CURRENT_DESKTOP:-$DESKTOP_SESSION}"
   [[ ! $genv ]]&& hash wmctrl&&{
-    while read line; do
+    while read -r line; do
       [[ $line =~ Name: ]]&&{ genv="${line#*: }"; break; }
-    done < <(wmctrl)
+    done < <(wmctrl -m)
   }
 
   genv="${genv:+\e[32mGENV\e[m: $genv\n}"
@@ -176,10 +169,10 @@ _packages(){
 _swap(){
   local line curSwap maxSwap
 
-  while read -a line; do
+  while read -ra line; do
     (( ${i:=0} ))&&{
-      ((curSwap+=${line[3]}/1024))
-      ((maxSwap+=${line[2]}/1024))
+      ((curSwap+=line[3]/1024))
+      ((maxSwap+=line[2]/1024))
     }|| ((++i))
   done </proc/swaps
 
@@ -196,7 +189,6 @@ main(){
   _mobo
   _disk
   _ram
-  _load
   _kernel
   _distro
   _genv
@@ -214,7 +206,6 @@ main(){
     "$mobo" \
     "$disk" \
     "$ram" \
-    "$load" \
     "$kernel" \
     "$distro" \
     "$genv" \
