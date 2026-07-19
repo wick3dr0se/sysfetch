@@ -122,14 +122,6 @@ _ram(){
   ram="${memUsage:+\e[32mRAM\e[m: $memActive/$memTotal MiB $memUsage\n}"
 }
 
-_kernel(){
-  local kernelName kernelRel
-
-  read -r kernelName _ kernelRel _ </proc/version
-
-  kernel="${kernelName:+\e[32mKernel\e[m: $kernelName $kernelRel\n}"
-}
-
 _distro(){
   local line
 
@@ -189,7 +181,6 @@ main(){
   _mobo
   _disk
   _ram
-  _kernel
   _distro
   _genv
   _packages
@@ -206,7 +197,6 @@ main(){
     "$mobo" \
     "$disk" \
     "$ram" \
-    "$kernel" \
     "$distro" \
     "$genv" \
     "$packages" \
