@@ -154,6 +154,10 @@ _packages(){
   [[ -d $pkgPath ]]&&{
     for _ in "$pkgPath"/*; do ((++pkgCnt)); done
   }
+  pkgPath='/var/lib/emerald/db'
+  [[ -d $pkgPath ]]&&{
+    for _ in "$pkgPath"/*; do ((++pkgCnt)); done
+  }
 
   packages="${pkgCnt:+\e[32mPackages\e[m: $pkgCnt\n}"
 }
